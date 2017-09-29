@@ -14,7 +14,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {pathOA,V,pathLocal} from '../js/variable.js'
+import {pathOA, V} from '../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -29,18 +29,18 @@ export default {
     }
   },
   computed: {
-    skinCol(){
-      return this.$store.state.skinCol;
+    skinCol() {
+      return this.$store.state.skinCol
     }
   },
-  methods:{
-    changeSkin: function(skinCol){
-      this.$store.commit('changeSkin',skinCol);
-      localStorage.setItem("skinCol", skinCol);
+  methods: {
+    changeSkin: function(skinCol) {
+      this.$store.commit('changeSkin', skinCol)
+      localStorage.setItem('skinCol', skinCol)
     },
-    jurisdiction: function(){
-      let _this = this;
-      let url = pathOA+'/PDAPermission.jsp';
+    jurisdiction: function() {
+      let _this = this
+      let url = pathOA + '/PDAPermission.jsp'
       // let url = pathLocal+'/jurisdiction.php';
       let params = {
         account: 11605002,
@@ -48,29 +48,29 @@ export default {
         factory: '工厂一',
         warehouse: '仓库二'
       }
-      V.post(url,params).then(function(data) {
-        if(data.status){
-          console.log(data);
-          _this.modules = data.permissions;
-        }else{
-          alert('数据获取失败！');
+      V.post(url, params).then(function(data) {
+        if (data.status) {
+          console.log(data)
+          _this.modules = data.permissions
+        } else {
+          alert('数据获取失败！')
         }
       }).catch((res) => {
-        alert('您的网络有问题。');
-      });
+        alert('您的网络有问题。')
+      })
     },
-    //跳转对应模块
-    toModule: function(module,status){
-      if(status){
-        this.$router.push({ path: '/'+module });
+    // 跳转对应模块
+    toModule: function(module, status) {
+      if (status) {
+        this.$router.push({ path: '/' + module })
       }
     }
   },
-  created: function(){
+  created: function() {
 
   },
-  mounted(){
-    this.jurisdiction();
+  mounted() {
+    this.jurisdiction()
   }
 }
 </script>
@@ -87,4 +87,3 @@ $skin-data: (skin-red, $skin-red),(skin-blue, $skin-blue);
   }
 }
 </style>
- 

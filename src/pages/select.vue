@@ -20,7 +20,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {pathOA,V,pathLocal} from '../js/variable.js'
+import {pathOA, V} from '../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -38,88 +38,88 @@ export default {
     }
   },
   computed: {
-    
+
   },
-  methods:{
-    select: function(){
-      localStorage.setItem("factoryMsg", "{factory: '"+this.factorySel+"',"+
-              "warehouse: '"+this.warehouseSel+"'}");
-      this.$router.push({ path: '/module' });
+  methods: {
+    select: function() {
+      localStorage.setItem('factoryMsg', '{factory: "' + this.factorySel + '",warehouse: "' + this.warehouseSel + '"}')
+      this.$router.push({ path: '/module' })
     },
-    setWarehouse: function(){
-      let _this = this;
+    setWarehouse: function() {
+      let _this = this
       // let url = pathLocal+"/warehouse_sel.php";
-      let url = pathOA+'/PDAWareHouse.jsp';
-      let obj = this.getAccountMsg();//获取本地存储账号信息
+      let url = pathOA + '/PDAWareHouse.jsp'
+      let obj = this.getAccountMsg()
+      // 获取本地存储账号信息
       let params = {
         account: obj.account,
         password: obj.password,
         factory: this.factorySel
       }
 
-      V.post(url,params).then(function(data) {
-        console.log('success');
-        console.log(data);
-        if(data.status){
-          _this.warehouses = data.warehouse;
-          if(_this.warehouseStatus){
-            _this.warehouseSel = data.warehouse[0];//更改默认仓库
-          }else{
-            _this.warehouseStatus = true;
+      V.post(url, params).then(function(data) {
+        console.log('success')
+        console.log(data)
+        if (data.status) {
+          _this.warehouses = data.warehouse
+          if (_this.warehouseStatus) {
+            // 更改默认仓库
+            _this.warehouseSel = data.warehouse[0]
+          } else {
+            _this.warehouseStatus = true
           }
-          console.log(data.warehouse);
+          console.log(data.warehouse)
         }
       }).catch((res) => {
-        alert('您的网络有问题。');
-      });
+        alert('您的网络有问题。')
+      })
     },
-    getAccountMsg: function(){
-      let accountMsg = localStorage.getItem("accountMsg");
-      let obj = eval('(' + accountMsg + ')');
-      return obj;
+    getAccountMsg: function() {
+      let accountMsg = localStorage.getItem('accountMsg')
+      let obj = eval('(' + accountMsg + ')')
+      return obj
     },
-    getFactorySel: function(){
-      //获取本地存储默认工厂
-      let factoryMsg = localStorage.getItem("factoryMsg");
-      let factoryObj = eval('(' + factoryMsg + ')');
-      if(factoryMsg){
-        this.factorySel = factoryObj.factory;
-        this.warehouseSel = factoryObj.warehouse;
-      }else{
-        console.log('没有本地存储');
+    getFactorySel: function() {
+      // 获取本地存储默认工厂
+      let factoryMsg = localStorage.getItem('factoryMsg')
+      let factoryObj = eval('(' + factoryMsg + ')')
+      if (factoryMsg) {
+        this.factorySel = factoryObj.factory
+        this.warehouseSel = factoryObj.warehouse
+      } else {
+        console.log('没有本地存储')
       }
     },
-    //设置工厂列表
-    setFactorys: function(){
-      let _this = this;
-      //获取本地存储的账号信息
-      let obj = this.getAccountMsg();
+    // 设置工厂列表
+    setFactorys: function() {
+      let _this = this
+      // 获取本地存储的账号信息
+      let obj = this.getAccountMsg()
       // let url = pathLocal+'/factory_sel.php';
-      let url = pathOA+'/PDAFactory.jsp';
-      let params  = {
+      let url = pathOA + '/PDAFactory.jsp'
+      let params = {
         // name: this.factorySel,
         // password: this.warehouseSel
         account: obj.account,
         password: obj.password
       }
 
-      V.post(url,params).then(function(data) {
-        console.log(data);
-        if(data.status){
-          _this.factorys = data.factorys;
-          _this.setWarehouse();
+      V.post(url, params).then(function(data) {
+        console.log(data)
+        if (data.status) {
+          _this.factorys = data.factorys
+          _this.setWarehouse()
         }
       }).catch((res) => {
-        alert('您的网络有问题。');
-      });
-      this.getFactorySel();
+        alert('您的网络有问题。')
+      })
+      this.getFactorySel()
     }
   },
   created: function () {
-    
-  }, 
-  mounted(){
-    this.setFactorys();
+  },
+  mounted() {
+    this.setFactorys()
   }
 }
 </script>
@@ -135,4 +135,3 @@ $skin-data: (skin-red, red),(skin-blue, blue);
   }
 }
 </style>
- 

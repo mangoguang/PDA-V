@@ -10,7 +10,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {pathOA} from '../../js/variable.js'
+// import {pathOA} from '../../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -22,13 +22,13 @@ export default {
     }
   },
   computed: {
-    
-  },
-  methods:{
 
   },
-  mounted(){
-    
+  methods: {
+
+  },
+  mounted() {
+
   }
 }
 </script>
@@ -37,4 +37,3 @@ export default {
 <style scoped lang="scss">
 
 </style>
- 

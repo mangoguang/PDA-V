@@ -5,15 +5,15 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import Vuex from 'vuex'
+// import Vue from 'vue'
+// import Vuex from 'vuex'
 // import vueResource from 'vue-resource'
 import {flexible} from './js/lib/properScreen.js'
 import Login from './pages/login.vue'
 import store from './store'
 
 // Vue.use(vueResource)
-flexible();
+flexible()
 
 export default{
   name: 'app',
@@ -26,8 +26,8 @@ export default{
     }
   },
   computed: {
-    skinCol(){
-      return this.$store.state.skinCol;
+    skinCol() {
+      return this.$store.state.skinCol
     }
   }
 }

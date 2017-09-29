@@ -18,7 +18,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {vv} from '../js/variable.js'
+// import {vv} from '../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -41,29 +41,29 @@ export default {
     }
   },
   computed: {
-    count(){
+    count() {
       return this.$store.state.count
     },
-    getter(){
+    getter() {
       return this.$store.getters.peopleMsg
     }
   },
-  methods:{
-    setMap: function(){
-      
+  methods: {
+    setMap: function() {
+
     },
-    increment(){
+    increment() {
       this.$store.commit('increment')
     },
-    decrement(){
+    decrement() {
       this.$store.commit('decrement')
     },
-    incrementAsync(){
+    incrementAsync() {
       this.$store.dispatch('incrementAsync')
     }
   },
-  mounted(){
-    this.setMap();
+  mounted() {
+    this.setMap()
   }
 }
 </script>
@@ -72,4 +72,3 @@ export default {
 <style scoped>
 
 </style>
- 

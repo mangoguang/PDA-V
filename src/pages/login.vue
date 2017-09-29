@@ -26,7 +26,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {pathOA,V,pathLocal} from '../js/variable.js'
+import { pathOA, V } from '../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -41,53 +41,53 @@ export default {
     }
   },
   computed: {
-    
+
   },
-  methods:{
-    login: function(){
-      let _this = this;
+  methods: {
+    login: function() {
+      let _this = this
       let params = {
           // name: 'mango',
           // password: '123456'
           account: this.account,
           password: this.password
-        };
-      let url = pathOA+'/PDAUserCheck.jsp';
+        }
+      let url = pathOA + '/PDAUserCheck.jsp'
       // let url = pathLocal+'/login.php';
-      V.post(url,params).then(function(data) {
+      V.post(url, params).then(function(data) {
         if (data.status) {
-          //保存账号密码到本地存储
-          localStorage.setItem("accountMsg", "{account: '"+_this.account+"',"+
-            "password: '"+_this.password+"'}");
-          _this.$router.push({ path: '/select' });
+          // 保存账号密码到本地存储
+          localStorage.setItem('accountMsg', "{account: '" + _this.account + "'," +
+            "password: '" + _this.password + "'}")
+          _this.$router.push({ path: '/select' })
         } else {
-          alert('账号或者密码错误！');
+          alert('账号或者密码错误！')
         }
       })
     }
   },
   created: function () {
-    //获取本地存储的皮肤值
-    let skinCol = localStorage.getItem("skinCol");
-    console.log(skinCol);
+    // 获取本地存储的皮肤值
+    let skinCol = localStorage.getItem('skinCol')
+    console.log(skinCol)
     console.log('success')
-    if(skinCol){//检测是否存在本地存储皮肤值
-      this.$store.commit('changeSkin',skinCol);
+    if (skinCol) {
+    // 检测是否存在本地存储皮肤值
+      this.$store.commit('changeSkin', skinCol)
     }
 
-    //获取本地存储账号信息
-    let accountMsg = localStorage.getItem("accountMsg");
-    if(accountMsg){
-      let obj = eval('(' + accountMsg + ')');
-      this.account = obj.account;
-      this.password = obj.password;
+    // 获取本地存储账号信息
+    let accountMsg = localStorage.getItem('accountMsg')
+    if (accountMsg) {
+      let obj = eval('(' + accountMsg + ')')
+      this.account = obj.account
+      this.password = obj.password
       console.log(obj)
-    }else{
-      console.log('没有本地存储');
+    } else {
+      console.log('没有本地存储')
     }
   },
-  mounted(){
-    
+  mounted() {
   }
 }
 </script>
@@ -106,4 +106,3 @@ $skin-data: (skin-red, $skin-red),(skin-blue, $skin-blue);
   }
 }
 </style>
- 
