@@ -14,7 +14,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {pathOA, V} from '../js/variable.js'
+import {pathLocal, V} from '../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -34,21 +34,27 @@ export default {
     }
   },
   methods: {
+    loadingShow: function(x) {
+      this.$store.commit('loadingShow', x)
+    },
     changeSkin: function(skinCol) {
       this.$store.commit('changeSkin', skinCol)
       localStorage.setItem('skinCol', skinCol)
     },
     jurisdiction: function() {
       let _this = this
-      let url = pathOA + '/PDAPermission.jsp'
-      // let url = pathLocal+'/jurisdiction.php';
+      // let url = pathOA + '/PDAPermission.jsp'
+      let url = pathLocal + '/jurisdiction.php'
       let params = {
         account: 11605002,
         password: 'ADF00707A1C0154A9AD8EDB57C8646F4',
         factory: '工厂一',
         warehouse: '仓库二'
       }
+
+      _this.loadingShow(true)
       V.post(url, params).then(function(data) {
+        _this.loadingShow(false)
         if (data.status) {
           console.log(data)
           _this.modules = data.permissions
@@ -56,7 +62,8 @@ export default {
           alert('数据获取失败！')
         }
       }).catch((res) => {
-        alert('您的网络有问题。')
+        alert('请求超时！')
+        _this.loadingShow(false)
       })
     },
     // 跳转对应模块

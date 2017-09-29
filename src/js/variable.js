@@ -1,7 +1,7 @@
 let pathOA = 'http://10.12.0.53:8900/derucci/workflow/jsp'
 let pathLocal = 'http://localhost/PDA-V/static/json'
 
-function Vue() {
+function VueAjax() {
 	// 创建XMLHttpRequest对象（如果是IE5，IE6，则创建ActiveXObject对象）
 	let xmlhttp
 	if (window.XMLHttpRequest) {
@@ -12,13 +12,14 @@ function Vue() {
 		xmlhttp = new ActiveXObject('Microsoft.XMLHTTP')
 	}
 
-	// 用于设置请求超时
-  function connecttoFail() {
-    if (xmlhttp) xmlhttp.abort()
-    alert('请求超时!')
-	}
-
 	this.post = function(url, params) {
+		// let t = null
+		// 用于设置请求超时
+		// function connecttoFail() {
+		// 	if (xmlhttp) xmlhttp.abort()
+		// 	// alert('请求超时!')
+		// }
+
 		let ajax = new Promise(function(resolve, reject) {
 			let sendStr = ''
 			for (let i in params) {
@@ -28,7 +29,7 @@ function Vue() {
 			xmlhttp.open('POST', url, true)
 			xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
 			xmlhttp.send(sendStr)
-			let t = setTimeout(connecttoFail, 8000)
+			// t = setTimeout(connecttoFail, 8000)
 
 			xmlhttp.onreadystatechange = function() {
 				/* if(xmlhttp.readyState === 0) {
@@ -41,7 +42,7 @@ function Vue() {
 		  		console.log("请求处理中")
 		  	}else */if (xmlhttp.readyState === 4) {
 					if (xmlhttp.status === 200) {
-						clearTimeout(t)
+						// clearTimeout(t)
 						resolve(JSON.parse(xmlhttp.responseText))
 					} else {
 						reject(xmlhttp)
@@ -81,6 +82,6 @@ function Vue() {
 		return ajax
 	}
 }
-let V = new Vue()
+let V = new VueAjax()
 
 export { pathOA, V, pathLocal }

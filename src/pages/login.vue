@@ -2,7 +2,6 @@
 <template>
   <div class="login" v-bind:style="{height: height+'px'}">
     <h1>欢迎使用扫描枪</h1>
-    
     <form>
       <ul>
         <li>
@@ -26,7 +25,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import { pathOA, V } from '../js/variable.js'
+import { pathLocal, V } from '../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -34,36 +33,50 @@ export default {
   name: 'Login',
   data () {
     return {
-      msg: 'Vuex组件',
       height: document.documentElement.clientHeight,
       account: null,
-      password: null
+      password: null,
+      // 按钮是否可点击
+      canClick: true
     }
   },
   computed: {
 
   },
   methods: {
+    loadingShow: function(x) {
+      this.$store.commit('loadingShow', x)
+    },
     login: function() {
       let _this = this
       let params = {
-          // name: 'mango',
-          // password: '123456'
-          account: this.account,
-          password: this.password
+          name: 'mango',
+          password: '123456'
+          // account: this.account,
+          // password: this.password
         }
-      let url = pathOA + '/PDAUserCheck.jsp'
-      // let url = pathLocal+'/login.php';
-      V.post(url, params).then(function(data) {
-        if (data.status) {
-          // 保存账号密码到本地存储
-          localStorage.setItem('accountMsg', "{account: '" + _this.account + "'," +
-            "password: '" + _this.password + "'}")
-          _this.$router.push({ path: '/select' })
-        } else {
-          alert('账号或者密码错误！')
-        }
-      })
+      // let url = pathOA + '/PDAUserCheck.jsp'
+      let url = pathLocal + '/login.php'
+      if (_this.canClick) {
+        _this.canClick = false
+        _this.loadingShow(true)
+        V.post(url, params).then(function(data) {
+          _this.canClick = true
+          _this.loadingShow(false)
+          if (data.status) {
+            // 保存账号密码到本地存储
+            localStorage.setItem('accountMsg', "{account: '" + _this.account + "'," +
+              "password: '" + _this.password + "'}")
+            _this.$router.push({ path: '/select' })
+          } else {
+            _this.canClick = true
+            alert('账号或者密码错误！')
+          }
+        }).catch((res) => {
+          alert('请求超时！')
+          _this.loadingShow(false)
+        })
+      }
     }
   },
   created: function () {
@@ -86,6 +99,7 @@ export default {
     } else {
       console.log('没有本地存储')
     }
+    this.loadingShow(false)
   },
   mounted() {
   }
@@ -105,4 +119,7 @@ $skin-data: (skin-red, $skin-red),(skin-blue, $skin-blue);
     }
   }
 }
+  div.login{
+    background: #fff!important;
+  } ;
 </style>

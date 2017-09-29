@@ -1,0 +1,51 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+button,input{
+  border: none;
+  outline: none;
+}
+.skin-red .login[data-v-db7be948] {
+  background: #fff;
+}
+.skin-blue .login[data-v-db7be948] {
+  background: blue;
+}
+div.login[data-v-db7be948] {
+  background: #fff !important;
+}
+
+/*# sourceMappingURL=app.8cc2261eb6f0baed6c22ef0505b634b9.css.map*/

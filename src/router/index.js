@@ -10,51 +10,51 @@ export var router = new VueRouter({
   routes: [{
     path: '/',
     name: 'Login',
-    component: require('../pages/login')
+    component: resolve => require(['../pages/login'], resolve)
   }, {
     path: '/select',
     name: 'Select',
-    component: require('../pages/select')
+    component: resolve => require(['../pages/select'], resolve)
   }, {
     path: '/module',
     name: 'Module',
-    component: require('../pages/module')
+    component: resolve => require(['../pages/module'], resolve)
   }, {
     path: '/production',
     name: 'Production',
-    component: require('../pages/production/index')
+    component: resolve => require(['../pages/production/index'], resolve)
   }, {
     path: '/purchase',
     name: 'Purchase',
-    component: require('../pages/purchase/index')
+    component: resolve => require(['../pages/purchase/index'], resolve)
   }, {
     path: '/salesReturn',
     name: 'SalesReturn',
-    component: require('../pages/salesReturn/index')
+    component: resolve => require(['../pages/salesReturn/index'], resolve)
   }, {
     path: '/allotIn',
     name: 'AllotIn',
-    component: require('../pages/allotIn/index')
+    component: resolve => require(['../pages/allotIn/index'], resolve)
   }, {
     path: '/allotOut',
     name: 'AllotOut',
-    component: require('../pages/allotOut/index')
+    component: resolve => require(['../pages/allotOut/index'], resolve)
   }, {
     path: '/stock',
     name: 'Stock',
-    component: require('../pages/stock/index')
+    component: resolve => require(['../pages/stock/index'], resolve)
   }, {
     path: '/scanSearch',
     name: 'ScanSearch',
-    component: require('../pages/scanSearch/index')
+    component: resolve => require(['../pages/scanSearch/index'], resolve)
   }, {
     path: '/setting',
     name: 'Setting',
-    component: require('../pages/setting/index')
+    component: resolve => require(['../pages/setting/index'], resolve)
   }, {
     path: '/check',
     name: 'Check',
-    component: require('../pages/check')
+    component: resolve => require(['../pages/check'], resolve)
   }]
 })
 

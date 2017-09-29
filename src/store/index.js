@@ -17,6 +17,7 @@ const store = new Vuex.Store({
   state: {
     count: 0,
     skinCol: 'skin-red',
+    loadingShow: true,
     people: [{
       'name': '张三',
       'age': 25
@@ -31,7 +32,10 @@ const store = new Vuex.Store({
   mutations: {
     increment: state => state.count++,
     decrement: state => state.count--,
-    changeSkin: (state, skinCol) => state.skinCol = skinCol
+    // 皮肤选择
+    changeSkin: (state, skinCol) => state.skinCol = skinCol,
+    // 加载动画显示/隐藏
+    loadingShow: (state, x) => state.loadingShow = x
   },
   actions: {
     incrementAsync({

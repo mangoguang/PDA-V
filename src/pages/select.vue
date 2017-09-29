@@ -20,7 +20,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {pathOA, V} from '../js/variable.js'
+import {pathLocal, V} from '../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -41,14 +41,17 @@ export default {
 
   },
   methods: {
+    loadingShow: function(x) {
+      this.$store.commit('loadingShow', x)
+    },
     select: function() {
       localStorage.setItem('factoryMsg', '{factory: "' + this.factorySel + '",warehouse: "' + this.warehouseSel + '"}')
       this.$router.push({ path: '/module' })
     },
     setWarehouse: function() {
       let _this = this
-      // let url = pathLocal+"/warehouse_sel.php";
-      let url = pathOA + '/PDAWareHouse.jsp'
+      let url = pathLocal + '/warehouse_sel.php'
+      // let url = pathOA + '/PDAWareHouse.jsp'
       let obj = this.getAccountMsg()
       // 获取本地存储账号信息
       let params = {
@@ -57,7 +60,9 @@ export default {
         factory: this.factorySel
       }
 
+      _this.loadingShow(true)
       V.post(url, params).then(function(data) {
+        _this.loadingShow(false)
         console.log('success')
         console.log(data)
         if (data.status) {
@@ -72,6 +77,7 @@ export default {
         }
       }).catch((res) => {
         alert('您的网络有问题。')
+        _this.loadingShow(false)
       })
     },
     getAccountMsg: function() {
@@ -95,8 +101,8 @@ export default {
       let _this = this
       // 获取本地存储的账号信息
       let obj = this.getAccountMsg()
-      // let url = pathLocal+'/factory_sel.php';
-      let url = pathOA + '/PDAFactory.jsp'
+      let url = pathLocal + '/factory_sel.php'
+      // let url = pathOA + '/PDAFactory.jsp'
       let params = {
         // name: this.factorySel,
         // password: this.warehouseSel
@@ -104,7 +110,9 @@ export default {
         password: obj.password
       }
 
+      _this.loadingShow(true)
       V.post(url, params).then(function(data) {
+        _this.loadingShow(false)
         console.log(data)
         if (data.status) {
           _this.factorys = data.factorys
@@ -112,6 +120,7 @@ export default {
         }
       }).catch((res) => {
         alert('您的网络有问题。')
+        _this.loadingShow(false)
       })
       this.getFactorySel()
     }

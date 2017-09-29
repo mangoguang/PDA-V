@@ -1,5 +1,6 @@
 <template>
   <div id="app" v-bind:class="skinCol">
+    <Loading></Loading>
     <router-view></router-view>
   </div>
 </template>
@@ -11,6 +12,7 @@
 import {flexible} from './js/lib/properScreen.js'
 import Login from './pages/login.vue'
 import store from './store'
+import Loading from './components/loading'
 
 // Vue.use(vueResource)
 flexible()
@@ -19,7 +21,7 @@ export default{
   name: 'app',
   store,
   // components: {ComponentHello}
-  components: {Login},
+  components: {Login, Loading},
   data () {
     return {
       height: document.documentElement.clientHeight
@@ -28,7 +30,7 @@ export default{
   computed: {
     skinCol() {
       return this.$store.state.skinCol
-    }
+    },
   }
 }
 </script>
