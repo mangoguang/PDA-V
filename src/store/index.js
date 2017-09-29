@@ -31,7 +31,7 @@ const store = new Vuex.Store({
   mutations: {
     increment: state => state.count++,
     decrement: state => state.count--,
-    changeSkin: state => state.skinCol = 'skin-blue'
+    changeSkin: (state,skinCol) => state.skinCol = skinCol
   },
   actions: {
     incrementAsync({

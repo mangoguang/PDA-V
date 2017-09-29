@@ -4,7 +4,8 @@
     <ul>
       <li v-for="module in modules" @click="toModule(module.coding,module.jurisdiction)">{{module.name}}</li>
     </ul>
-    <button type="button" @click="changeSkin">换肤</button>
+    <button type="button" @click="changeSkin('skin-blue')">blue</button>
+    <button type="button" @click="changeSkin('skin-red')">red</button>
   </div>
 </template>
 <!-- </keep-alive> -->
@@ -33,8 +34,9 @@ export default {
     }
   },
   methods:{
-    changeSkin: function(){
-      this.$store.commit('changeSkin');
+    changeSkin: function(skinCol){
+      this.$store.commit('changeSkin',skinCol);
+      localStorage.setItem("skinCol", skinCol);
     },
     jurisdiction: function(){
       let _this = this;

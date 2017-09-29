@@ -15,7 +15,6 @@
         </li>
         <li>
           <button type="button" @click="login">登录</button>
-          <button type="button" @click="sapTest">测试SAP接口</button>
         </li>
       </ul>
     </form>
@@ -65,21 +64,18 @@ export default {
           alert('账号或者密码错误！');
         }
       })
-    },
-    sapTest:function(){
-      let url = 'http://10.12.0.153:50100/RESTAdapter/purchase/getcity?WERKS=1010&LGORT=1001';
-      // let url = pathLocal+'/purchase/getlist.php';
-
-      V.get(url).then(function(data) {
-        alert(data.responseText)
-        // data = JSON.parse(data.responseText);
-        // console.log(data.MT_Purchase_GetInCity_Resp.Item);
-      }, function(value) {
-        console.log(value);
-      });
     }
   },
   created: function () {
+    //获取本地存储的皮肤值
+    let skinCol = localStorage.getItem("skinCol");
+    console.log(skinCol);
+    console.log('success')
+    if(skinCol){//检测是否存在本地存储皮肤值
+      this.$store.commit('changeSkin',skinCol);
+    }
+
+    //获取本地存储账号信息
     let accountMsg = localStorage.getItem("accountMsg");
     if(accountMsg){
       let obj = eval('(' + accountMsg + ')');
@@ -98,15 +94,14 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-.login{
-  background: #eee;
-}
-ul{
-  li{
-    list-style: none;
-    input{
-      border: none;
-      outline: none;
+@import "./../assets/sass/variable.scss";
+@import "./../assets/css/common.css";
+
+$skin-data: (skin-red, $skin-red),(skin-blue, $skin-blue);
+@each $skin, $color in $skin-data {
+  .#{$skin} {
+    .login{
+      background: $color;
     }
   }
 }

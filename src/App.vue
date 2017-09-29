@@ -34,8 +34,4 @@ export default{
 </script>
 
 <style>
-@import "./assets/css/normalize.css"
-#app{
-	background: red;
-}
 </style>
