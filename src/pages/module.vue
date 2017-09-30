@@ -4,8 +4,8 @@
     <ul>
       <li v-for="module in modules" @click="toModule(module.coding,module.jurisdiction)">{{module.name}}</li>
     </ul>
-    <button type="button" @click="changeSkin('skin-blue')">blue</button>
-    <button type="button" @click="changeSkin('skin-red')">red</button>
+    <button type="button" @click="changeSkin('skinA')">skinA</button>
+    <button type="button" @click="changeSkin('skinB')">skinB</button>
   </div>
 </template>
 <!-- </keep-alive> -->
@@ -85,7 +85,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import "./../assets/sass/variable.scss";
-$skin-data: (skin-red, $skin-red),(skin-blue, $skin-blue);
+$skin-data: (skinA, $s1Col),(skinB, $s2Col);
 @each $skin, $color in $skin-data {
   .#{$skin} {
     .module{

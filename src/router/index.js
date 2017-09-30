@@ -28,6 +28,10 @@ export var router = new VueRouter({
     name: 'Purchase',
     component: resolve => require(['../pages/purchase/index'], resolve)
   }, {
+    path: '/orderDetail/:num',
+    name: 'OrderDetail',
+    component: resolve => require(['../pages/purchase/order-detail'], resolve)
+  }, {
     path: '/salesReturn',
     name: 'SalesReturn',
     component: resolve => require(['../pages/salesReturn/index'], resolve)

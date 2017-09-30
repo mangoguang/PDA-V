@@ -135,12 +135,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-$skin-data: (skin-red, red),(skin-blue, blue);
-@each $skin, $color in $skin-data {
-  .#{$skin} {
-    .select{
-      background: $color;
-    }
-  }
-}
+// $skin-data: (skin-red, red),(skin-blue, blue);
+// @each $skin, $color in $skin-data {
+//   .#{$skin} {
+//     .select{
+//       background: $color;
+//     }
+//   }
+// }
 </style>

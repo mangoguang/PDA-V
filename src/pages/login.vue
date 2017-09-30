@@ -111,7 +111,7 @@ export default {
 @import "./../assets/sass/variable.scss";
 @import "./../assets/css/common.css";
 
-$skin-data: (skin-red, $skin-red),(skin-blue, $skin-blue);
+$skin-data: (skinA, $s1Col),(skinB, $s2Col);
 @each $skin, $color in $skin-data {
   .#{$skin} {
     .login{

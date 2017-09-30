@@ -30,7 +30,7 @@ export default{
   computed: {
     skinCol() {
       return this.$store.state.skinCol
-    },
+    }
   }
 }
 </script>
