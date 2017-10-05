@@ -1,16 +1,16 @@
 <!-- <keep-alive> -->
 <template>
   <div class="login" v-bind:style="{height: height+'px'}">
-    <h1>欢迎使用扫描枪</h1>
     <form>
+      <h1>欢迎使用扫描枪</h1>
       <ul>
         <li>
-          <label for="account">工号</label>
-          <input id="account" name="account" type="number" v-model="account" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')" maxlength="8" autocomplete="off">
+          <label for="account"></label>
+          <input id="account" name="account" type="number" v-model="account" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')" maxlength="8" autocomplete="off" placeholder="请输入用户名">
         </li>
         <li>
-          <label for="password">密码</label>
-          <input id="password" name="password" type="password" v-model="password" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')"  maxlength="32" autocomplete="off">
+          <label for="password"></label>
+          <input id="password" name="password" type="password" v-model="password" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')"  maxlength="32" autocomplete="off" placeholder="请输入密码">
         </li>
         <li>
           <button type="button" @click="login">登录</button>
@@ -69,11 +69,11 @@ export default {
               "password: '" + _this.password + "'}")
             _this.$router.push({ path: '/select' })
           } else {
-            _this.canClick = true
             alert('账号或者密码错误！')
           }
         }).catch((res) => {
           alert('请求超时！')
+          _this.canClick = true
           _this.loadingShow(false)
         })
       }
@@ -115,11 +115,77 @@ $skin-data: (skinA, $s1Col),(skinB, $s2Col);
 @each $skin, $color in $skin-data {
   .#{$skin} {
     .login{
-      background: $color;
+      background: $s1loginBg no-repeat;
+      background-size: 100% 100%;
+      form{
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 200px;
+        margin-top: -100px;
+      }
+      h1{
+        color: #fff;
+        margin: 10px auto;
+      }
+      li{
+        position: relative;
+        height: 30px;
+        width: 80%;
+        background: rgba(255,255,255,0.2);
+        margin-bottom: 5px;
+        input{
+          display: block;
+          width: 100%;
+          line-height: 30px;
+          padding-left: 40px;
+          box-sizing: border-box;
+          color: $s1btnBgCol;
+        }
+        #account{
+          background: url(../assets/img/login/1_user.png) no-repeat;
+          background-size: 19px 19px;
+          background-position: 5px 5px;
+        }
+        #password{
+          background: url(../assets/img/login/2_Lock.png) no-repeat;
+          background-size: 19px 19px;
+          background-position: 5px 5px;
+        }
+        input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+          color: $s1btnBgCol;
+        } input:-moz-placeholder, textarea:-moz-placeholder {
+          color: $s1btnBgCol;
+        } input::-moz-placeholder, textarea::-moz-placeholder {
+          color: $s1btnBgCol;
+        } input:-ms-input-placeholder, textarea:-ms-input-placeholder {
+          color: $s1btnBgCol;
+        }
+      }
+      label:after{
+        position: absolute;
+        top: 5px; 
+        left: 29px;
+        display: block;
+        content: "";
+        width: 1px;
+        height: 19px;
+        background: $s1btnBgCol;
+      }
+      button{
+        width: 100%;
+        height: 100%;
+        background: $s1btnBgCol;
+        color: #fff;
+        font-size: $btnSize;
+        border-radius: 4px;
+      }
+    }
+    li:last-child{
+      height: 40px;
+      margin-top: 20px;
     }
   }
 }
-  div.login{
-    background: #fff!important;
-  } ;
 </style>

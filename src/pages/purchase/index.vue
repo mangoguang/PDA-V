@@ -5,9 +5,10 @@
       <HeadComponent>
         <h1>采购入库</h1>
       </HeadComponent>
-      <input type="text" class="searchOrder" placeholder="搜索生产入库单号">
+      <div class="searchOrder">
+        <input v-model="searchNum" v-focus="focusStatus" type="text" placeholder="搜索生产入库单号">
+      </div>
     </div>
-    <button @click="searchOrder">订单查询</button>
     <div class="table">
       <TableH></TableH>
       <TableTr></TableTr>
@@ -33,11 +34,20 @@ export default {
   data () {
     return {
       height: document.documentElement.clientHeight,
-      orderArr: [{'num': '00002401', 'warehouse': '凯奇仓库', 'area': '内蒙古'}, {'num': '00002402', 'warehouse': '凯奇仓库', 'area': '内蒙古'}, {'num': '00002403', 'warehouse': '凯奇仓库', 'area': '内蒙古'}]
+      orderArr: [{'num': '00002401', 'warehouse': '凯奇仓库', 'area': '内蒙古'}, {'num': '00002402', 'warehouse': '凯奇仓库', 'area': '内蒙古'}, {'num': '00002403', 'warehouse': '凯奇仓库', 'area': '内蒙古'}],
+      // 将获取的订单列表保存到本地
+      orders: [],
+      searchNum: '',
+      focusStatus: true
     }
   },
   computed: {
 
+  },
+  watch: {
+    'searchNum': function(val) {
+      this.searchOrder()
+    }
   },
   methods: {
     setOrders(arr) {
@@ -56,6 +66,8 @@ export default {
         data = JSON.parse(data.responseText)
         let arr = data.MT_Purchase_GetInCity_Resp.Item
         _this.setOrders(arr)
+        // 将获取道德数据保存到本地变量
+        _this.orders = arr
       }).catch((res) => {
         alert('请求超时！')
         _this.loadingShow(false)
@@ -63,15 +75,28 @@ export default {
     },
     searchOrder() {
       let arr = []
-      let str = '4000000002'
-      let orderArr = this.$store.state.orders
-      for (let i in orderArr) {
-        if (str.indexOf(i) !== -1) {
-          arr.push(orderArr[i])
+      let str = this.searchNum
+      if (str === '') {
+        arr = this.orders
+      } else {
+        let orderArr = this.orders
+        for (let i in orderArr) {
+          let Str = orderArr[i].BUS_NO.toString()
+          if (Str.indexOf(str) !== -1) {
+            arr.push(orderArr[i])
+          }
         }
       }
-      console.log(arr)
-      this.$store.commit('setOrders', arr)
+      this.setOrders(arr)
+    }
+  },
+  directives: {
+    focus: {
+        inserted: function (el, {value}) {
+            if (value) {
+              el.focus();
+            }
+        }
     }
   },
   created: function() {
@@ -95,7 +120,33 @@ $skin-data: (skinA, $s1Col),(skinB, $s2Col);
       background: $color;
     }
     .searchOrder{
-      border-bottom: 1px solid #000;
+      height: 25px;
+      background: $color;
+      padding: 5px 0;
+      input{
+        display: block;
+        width: 60%;
+        height: 20px;
+        margin: auto;
+        border: none;
+        border-bottom: 1px solid #fff;
+        background: $color;
+        color: #fff;
+        text-align: center;
+      }
+      input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+        color: #fff;
+        text-align: center;
+      } input:-moz-placeholder, textarea:-moz-placeholder {
+        color: #fff;
+        text-align: center;
+      } input::-moz-placeholder, textarea::-moz-placeholder {
+        color: #fff;
+        text-align: center;
+      } input:-ms-input-placeholder, textarea:-ms-input-placeholder {
+        color: #fff;
+        text-align: center;
+      }
     }
   }
 }

@@ -1,7 +1,11 @@
 <!-- <keep-alive> -->
 <template>
   <div class="select" v-bind:style="{height: height+'px'}">
-    <h2>请进行相关操作</h2>
+    <div class="photoBox">
+      <img src="../assets/img/login/s1/3_pic.png" alt="">
+      <h3>{{name}}</h3>
+      <h2>选择相关区域</h2>
+    </div>
     
     <form>
       <select id="factorys" v-model="factorySel" @change="setWarehouse">
@@ -10,7 +14,8 @@
       <select id="warehouse" v-model="warehouseSel">
         <option v-for="warehouse in warehouses" :value="warehouse">{{ warehouse }}</option>
       </select>
-      <button @click="select" type="button">确定</button>
+      <div v-on:click="select"><Btn>确定</Btn></div>
+<!--       <button @click="select" type="button">确定</button> -->
     </form>
   </div>
 </template>
@@ -20,12 +25,14 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {pathLocal, V} from '../js/variable.js'
+import {pathLocal, V} from '../js/variable'
+import Btn from '../components/btn'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
 export default {
   name: 'Select',
+  components: {Btn},
   data () {
     return {
       msg: 'Vuex组件',
@@ -34,7 +41,8 @@ export default {
       warehouses: [],
       factorySel: '',
       warehouseSel: '',
-      warehouseStatus: false
+      warehouseStatus: false,
+      name: '刘淑婷'
     }
   },
   computed: {
@@ -135,12 +143,46 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-// $skin-data: (skin-red, red),(skin-blue, blue);
-// @each $skin, $color in $skin-data {
-//   .#{$skin} {
-//     .select{
-//       background: $color;
-//     }
-//   }
-// }
+@import "./../assets/sass/variable.scss";
+@import "./../assets/css/common.css";
+
+$skin-data: (skinA, $s1Col),(skinB, $s2Col);
+@each $skin, $color in $skin-data {
+  .#{$skin} {
+    .select{
+      width: 70%;
+      padding-top: 70px;
+      margin: 0 auto;
+      background: #fff;
+      div.photoBox{
+        text-align: center;
+        h2,h3{
+          line-height: 2em;
+          color: $textCol;
+        }
+        img{
+          width: 64px;
+          height: 64px;
+          border-radius: 50%;
+        }
+      }
+      form{
+        padding-top: 20px;
+      }
+      select{
+        display: block;
+        width: 100%;
+        height: 30px;
+        margin-bottom: 10px;
+        background: #f0f0f0;
+        border-radius: 4px;
+        border: 1px solid $borderOut;
+        text-indent: 10px;
+      }
+      select:last-child{
+        margin-bottom: 15px;
+      }
+    }
+  }
+}
 </style>

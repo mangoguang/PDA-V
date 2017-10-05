@@ -1,16 +1,26 @@
-$s1Col: #007aff;
-$s1SubCol: #334559;
-$s1StrongCol: #ff9600;
-$s1BgCol: #f3f5f7;
-$s1BgSubCol: #fff;
-$s1annotSize: 12px;
-$s1textSize: 14px;
-$s1artTitSize: 16px;
-$s1navSize: 18px;
-$s1btnSize: 17px;
-$s1btnBgCol: #334559;
-$s1btnBgSubCol: #465e7e;
-$s1borderIn: #e1e1e1;
-$s1borderOut: #e1e1e1;
+$BgCol: #f3f5f7;
+$BgSubCol: #fff;
+$annotSize: 12px;
+$textSize: 14px;
+$textCol: #666;//文本字体颜色（深）
+$textSubCol: #999;//文本字体颜色（浅）
+$artTitSize: 16px;
+$navSize: 18px;
+$btnSize: 17px;
+$borderIn: #e1e1e1;//内框线
+$borderOut: #d6d7dc;//外框线
+
+$s1Col: #007aff;//主色
+$s1SubCol: #334559;//辅助色
+$s1StrongCol: #ff9600;//强调色
+$s1btnBgCol: #334559;//按钮背景色
+$s1btnBgSubCol: #465e7e;//按钮点击背景色
 
 $s2Col: #007a00;
+$s2SubCol: #28a191;
+$s2StrongCol: #c3314d;
+$s2btnBgCol: #28a191;
+$s2btnBgSubCol: #22877a;
+
+// 登录页
+$s1loginBg: url(../assets/img/login/s1/1_bg.jpg);

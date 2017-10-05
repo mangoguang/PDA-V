@@ -1,6 +1,15 @@
-button,input{
+body{
+  margin: 0;
+  padding: 0;
+  background: #fff;
+}
+h1,h2,h3,h4{
+  margin: 0;
+}
+button,input,select,option{
   border: none;
   outline: none;
+  background: none;
 }
 li{
 	list-style: none;
@@ -18,4 +27,10 @@ li{
   line-height: 0;
   content: "";
   clear: both;
+}
+h1{
+  font-size: 18px;
+  text-align: center;
+  font-weight: 500;
+  margin: 0;
 }
