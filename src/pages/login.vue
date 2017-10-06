@@ -111,80 +111,105 @@ export default {
 @import "./../assets/sass/variable.scss";
 @import "./../assets/css/common.css";
 
-$skin-data: (skinA, $s1Col),(skinB, $s2Col);
-@each $skin, $color in $skin-data {
+.login{
+  background: $s1loginBg no-repeat;
+  background-size: 100% 100%;
+  form{
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 6.25rem;
+    margin-top: -3.125rem;
+  }
+  h1{
+    color: #fff;
+    margin: $f15 auto;
+  }
+  li{
+    position: relative;
+    height: $f30;
+    width: 80%;
+    background: rgba(255,255,255,0.2);
+    margin-bottom: $f5;
+    margin-left: 10%;
+    input{
+      display: block;
+      width: 100%;
+      line-height: $f30;
+      padding-left: $f40;
+      box-sizing: border-box;
+      color: $s1btnBgCol;
+    }
+    #account{
+      background: url(../assets/img/login/1_user.png) no-repeat;
+      background-size: .59375rem .59375rem;
+      background-position: $f5;
+    }
+    #password{
+      background: url(../assets/img/login/2_Lock.png) no-repeat;
+      background-size: .59375rem .59375rem;
+      background-position: $f5;
+    }
+    input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+      color: $s1btnBgCol;
+    } input:-moz-placeholder, textarea:-moz-placeholder {
+      color: $s1btnBgCol;
+    } input::-moz-placeholder, textarea::-moz-placeholder {
+      color: $s1btnBgCol;
+    } input:-ms-input-placeholder, textarea:-ms-input-placeholder {
+      color: $s1btnBgCol;
+    }
+  }
+  label:after{
+    position: absolute;
+    top: $f5; 
+    left: $f30;
+    display: block;
+    content: "";
+    width: 1px;
+    height: .59375rem;
+    background: $s1btnBgCol;
+  }
+  button{
+    width: 100%;
+    height: 100%;
+    background: $s1btnBgCol;
+    color: #fff;
+    font-size: $btnSize;
+    border-radius: $f4;
+  }
+}
+li:last-child{
+  height: $f40;
+  margin-top: $f20;
+}
+
+@each $skin, $col, $subCol, $strongCol, $btnBgCol, $btnBgSubCol, $loginBg in $skin-data {
   .#{$skin} {
     .login{
-      background: $s1loginBg no-repeat;
+      background: $loginBg no-repeat;
       background-size: 100% 100%;
-      form{
-        position: absolute;
-        top: 50%;
-        left: 0;
-        width: 100%;
-        height: 200px;
-        margin-top: -100px;
-      }
-      h1{
-        color: #fff;
-        margin: 10px auto;
-      }
       li{
-        position: relative;
-        height: 30px;
-        width: 80%;
-        background: rgba(255,255,255,0.2);
-        margin-bottom: 5px;
         input{
-          display: block;
-          width: 100%;
-          line-height: 30px;
-          padding-left: 40px;
-          box-sizing: border-box;
-          color: $s1btnBgCol;
-        }
-        #account{
-          background: url(../assets/img/login/1_user.png) no-repeat;
-          background-size: 19px 19px;
-          background-position: 5px 5px;
-        }
-        #password{
-          background: url(../assets/img/login/2_Lock.png) no-repeat;
-          background-size: 19px 19px;
-          background-position: 5px 5px;
+          color: $btnBgCol;
         }
         input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
-          color: $s1btnBgCol;
+          color: $btnBgCol;
         } input:-moz-placeholder, textarea:-moz-placeholder {
-          color: $s1btnBgCol;
+          color: $btnBgCol;
         } input::-moz-placeholder, textarea::-moz-placeholder {
-          color: $s1btnBgCol;
+          color: $btnBgCol;
         } input:-ms-input-placeholder, textarea:-ms-input-placeholder {
-          color: $s1btnBgCol;
+          color: $btnBgCol;
         }
       }
       label:after{
-        position: absolute;
-        top: 5px; 
-        left: 29px;
-        display: block;
-        content: "";
-        width: 1px;
-        height: 19px;
-        background: $s1btnBgCol;
+        background: $btnBgCol;
       }
       button{
-        width: 100%;
-        height: 100%;
-        background: $s1btnBgCol;
-        color: #fff;
-        font-size: $btnSize;
-        border-radius: 4px;
+        background: $btnBgCol;
       }
-    }
-    li:last-child{
-      height: 40px;
-      margin-top: 20px;
     }
   }
 }

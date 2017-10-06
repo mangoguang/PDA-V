@@ -18,6 +18,7 @@ const store = new Vuex.Store({
     count: 0,
     skinCol: 'skinA',
     loadingShow: true,
+    detailBoxShow: false,
     orders: [],
     people: [{
       'name': '张三',
@@ -37,7 +38,9 @@ const store = new Vuex.Store({
     changeSkin: (state, skinCol) => state.skinCol = skinCol,
     // 加载动画显示/隐藏
     loadingShow: (state, x) => state.loadingShow = x,
-    setOrders: (state, arr) => state.orders = arr
+    setOrders: (state, arr) => state.orders = arr,
+    // SN码详情框显示/隐藏
+    detailBoxShow: (state, x) => state.detailBoxShow = x
   },
   actions: {
     incrementAsync({

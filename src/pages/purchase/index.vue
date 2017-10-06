@@ -1,6 +1,6 @@
 <!-- <keep-alive> -->
 <template>
-  <div class="purchase" v-bind:style="{height: height+'px'}">
+  <div class="purchase">
     <div class="header">
       <HeadComponent>
         <h1>采购入库</h1>
@@ -11,7 +11,10 @@
     </div>
     <div class="table">
       <TableH></TableH>
-      <TableTr></TableTr>
+      <TableTr 
+      class="contain" 
+      v-bind:style="{height: height+'px'}"
+      ></TableTr>
     </div>
   </div>
 </template>
@@ -21,7 +24,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {pathLocal, V} from '../../js/variable.js'
+import {V} from '../../js/variable.js'
 import HeadComponent from '../../components/header'
 import TableH from '../../components/table-h'
 import TableTr from '../../components/table-tr'
@@ -58,8 +61,8 @@ export default {
     },
     getOrderList: function() {
       let _this = this
-      // let url = 'http://10.12.0.153:50100/RESTAdapter/purchase/getcity?WERKS=1010&LGORT=1001'
-      let url = pathLocal + '/purchase/getlist.php'
+      let url = 'http://10.12.0.153:50100/RESTAdapter/purchase/getcity?WERKS=1010&LGORT=1001'
+      // let url = pathLocal + '/purchase/getlist.php'
       _this.loadingShow(true)
       V.get(url).then(function(data) {
         _this.loadingShow(false)
@@ -94,7 +97,7 @@ export default {
     focus: {
         inserted: function (el, {value}) {
             if (value) {
-              el.focus();
+              el.focus()
             }
         }
     }
@@ -112,40 +115,53 @@ export default {
 <style scoped lang="scss">
 @import "../../assets/sass/variable.scss";
 @import "../../assets/css/common.css";
+.contain{
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding-top: 3.4375rem;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  z-index: -1;
+}
+.searchOrder{
+  height: .78125rem;
+  padding: $f5 0;
+  input{
+    display: block;
+    width: 60%;
+    height: $f20;
+    margin: auto;
+    border: none;
+    border-bottom: 1px solid #fff;
+    color: #fff;
+    font-size: $f16;
+    text-align: center;
+  }
+  input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+    color: #fff;
+    text-align: center;
+  } input:-moz-placeholder, textarea:-moz-placeholder {
+    color: #fff;
+    text-align: center;
+  } input::-moz-placeholder, textarea::-moz-placeholder {
+    color: #fff;
+    text-align: center;
+  } input:-ms-input-placeholder, textarea:-ms-input-placeholder {
+    color: #fff;
+    text-align: center;
+  }
+}
 
-$skin-data: (skinA, $s1Col),(skinB, $s2Col);
-@each $skin, $color in $skin-data {
+@each $skin, $col, $subCol, $strongCol, $btnBgCol, $btnBgSubCol in $skin-data {
   .#{$skin} {
     .head{
-      background: $color;
+      background: $col;
     }
     .searchOrder{
-      height: 25px;
-      background: $color;
-      padding: 5px 0;
+      background: $col;
       input{
-        display: block;
-        width: 60%;
-        height: 20px;
-        margin: auto;
-        border: none;
-        border-bottom: 1px solid #fff;
-        background: $color;
-        color: #fff;
-        text-align: center;
-      }
-      input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
-        color: #fff;
-        text-align: center;
-      } input:-moz-placeholder, textarea:-moz-placeholder {
-        color: #fff;
-        text-align: center;
-      } input::-moz-placeholder, textarea::-moz-placeholder {
-        color: #fff;
-        text-align: center;
-      } input:-ms-input-placeholder, textarea:-ms-input-placeholder {
-        color: #fff;
-        text-align: center;
+        background: $col;
       }
     }
   }

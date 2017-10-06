@@ -146,8 +146,7 @@ export default {
 @import "./../assets/sass/variable.scss";
 @import "./../assets/css/common.css";
 
-$skin-data: (skinA, $s1Col),(skinB, $s2Col);
-@each $skin, $color in $skin-data {
+@each $skin, $col, $subCol, $strongCol, $btnBgCol, $btnBgSubCol, $loginBg in $skin-data {
   .#{$skin} {
     .select{
       width: 70%;

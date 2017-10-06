@@ -1,8 +1,19 @@
 <!-- <keep-alive> -->
 <template>
   <div class="module" v-bind:style="{height: height+'px'}">
-    <ul>
-      <li v-for="module in modules" @click="toModule(module.coding,module.jurisdiction)">{{module.name}}</li>
+    <HeadComponent>
+      <h1>仓库</h1>
+    </HeadComponent>
+    <ul class="clearfix">
+      <li 
+      v-for="(module,index) in modules" 
+      @click="toModule(module.coding,module.jurisdiction)" 
+      v-bind:style="{
+        background: 'url(./static/images/modules/module'+(index+1)+'.png) no-repeat',
+        backgroundSize: '100% 100%'}"
+        @mouseover="addClass">
+        <p>{{module.name}}</p>
+      </li>
     </ul>
     <button type="button" @click="changeSkin('skinA')">skinA</button>
     <button type="button" @click="changeSkin('skinB')">skinB</button>
@@ -14,12 +25,14 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {pathLocal, V} from '../js/variable.js'
+import {pathLocal, V} from '../js/variable'
+import HeadComponent from '../components/header'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
 export default {
   name: 'Module',
+  components: {HeadComponent},
   data () {
     return {
       height: document.documentElement.clientHeight,
@@ -34,6 +47,9 @@ export default {
     }
   },
   methods: {
+    addClass() {
+      console.log('success')
+    },
     loadingShow: function(x) {
       this.$store.commit('loadingShow', x)
     },
@@ -85,11 +101,25 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import "./../assets/sass/variable.scss";
-$skin-data: (skinA, $s1Col),(skinB, $s2Col);
-@each $skin, $color in $skin-data {
-  .#{$skin} {
-    .module{
-      background: $color;
+
+.module{
+  ul{
+    width: 100%;
+    padding-left: $f20;
+    box-sizing: border-box;
+  }
+  li{
+    float: left;
+    width: 2.5rem;
+    height: 3.4375rem;
+    text-align: center;
+    background-size: 100% 100%;
+    margin: $f20 $f20 0 0;
+    border-radius: $f4;
+    color: #fff;
+    p{
+      font-size: $textSize;
+      line-height: 2.2em;
     }
   }
 }

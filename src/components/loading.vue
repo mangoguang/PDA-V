@@ -1,5 +1,5 @@
 <template>
-    <div v-show="loadingShow" class="loading" v-bind:style = "{'height': height+'px'}">
+    <div @click="loadShow(false)" v-show="loadingShow" class="loading" v-bind:style = "{'height': height+'px'}">
         <div class="spinner">
           <div class="spinner-container container1">
             <div class="circle1"></div>
@@ -34,12 +34,18 @@
         loadingShow() {
           return this.$store.state.loadingShow
         }
+      },
+      methods: {
+        loadShow: function(x) {
+          this.$store.commit('loadingShow', x)
+        }
       }
     }
 </script>
-<style scoped>
+<style scoped lang="scss">
+@import "./../assets/sass/variable.scss";
 .loading{
-    height: 300px;
+    height: 9.375rem;
     width: 100%;
     position: absolute;
     top: 0;
@@ -48,16 +54,16 @@
 }
 .spinner {
   position: absolute;
-  width: 30px;
-  height: 30px;
+  width: $f30;
+  height: $f30;
   left: 50%;
   top: 50%;
-  margin: -15px 0 0 -15px;
+  margin: -$f15 0 0 -$f15;
 }
  
 .container1 > div, .container2 > div, .container3 > div {
-  width: 6px;
-  height: 6px;
+  width: .1875rem;
+  height: .1875rem;
   background-color: #333;
  
   border-radius: 100%;

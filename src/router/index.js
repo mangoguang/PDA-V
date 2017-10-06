@@ -28,9 +28,9 @@ export var router = new VueRouter({
     name: 'Purchase',
     component: resolve => require(['../pages/purchase/index'], resolve)
   }, {
-    path: '/orderDetail/:num',
-    name: 'OrderDetail',
-    component: resolve => require(['../pages/purchase/order-detail'], resolve)
+    path: '/snList/:num',
+    name: 'SNList',
+    component: resolve => require(['../pages/purchase/sn-list'], resolve)
   }, {
     path: '/salesReturn',
     name: 'SalesReturn',
