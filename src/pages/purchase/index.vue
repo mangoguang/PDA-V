@@ -24,7 +24,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {V} from '../../js/variable.js'
+import {pathLocal, V} from '../../js/variable.js'
 import HeadComponent from '../../components/header'
 import TableH from '../../components/table-h'
 import TableTr from '../../components/table-tr'
@@ -61,8 +61,8 @@ export default {
     },
     getOrderList: function() {
       let _this = this
-      let url = 'http://10.12.0.153:50100/RESTAdapter/purchase/getcity?WERKS=1010&LGORT=1001'
-      // let url = pathLocal + '/purchase/getlist.php'
+      // let url = 'http://10.12.0.153:50100/RESTAdapter/purchase/getcity?WERKS=1010&LGORT=1001'
+      let url = pathLocal + '/purchase/getlist.php'
       _this.loadingShow(true)
       V.get(url).then(function(data) {
         _this.loadingShow(false)

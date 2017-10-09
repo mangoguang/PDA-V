@@ -19,7 +19,8 @@
           <p @click="detailBoxShow(true)">单号：{{opNum}}</p>
         </li>
         <li>
-          <input type="text" placeholder="条码" v-focus="focusStatus">
+          <input type="text" v-model="inputVal" placeholder="条码" v-focus="focusStatus">
+          <button @click="clearInput" class="clearInput"></button>
         </li>
       </ul>
       <ul class="statusBox clearfix">
@@ -62,7 +63,8 @@ export default {
       status: [5, 7, 4, 3],
       // 扫码错误弹框显示/隐藏
       errorShow: true,
-      putInShow: true
+      putInShow: true,
+      inputVal: ''
     }
   },
   computed: {
@@ -80,6 +82,9 @@ export default {
     },
     putIn() {
       this.putInShow = false
+    },
+    clearInput() {
+      this.inputVal = ''
     }
   },
   directives: {
@@ -126,6 +131,7 @@ export default {
     }
   }
   .snBox{
+    position: relative;
     height: $f30;
     padding: 0 $f15;
     box-sizing: border-box;
@@ -139,6 +145,15 @@ export default {
       width: 5rem;
       margin-right: $f10;
     }
+    .clearInput{
+      position: absolute;
+      top: $f4;
+      right: $f15;
+      width: $f12;
+      height: $f12;
+      background: url(../../assets/img/purchase/6_delect.png) no-repeat;
+      background-size: $f12 $f12;
+    }
     input{
       position: relative;
       border-bottom: 1px solid #fff;
@@ -147,9 +162,6 @@ export default {
       padding: $f5 $f15 0 0;
       box-sizing: border-box;
       line-height: $f20;
-      background: url(../../assets/img/purchase/6_delect.png) no-repeat;
-      background-size: $f12 $f12;
-      background-position: right 0 top $f4;
       color: #fff;
       font-size: $f16;
     }

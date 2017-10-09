@@ -7,7 +7,16 @@
         @click="detailBoxShow(false)" 
         class="close" 
         type="button"></button>
-        <h2>订单详情页</h2>
+        <ul>
+          <li>订单来源号：<span>000000000001</span></li>
+          <li>销售订单号：<span>000000000001</span></li>
+          <li>物料编码：<span>000000000001</span></li>
+          <li>物料描述：<span>A-01床架180*200</span></li>
+          <li>指令号：<span>00000000001</span></li>
+          <li>库存单位：<span>套</span></li>
+          <li>计划入库数：<span>50</span></li>
+          <li>实际入库数：<span>40</span></li>
+        </ul>
       </div>
     </div>
   </div>
@@ -67,6 +76,7 @@ export default {
     margin-left: -4.53125rem;
     margin-top: -5rem;
     padding-top: 1rem;
+    padding-bottom: .5rem;
     box-sizing: border-box;
     border-radius: $f4;
     .close{
@@ -77,6 +87,19 @@ export default {
       height: .78125rem;
       background: url(../../assets/img/purchase/8_close.png) no-repeat;
       background-size: 100% 100%;
+    }
+    ul{
+      height: 100%;
+      overflow-x: hidden;
+      li{
+        font-size: $f16;
+        line-height: 2em;
+        color: $textCol;
+        padding-left: $f15;
+        span{
+          color: #333;
+        }
+      }
     }
   }
 }
