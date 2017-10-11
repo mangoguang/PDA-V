@@ -20,12 +20,18 @@ button.btn{
 }
 button.btn100{
   width: 3.125rem;
+  position: absolute;
+  left: 50%;
+  margin-left: -$f50;
 }
 
 @each $skin, $col, $subCol, $strongCol, $btnBgCol, $btnBgSubCol in $skin-data {
   .#{$skin} {
     button.btn{
       background: $btnBgCol;
+    }
+    button.gray{
+      background: #bdbdbd;
     }
   }
 }

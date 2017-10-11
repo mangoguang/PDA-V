@@ -1,5 +1,13 @@
+function Path() {
+	this.oa = 'http://10.12.0.53:8900/derucci/workflow/jsp'
+	this.local = 'http://localhost/PDA-V/static/json'
+	// this.local = 'http://mangoguang.cn/PDA/static/json'
+	this.pi = 'http://10.12.0.153:50100/RESTAdapter/'
+}
+let path = new Path()
 let pathOA = 'http://10.12.0.53:8900/derucci/workflow/jsp'
 let pathLocal = 'http://localhost/PDA-V/static/json'
+// let pathLocal = 'http://mangoguang.cn/PDA/static/json'
 
 function VueAjax() {
 	// 创建XMLHttpRequest对象（如果是IE5，IE6，则创建ActiveXObject对象）
@@ -84,4 +92,4 @@ function VueAjax() {
 }
 let V = new VueAjax()
 
-export { pathOA, V, pathLocal }
+export { path, pathOA, V, pathLocal }

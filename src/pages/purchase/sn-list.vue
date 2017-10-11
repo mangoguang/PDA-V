@@ -13,6 +13,7 @@
     <div class="headBox">
       <HeadComponent>
         <h1>采购入库操作</h1>
+        <button @click="checkBoxShowFn(showCheckbox)" class="delBtn"></button>
       </HeadComponent>
       <ul class="snBox clearfix">
         <li>
@@ -33,6 +34,11 @@
     <div class="table">
       <TableH></TableH>
       <TableTr class="contain" v-bind:style="{height: height+'px'}"></TableTr>
+      <div @click="sureIn" v-if="btnShow"><Btn class="btn100 sure">确认入库</Btn></div>
+      <ul class="delCancel clearfix">
+        <li @click="delSN" v-if="!btnShow"><Btn class="btn100 del">删除</Btn></li>
+        <li @click="cancel" v-if="!btnShow"><Btn class="btn100 gray cancel">取消</Btn></li>
+      </ul>
     </div>
   </div>
 </template>
@@ -48,13 +54,14 @@ import TableTr from '../../components/table-tr'
 import ScanError from '../../components/purchase/scan-error'
 import PutIn from '../../components/purchase/put-in'
 import SNDetail from '../../components/purchase/sn-detail'
+import Btn from '../../components/btn'
 // import {pathLocal, V} from '../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
 export default {
   name: 'snList',
-  components: {HeadComponent, TableH, TableTr, ScanError, PutIn, SNDetail},
+  components: {HeadComponent, TableH, TableTr, ScanError, PutIn, SNDetail, Btn},
   data () {
     return {
       height: document.documentElement.clientHeight,
@@ -64,13 +71,20 @@ export default {
       // 扫码错误弹框显示/隐藏
       errorShow: true,
       putInShow: true,
-      inputVal: ''
+      inputVal: '',
+      btnShow: true,
+      showCheckbox: true
     }
   },
   computed: {
 
   },
   methods: {
+    // SN列表checkbox复选框显示/隐藏
+    checkBoxShowFn(x) {
+      this.showCheckbox = !this.showCheckbox
+      this.$store.commit('checkBoxShow', x)
+    },
     detailBoxShow(x) {
       this.$store.commit('detailBoxShow', x)
     },
@@ -85,6 +99,15 @@ export default {
     },
     clearInput() {
       this.inputVal = ''
+    },
+    sureIn() {
+      this.btnShow = false
+    },
+    delSN() {
+      this.btnShow = true
+    },
+    cancel() {
+      this.btnShow = true
     }
   },
   directives: {
@@ -108,6 +131,28 @@ export default {
 <style scoped lang="scss">
 @import "../../assets/sass/variable.scss";
 .snList{
+  .delBtn{
+    position: absolute;
+    top: 0.46875rem;
+    right: $f40;
+    width: $f20;
+    height: $f20;
+    background: url(../../assets/img/purchase/2_dustbin.png) no-repeat;
+    background-size: 100% 100%;
+  }
+  .sure{
+    bottom: $f20;
+  }
+  ul.delCancel{
+    position: absolute;
+    bottom: $f20;
+    li{
+      position: relative;
+      float: left;
+      width: 5rem;
+      height: $f40;
+    }
+  }
   .statusBox{
     width: 9.6875rem;
     height: $f50;
@@ -187,6 +232,7 @@ export default {
     box-sizing: border-box;
     overflow-x: hidden;
     z-index: -1;
+    padding-bottom: 2.1875rem;
   }
 }
 @each $skin, $col, $subCol, $strongCol, $btnBgCol, $btnBgSubCol in $skin-data {

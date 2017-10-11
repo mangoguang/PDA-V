@@ -25,7 +25,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import { pathLocal, V } from '../js/variable.js'
+import { path, V } from '../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -55,8 +55,8 @@ export default {
           // account: this.account,
           // password: this.password
         }
-      // let url = pathOA + '/PDAUserCheck.jsp'
-      let url = pathLocal + '/login.php'
+      // let url = path.oa + '/PDAUserCheck.jsp'
+      let url = path.local + '/login.php'
       if (_this.canClick) {
         _this.canClick = false
         _this.loadingShow(true)

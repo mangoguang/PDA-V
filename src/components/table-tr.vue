@@ -2,12 +2,18 @@
   <ul class="clearfix table-tr">
     <li v-for="(order,index) in orders" @click="toOrderDetail(order.BUS_NO)">
       <ul>
-        <li>{{index+1}}</li>
+        <li v-bind:class="{paddingLfet20: checkBoxShow}">
+          <label v-show="checkBoxShow" :for= "order.BUS_NO" v-bind:class="{on: checkboxNames[index]}">
+          </label>
+          <input type="checkbox" :id="order.BUS_NO" v-model="checkboxNames[index]">
+          {{index+1+'00'}}
+        </li>
         <li>{{order.BUS_NO}}</li>
         <li>{{order.ZDDLX}}</li>
         <li>{{order.ORT01}}</li>
       </ul>
     </li>
+    <p>{{checkboxNames}}</p>
   </ul>
 </template>
 <script>
@@ -18,12 +24,15 @@ Vue.use(Vuex)
     name: 'table-tr',
     data() {
       return {
-
+        checkboxNames: [true, false, true]
       }
     },
     computed: {
       orders() {
         return this.$store.state.orders
+      },
+      checkBoxShow() {
+        return this.$store.state.checkBoxShow
       }
     },
     methods: {
@@ -39,6 +48,23 @@ Vue.use(Vuex)
 
 .table-tr{
   width: 100%;
+  label{
+    position: absolute;
+    display: block;
+    top: .1875rem;
+    left: $f4;
+    width: $f14;
+    height: $f14;
+    border: 1px solid #b8b8b8;
+    border-radius: 3px;
+  }
+  label.on{
+    background: url(../assets/img/purchase/6_choose.png) no-repeat;
+    background-size: 105% 105%;
+  }
+  input[type="checkbox"]{
+    display: none;
+  }
   li{
     float: left;
   }   
@@ -74,6 +100,9 @@ Vue.use(Vuex)
     }
     li:first-child{
       width: $f50;
+    }
+    li.paddingLfet20{
+      padding-left: $f20;
     }
   }
 }

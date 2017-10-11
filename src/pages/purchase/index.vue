@@ -24,7 +24,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {pathLocal, V} from '../../js/variable.js'
+import {path, V} from '../../js/variable.js'
 import HeadComponent from '../../components/header'
 import TableH from '../../components/table-h'
 import TableTr from '../../components/table-tr'
@@ -53,21 +53,24 @@ export default {
     }
   },
   methods: {
+    // 将订单列表提交到store
     setOrders(arr) {
       this.$store.commit('setOrders', arr)
     },
     loadingShow: function(x) {
       this.$store.commit('loadingShow', x)
     },
+    // 从后台获取订单列表
     getOrderList: function() {
       let _this = this
-      // let url = 'http://10.12.0.153:50100/RESTAdapter/purchase/getcity?WERKS=1010&LGORT=1001'
-      let url = pathLocal + '/purchase/getlist.php'
+      let url = path.pi + 'purchase/getcity?WERKS=1010&LGORT=1001'
+      // let url = path.local + '/purchase/getlist.php'
       _this.loadingShow(true)
       V.get(url).then(function(data) {
         _this.loadingShow(false)
         data = JSON.parse(data.responseText)
         let arr = data.MT_Purchase_GetInCity_Resp.Item
+        console.log(arr)
         _this.setOrders(arr)
         // 将获取道德数据保存到本地变量
         _this.orders = arr
@@ -76,6 +79,7 @@ export default {
         _this.loadingShow(false)
       })
     },
+    // 检索订单号
     searchOrder() {
       let arr = []
       let str = this.searchNum

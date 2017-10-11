@@ -25,7 +25,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {pathLocal, V} from '../js/variable'
+import {path, V} from '../js/variable'
 import HeadComponent from '../components/header'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -59,8 +59,8 @@ export default {
     },
     jurisdiction: function() {
       let _this = this
-      // let url = pathOA + '/PDAPermission.jsp'
-      let url = pathLocal + '/jurisdiction.php'
+      // let url = path.oa + '/PDAPermission.jsp'
+      let url = path.local + '/jurisdiction.php'
       let params = {
         account: 11605002,
         password: 'ADF00707A1C0154A9AD8EDB57C8646F4',

@@ -25,7 +25,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {pathLocal, V} from '../js/variable'
+import {path, V} from '../js/variable'
 import Btn from '../components/btn'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -58,7 +58,7 @@ export default {
     },
     setWarehouse: function() {
       let _this = this
-      let url = pathLocal + '/warehouse_sel.php'
+      let url = path.local + '/warehouse_sel.php'
       // let url = pathOA + '/PDAWareHouse.jsp'
       let obj = this.getAccountMsg()
       // 获取本地存储账号信息
@@ -109,8 +109,8 @@ export default {
       let _this = this
       // 获取本地存储的账号信息
       let obj = this.getAccountMsg()
-      let url = pathLocal + '/factory_sel.php'
-      // let url = pathOA + '/PDAFactory.jsp'
+      let url = path.local + '/factory_sel.php'
+      // let url = path.oa + '/PDAFactory.jsp'
       let params = {
         // name: this.factorySel,
         // password: this.warehouseSel
@@ -146,42 +146,38 @@ export default {
 @import "./../assets/sass/variable.scss";
 @import "./../assets/css/common.css";
 
-@each $skin, $col, $subCol, $strongCol, $btnBgCol, $btnBgSubCol, $loginBg in $skin-data {
-  .#{$skin} {
-    .select{
-      width: 70%;
-      padding-top: 70px;
-      margin: 0 auto;
-      background: #fff;
-      div.photoBox{
-        text-align: center;
-        h2,h3{
-          line-height: 2em;
-          color: $textCol;
-        }
-        img{
-          width: 64px;
-          height: 64px;
-          border-radius: 50%;
-        }
-      }
-      form{
-        padding-top: 20px;
-      }
-      select{
-        display: block;
-        width: 100%;
-        height: 30px;
-        margin-bottom: 10px;
-        background: #f0f0f0;
-        border-radius: 4px;
-        border: 1px solid $borderOut;
-        text-indent: 10px;
-      }
-      select:last-child{
-        margin-bottom: 15px;
-      }
+.select{
+  width: 70%;
+  padding-top: 70px;
+  margin: 0 auto;
+  background: #fff;
+  div.photoBox{
+    text-align: center;
+    h2,h3{
+      line-height: 2em;
+      color: $textCol;
     }
+    img{
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+    }
+  }
+  form{
+    padding-top: 20px;
+  }
+  select{
+    display: block;
+    width: 100%;
+    height: 30px;
+    margin-bottom: 10px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    border: 1px solid $borderOut;
+    text-indent: 10px;
+  }
+  select:last-child{
+    margin-bottom: 15px;
   }
 }
 </style>
