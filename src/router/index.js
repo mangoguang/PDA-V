@@ -63,6 +63,10 @@ export var router = new VueRouter({
     path: '/edit',
     name: 'Edit',
     component: resolve => require(['../pages/edit'], resolve)
+  }, {
+    path: '*',
+    name: '404',
+    component: resolve => require(['../pages/404'], resolve)
   }]
 })
 

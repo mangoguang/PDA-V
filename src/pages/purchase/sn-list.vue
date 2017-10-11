@@ -50,11 +50,12 @@ import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import HeadComponent from '../../components/header'
 import TableH from '../../components/table-h'
-import TableTr from '../../components/table-tr'
+import TableTr from '../../components/table-tr-sn'
 import ScanError from '../../components/purchase/scan-error'
 import PutIn from '../../components/purchase/put-in'
 import SNDetail from '../../components/purchase/sn-detail'
 import Btn from '../../components/btn'
+import { path, V } from '../../js/variable.js'
 // import {pathLocal, V} from '../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -70,7 +71,7 @@ export default {
       status: [5, 7, 4, 3],
       // 扫码错误弹框显示/隐藏
       errorShow: true,
-      putInShow: true,
+      putInShow: false,
       inputVal: '',
       btnShow: true,
       showCheckbox: true
@@ -108,6 +109,39 @@ export default {
     },
     cancel() {
       this.btnShow = true
+    },
+    setSN(arr) {
+      this.$store.commit('setSN', arr)
+    },
+    getSNList() {
+      let _this = this
+      _this.loadingShow(true)
+      let url = path.sap + 'purchase/getsn'
+      let params = {
+          BUS_NO: '4500000206',
+          ZDDLX: 1,
+          WERKS: '1010',
+          LGORT: '1001'
+        }
+      V.get(url, params).then(function(data) {
+        _this.loadingShow(false)
+        data = JSON.parse(data.responseText)
+        let arr = data.MT_Purchase_GetSN_Resp.Header
+        console.log(arr)
+        // 临时数组
+        let trArr = []
+        for (let i in arr) {
+          let temp = []
+          temp[0] = arr[i].BUS_NO
+          temp[1] = arr[i].ITEM_NO
+          temp[2] = arr[i].LGOBE
+          trArr.push(temp)
+        }
+        _this.setSN(trArr)
+      }).catch((res) => {
+        alert('请求超时！')
+        _this.loadingShow(false)
+      })
     }
   },
   directives: {
@@ -120,9 +154,9 @@ export default {
     }
   },
   created: function () {
+    this.getSNList()
   },
   mounted() {
-
   }
 }
 </script>

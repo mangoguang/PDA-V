@@ -27,7 +27,7 @@ import Vuex from 'vuex'
 import {path, V} from '../../js/variable.js'
 import HeadComponent from '../../components/header'
 import TableH from '../../components/table-h'
-import TableTr from '../../components/table-tr'
+import TableTr from '../../components/table-tr-op'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -63,17 +63,25 @@ export default {
     // 从后台获取订单列表
     getOrderList: function() {
       let _this = this
-      let url = path.pi + 'purchase/getcity?WERKS=1010&LGORT=1001'
+      let url = path.sap + 'purchase/getcity?WERKS=1010&LGORT=1001'
       // let url = path.local + '/purchase/getlist.php'
       _this.loadingShow(true)
       V.get(url).then(function(data) {
         _this.loadingShow(false)
         data = JSON.parse(data.responseText)
         let arr = data.MT_Purchase_GetInCity_Resp.Item
-        console.log(arr)
-        _this.setOrders(arr)
+        // 转化成table-tr组件使用的数组
+        let trArr = []
+        for (let i in arr) {
+          let temp = []
+          temp[0] = arr[i].BUS_NO
+          temp[1] = arr[i].ORT01
+          temp[2] = arr[i].ZDDLX
+          trArr.push(temp)
+        }
+        _this.setOrders(trArr)
         // 将获取道德数据保存到本地变量
-        _this.orders = arr
+        _this.orders = trArr
       }).catch((res) => {
         alert('请求超时！')
         _this.loadingShow(false)
@@ -88,7 +96,7 @@ export default {
       } else {
         let orderArr = this.orders
         for (let i in orderArr) {
-          let Str = orderArr[i].BUS_NO.toString()
+          let Str = orderArr[i][0].toString()
           if (Str.indexOf(str) !== -1) {
             arr.push(orderArr[i])
           }

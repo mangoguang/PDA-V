@@ -21,6 +21,7 @@ const store = new Vuex.Store({
     detailBoxShow: false,
     checkBoxShow: false,
     orders: [],
+    SN: [],
     people: [{
       'name': '张三',
       'age': 25
@@ -33,16 +34,17 @@ const store = new Vuex.Store({
     }]
   },
   mutations: {
-    increment: state => state.count++,
-    decrement: state => state.count--,
     // 皮肤选择
     changeSkin: (state, skinCol) => state.skinCol = skinCol,
     // 加载动画显示/隐藏
     loadingShow: (state, x) => state.loadingShow = x,
+    // 插入订单号数据
     setOrders: (state, arr) => state.orders = arr,
-    // SN码详情框显示/隐藏
+    // 插入SN号数据
+    setSN: (state, arr) => state.SN = arr,
+    // SN码详情框显示/隐藏  组件table-tr.vue
     detailBoxShow: (state, x) => state.detailBoxShow = x,
-    // SN列表页checkbox复选框显示/隐藏
+    // SN列表页checkbox复选框显示/隐藏   组件table-tr.vue
     checkBoxShow: (state, x) => state.checkBoxShow = x
   },
   actions: {
