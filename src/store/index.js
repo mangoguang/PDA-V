@@ -22,6 +22,7 @@ const store = new Vuex.Store({
     checkBoxShow: false,
     orders: [],
     SN: [],
+    snDetail: {},
     people: [{
       'name': '张三',
       'age': 25
@@ -45,7 +46,9 @@ const store = new Vuex.Store({
     // SN码详情框显示/隐藏  组件table-tr.vue
     detailBoxShow: (state, x) => state.detailBoxShow = x,
     // SN列表页checkbox复选框显示/隐藏   组件table-tr.vue
-    checkBoxShow: (state, x) => state.checkBoxShow = x
+    checkBoxShow: (state, x) => state.checkBoxShow = x,
+    // SN列表页SN详情  组件sn-detail.vue
+    snDetail: (state, x) => state.snDetail = x
   },
   actions: {
     incrementAsync({

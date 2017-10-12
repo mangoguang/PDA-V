@@ -5,9 +5,6 @@ function Path() {
 	this.sap = 'http://10.12.0.153:50100/RESTAdapter/'
 }
 let path = new Path()
-let pathOA = 'http://10.12.0.53:8900/derucci/workflow/jsp'
-let pathLocal = 'http://localhost/PDA-V/static/json'
-// let pathLocal = 'http://mangoguang.cn/PDA/static/json'
 
 function VueAjax() {
 	// 创建XMLHttpRequest对象（如果是IE5，IE6，则创建ActiveXObject对象）
@@ -92,4 +89,4 @@ function VueAjax() {
 }
 let V = new VueAjax()
 
-export { path, pathOA, V, pathLocal }
+export { path, V }

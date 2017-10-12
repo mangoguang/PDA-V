@@ -8,7 +8,7 @@
         class="close" 
         type="button"></button>
         <ul>
-          <li>订单来源号：<span>000000000001</span></li>
+          <li>订单来源号：<span>{{snDetail.BUS_NO}}</span></li>
           <li>销售订单号：<span>000000000001</span></li>
           <li>物料编码：<span>000000000001</span></li>
           <li>物料描述：<span>A-01床架180*200</span></li>
@@ -25,10 +25,8 @@
 
 <script>
 import Vue from 'vue'
-import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 // import {pathLocal, V} from '../js/variable.js'
-Vue.use(VueRouter)
 Vue.use(Vuex)
 
 export default {
@@ -41,6 +39,12 @@ export default {
   computed: {
     BoxShow() {
       return this.$store.state.detailBoxShow
+    },
+    snDetail() {
+      console.log(11111111111)
+      console.log(this)
+      console.log(this.$store.state.snDetail)
+      return this.$store.state.snDetail
     }
   },
   methods: {

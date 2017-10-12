@@ -17,7 +17,7 @@
       </HeadComponent>
       <ul class="snBox clearfix">
         <li>
-          <p @click="detailBoxShow(true)">单号：{{opNum}}</p>
+          <p @click="test">单号：{{opNum}}</p>
         </li>
         <li>
           <input type="text" v-model="inputVal" placeholder="条码" v-focus="focusStatus">
@@ -56,6 +56,7 @@ import PutIn from '../../components/purchase/put-in'
 import SNDetail from '../../components/purchase/sn-detail'
 import Btn from '../../components/btn'
 import { path, V } from '../../js/variable.js'
+import $ from 'n-zepto'
 // import {pathLocal, V} from '../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -86,9 +87,6 @@ export default {
       this.showCheckbox = !this.showCheckbox
       this.$store.commit('checkBoxShow', x)
     },
-    detailBoxShow(x) {
-      this.$store.commit('detailBoxShow', x)
-    },
     loadingShow: function(x) {
       this.$store.commit('loadingShow', x)
     },
@@ -113,16 +111,23 @@ export default {
     setSN(arr) {
       this.$store.commit('setSN', arr)
     },
+    test() {
+      let url = path.sap + 'purchase/confirm'
+      let params = '{"Item": {"BUS_NO": "4500000240","ZDDLX": "1","ZQRKZ": "1","ZGH": "1"}}'
+      $.post(url, params, function(response){
+        console.log(response)
+      })
+    },
     getSNList() {
       let _this = this
       _this.loadingShow(true)
       let url = path.sap + 'purchase/getsn'
       let params = {
-          BUS_NO: '4500000206',
-          ZDDLX: 1,
-          WERKS: '1010',
-          LGORT: '1001'
-        }
+        BUS_NO: '4500000277',
+        ZDDLX: 1,
+        WERKS: '1010',
+        LGORT: '1001'
+      }
       V.get(url, params).then(function(data) {
         _this.loadingShow(false)
         data = JSON.parse(data.responseText)
@@ -130,13 +135,35 @@ export default {
         console.log(arr)
         // 临时数组
         let trArr = []
-        for (let i in arr) {
-          let temp = []
-          temp[0] = arr[i].BUS_NO
-          temp[1] = arr[i].ITEM_NO
-          temp[2] = arr[i].LGOBE
-          trArr.push(temp)
+        if (arr.length >= 0) {
+          for (let i in arr) {
+            let temp = {}
+            if (arr[i].item === null || arr[i].item === undefined) {
+              temp.status = false
+              temp.arr = []
+              temp.arr[0] = arr[i].MATKL
+              temp.arr[1] = arr[i].ZTIAOM
+              temp.arr[2] = arr[i].LGOBE
+              temp.arr[3] = arr[i].BUS_NO
+            } else {
+              temp.status = true
+              temp.arr = []
+              temp.arr[0] = arr[i].MATKL
+              let arr1 = []
+              let arr2 = []
+              for(let j in arr[i].item) {
+                arr1.push(arr[i].item[j].ZTIAOMA_FB)
+                arr2.push(j)
+              }
+              temp.arr[1] = arr1
+              temp.arr[2] = arr2
+              temp.arr[3] = arr[i].BUS_NO
+            }
+            trArr.push(temp)
+          }
         }
+        console.log('success')
+        console.log(trArr)
         _this.setSN(trArr)
       }).catch((res) => {
         alert('请求超时！')
