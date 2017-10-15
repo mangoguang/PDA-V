@@ -53,6 +53,10 @@ export default {
     }
   },
   methods: {
+    // 设置表头标题
+    setTableH() {
+      this.$store.commit('tableH', ['序号', '入库单号', '归属仓库', '客户地址'])
+    },
     // 将订单列表提交到store
     setOrders(arr) {
       this.$store.commit('setOrders', arr)
@@ -116,6 +120,8 @@ export default {
   },
   created: function() {
     this.getOrderList()
+    this.setTableH()
+    this.$store.commit('loadingShow', true)
   },
   mounted() {
     this.loadingShow(false)

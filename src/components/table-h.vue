@@ -1,5 +1,5 @@
 <template>
-  <ul v-bind:class="{tableH: isTbleH}" class="clearfix table-h">
+  <ul v-bind:class="{tableH1: isTr3 && !isOP}" class="clearfix table-h">
     <li v-for="name in names">{{name}}</li>
   </ul>
 </template>
@@ -8,8 +8,18 @@
     name: 'table-h',
     data() {
       return {
-        names: ['序号', '入库单号', '归属仓库', '客户地址'],
         isTbleH: false
+      }
+    },
+    computed: {
+      names() {
+        return this.$store.state.tableH
+      },
+      isTr3() {
+        return this.$store.state.isTr3
+      },
+      isOP() {
+        return this.$store.state.isOP
       }
     }
   }

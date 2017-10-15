@@ -25,19 +25,19 @@
         </li>
       </ul>
       <ul class="statusBox clearfix">
-        <li class="on">产品：{{status[0]}}</li>
-        <li>应扫：{{status[1]}}</li>
-        <li>已扫：{{status[2]}}</li>
-        <li>未扫：{{status[3]}}</li>
+        <li @click="btn1" :class="{on: btnStatus[0]}">产品：{{status1}}</li>
+        <li @click="btn2" :class="{on: btnStatus[1]}">应扫：{{status2}}</li>
+        <li @click="btn3" :class="{on: btnStatus[2]}">已扫：{{status3}}</li>
+        <li @click="btn4" :class="{on: btnStatus[3]}">未扫：{{status4}}</li>
       </ul>
     </div>
     <div class="table">
       <TableH></TableH>
       <TableTr class="contain" v-bind:style="{height: height+'px'}"></TableTr>
-      <div @click="sureIn" v-if="btnShow"><Btn class="btn100 sure">确认入库</Btn></div>
+      <div @click="sureIn" v-if="!checkBoxShow && !btnStatus[0]"><Btn class="btn100 sure">确认入库</Btn></div>
       <ul class="delCancel clearfix">
-        <li @click="delSN" v-if="!btnShow"><Btn class="btn100 del">删除</Btn></li>
-        <li @click="cancel" v-if="!btnShow"><Btn class="btn100 gray cancel">取消</Btn></li>
+        <li @click="delSN" v-if="checkBoxShow"><Btn class="btn100 del">删除</Btn></li>
+        <li @click="cancel" v-if="checkBoxShow"><Btn class="btn100 gray cancel">取消</Btn></li>
       </ul>
     </div>
   </div>
@@ -56,7 +56,6 @@ import PutIn from '../../components/purchase/put-in'
 import SNDetail from '../../components/purchase/sn-detail'
 import Btn from '../../components/btn'
 import { path, V } from '../../js/variable.js'
-import $ from 'n-zepto'
 // import {pathLocal, V} from '../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -69,21 +68,70 @@ export default {
       height: document.documentElement.clientHeight,
       focusStatus: true,
       opNum: this.$route.params.num,
-      status: [5, 7, 4, 3],
+      status1: 0,
+      status2: 0,
+      status3: 0,
+      status4: 0,
       // 扫码错误弹框显示/隐藏
       errorShow: true,
       putInShow: false,
       inputVal: '',
       btnShow: true,
-      showCheckbox: true
+      showCheckbox: true,
+      btnStatus: [true, false, false, false],
+      // 用于判断是否添加sn数组的status属性
+      addStatus: true
+    }
+  },
+  watch: {
+    'inputVal': function() {
+      this.verify()
     }
   },
   computed: {
-
+    checkBoxShow() {
+      return this.$store.state.checkBoxShow
+    },
+    btnNum() {
+      return this.status
+    },
+    snArr() {
+      return this.$store.state.snArr
+    }
   },
   methods: {
+    // 点击头部切换按钮
+    btn1() {
+      this.$store.commit('tableH', ['序号', '物料描述', '数量'])
+      this.setIsTr3(true)
+      this.btnStatus = [true, false, false, false]
+    },
+    btn2() {
+      this.$store.commit('tableH', ['序号', '描述', '条码', '状态'])
+      this.setIsTr3(false)
+      this.btnStatus = [false, true, false, false]
+    },
+    btn3() {
+      this.$store.commit('tableH', ['序号', '描述', '条码', '状态'])
+      this.setIsTr3(false)
+      this.btnStatus = [false, false, true, false]
+      this.filtrateArr(this.snArr)
+    },
+    btn4() {
+      this.$store.commit('tableH', ['序号', '描述', '条码', '状态'])
+      this.setIsTr3(false)
+      this.btnStatus = [false, false, false, true]
+    },
+    setIsTr3(x) {
+      this.$store.commit('isTr3', x)
+    },
+    // 设置表头标题
+    setTableH() {
+      this.$store.commit('tableH', ['序号', '物料', '描述', '数量'])
+    },
     // SN列表checkbox复选框显示/隐藏
     checkBoxShowFn(x) {
+      this.btnShow = false
       this.showCheckbox = !this.showCheckbox
       this.$store.commit('checkBoxShow', x)
     },
@@ -112,11 +160,12 @@ export default {
       this.$store.commit('setSN', arr)
     },
     test() {
-      let url = path.sap + 'purchase/confirm'
-      let params = '{"Item": {"BUS_NO": "4500000240","ZDDLX": "1","ZQRKZ": "1","ZGH": "1"}}'
-      $.post(url, params, function(response){
-        console.log(response)
-      })
+      this.status = [1, 2, 3, 4]
+      // let url = path.sap + 'purchase/confirm'
+      // let params = '{"Item": {"BUS_NO": "4500000240","ZDDLX": "1","ZQRKZ": "1","ZGH": "1"}}'
+      // $.post(url, params, function(response) {
+      //   console.log(response)
+      // })
     },
     getSNList() {
       let _this = this
@@ -132,43 +181,102 @@ export default {
         _this.loadingShow(false)
         data = JSON.parse(data.responseText)
         let arr = data.MT_Purchase_GetSN_Resp.Header
-        console.log(arr)
-        // 临时数组
-        let trArr = []
-        if (arr.length >= 0) {
-          for (let i in arr) {
-            let temp = {}
-            if (arr[i].item === null || arr[i].item === undefined) {
-              temp.status = false
-              temp.arr = []
-              temp.arr[0] = arr[i].MATKL
-              temp.arr[1] = arr[i].ZTIAOM
-              temp.arr[2] = arr[i].LGOBE
-              temp.arr[3] = arr[i].BUS_NO
-            } else {
-              temp.status = true
-              temp.arr = []
-              temp.arr[0] = arr[i].MATKL
-              let arr1 = []
-              let arr2 = []
-              for(let j in arr[i].item) {
-                arr1.push(arr[i].item[j].ZTIAOMA_FB)
-                arr2.push(j)
-              }
-              temp.arr[1] = arr1
-              temp.arr[2] = arr2
-              temp.arr[3] = arr[i].BUS_NO
-            }
-            trArr.push(temp)
-          }
-        }
-        console.log('success')
-        console.log(trArr)
-        _this.setSN(trArr)
+        // 讲sn码列表数组保存到store
+        _this.$store.commit('snArr', arr)
+        console.log(_this.snArr)
+        // 计算产品数量
+        _this.status1 = arr.length
+        _this.turnArr(arr)
+        _this.addStatus = false
       }).catch((res) => {
         alert('请求超时！')
         _this.loadingShow(false)
       })
+    },
+    turnArr(arr) {
+      // 临时数组
+      let trArr = []
+      let num = 0
+      if (arr.length >= 0) {
+        for (let i in arr) {
+          num++
+          if (this.addStatus) {
+            arr[i].status = false
+          }
+          let temp = {}
+          if (arr[i].item === null || arr[i].item === undefined) {
+            temp.status = false
+            temp.arr = []
+            temp.arr[0] = arr[i].MATKL
+            temp.arr[1] = arr[i].ZTIAOM
+            temp.arr[2] = arr[i].LGOBE
+            temp.arr[3] = arr[i].BUS_NO
+            temp.arr[4] = parseInt(arr[i].MENGE)
+            temp.arr[5] = arr[i].status
+          } else {
+            temp.status = true
+            temp.arr = []
+            temp.arr[0] = arr[i].MATKL
+            let arr1 = []
+            let arr2 = []
+            for (let j in arr[i].item) {
+              num++
+              if (this.addStatus) {
+                arr2.push(false)
+              } else {
+                arr2.push(arr[i].item[j].status)
+              }
+              arr1.push(arr[i].item[j].ZTIAOMA_FB)
+            }
+            temp.arr[1] = arr1
+            temp.arr[2] = arr2
+            temp.arr[3] = arr[i].BUS_NO
+            temp.arr[4] = parseInt(arr[i].MENGE)
+            temp.arr[5] = arr[i].status
+          }
+          trArr.push(temp)
+        }
+      }
+      this.setSN(trArr)
+      this.status2 = num
+    },
+    verify() {
+      let num = this.inputVal
+      if (num.length > 22) {
+        let _this = this
+        for (let i in _this.snArr) {
+          if (_this.snArr[i].item === null || _this.snArr[i].item === undefined) {
+            if (num == _this.snArr[i].ZTIAOM) {
+              _this.snArr[i].status = true
+              _this.$store.commit('snArr', _this.snArr)
+              _this.turnArr(_this.snArr)
+            }
+          } else {
+            for (let j in _this.snArr[i].item) {
+              if (num == _this.snArr[i].item[j].ZTIAOMA_FB) {
+                _this.snArr[i].item[j].status = true
+                _this.$store.commit('snArr', _this.snArr)
+                _this.turnArr(_this.snArr)
+              }
+            }
+          }
+        }
+      }
+    },
+    filtrateArr() {
+      let arr = this.snArr.concat()
+      for (let i in arr) {
+        if (arr.item === null || arr.item === undefined) {
+          
+        } else {
+          console.log(arr[i])
+          // if (arr[i].arr[5]) {
+          //   arr.splice(i, 1)
+          // }
+        }
+      }
+      console.log(arr)
+      this.turnArr(arr)
     }
   },
   directives: {
@@ -182,8 +290,11 @@ export default {
   },
   created: function () {
     this.getSNList()
+    this.setTableH()
+    this.$store.commit('loadingShow', false)
   },
   mounted() {
+
   }
 }
 </script>
@@ -303,8 +414,17 @@ export default {
         background: $col;
       }
       .statusBox{
-        li.on{
+        li.on:nth-child(1){
           background: $btnBgCol;
+        }
+        li.on:nth-child(2){
+          background: #ff9600;
+        }
+        li.on:nth-child(3){
+          background: #38ce54;
+        }
+        li.on:nth-child(4){
+          background: #666;
         }
       }
       .snBox{

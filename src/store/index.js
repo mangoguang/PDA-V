@@ -23,16 +23,11 @@ const store = new Vuex.Store({
     orders: [],
     SN: [],
     snDetail: {},
-    people: [{
-      'name': '张三',
-      'age': 25
-    }, {
-      'name': '李四',
-      'age': 26
-    }, {
-      'name': '王五',
-      'age': 27
-    }]
+    tableH: [],
+    snStatus: [],
+    isTr3: true,
+    isOP: true,
+    snArr: []
   },
   mutations: {
     // 皮肤选择
@@ -48,7 +43,16 @@ const store = new Vuex.Store({
     // SN列表页checkbox复选框显示/隐藏   组件table-tr.vue
     checkBoxShow: (state, x) => state.checkBoxShow = x,
     // SN列表页SN详情  组件sn-detail.vue
-    snDetail: (state, x) => state.snDetail = x
+    snDetail: (state, x) => state.snDetail = x,
+    // table表头的标题
+    tableH: (state, x) => state.tableH = x,
+    // 表是否为三列
+    isOP: (state, x) => state.snStatus = x,
+    isTr3: (state, x) => state.isTr3 = x,
+    // sn列表的校验状态数组
+    snStatus: (state, x) => state.snStatus = arr,
+    // 提交数组到store
+    snArr: (state, arr) => state.snArr = arr
   },
   actions: {
     incrementAsync({

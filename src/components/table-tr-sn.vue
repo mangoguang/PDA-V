@@ -1,29 +1,42 @@
 <template>
   <ul class="clearfix table-tr-sn">
     <li v-for="(sn,index) in sns" @click="showSNDetail(sn.arr[3])">
-      <ul v-if="!sn.status">
-        <li v-bind:class="{paddingLfet20: checkBoxShow}">
-          <label v-show="checkBoxShow" :for= "sn.arr[0]" v-bind:class="{on: checkboxNames[index]}">
-          </label>
-          <input type="checkbox" :id="sn.arr[0]" v-model="checkboxNames[index]">
-          {{index+1}}
-        </li>
-        <li><input :value="sn.arr[0]" disabled="disabled"></li>
-        <li><input :value="sn.arr[1]" disabled="disabled"></li>
-        <li>{{sn.arr[2]}}</li>
-      </ul>
-      <ul v-else v-for="(i,index) in sn.arr[1].length">
-        <li v-bind:class="{paddingLfet20: checkBoxShow}">
-          <label v-show="checkBoxShow" :for= "sn.arr[0]" v-bind:class="{on: checkboxNames[index]}">
-          </label>
-          <input type="checkbox" :id="sn.arr[0]" v-model="checkboxNames[index]">
-          {{index+1}}
-        </li>
-        <li v-if="index == 0"><input :value="sn.arr[0]" disabled="disabled"></li>
-        <li v-else></li>
-        <li><input :value="sn.arr[1][i-1]" disabled="disabled"></li>
-        <li>{{sn.arr[2][i-1]}}</li>
-      </ul>
+      <div v-if="isTr3">
+        <ul>
+          <li>{{index+1}}</li>
+          <li class="tr2in1"><input :value="sn.arr[0]" disabled="disabled"></li>
+<!--           <li><input :value="sn.arr[1]" disabled="disabled"></li> -->
+          <li>{{sn.arr[4]}}</li>
+        </ul>
+      </div>
+      <div v-else="isTr3" :class="{on: sn.arr[5]}">
+        <ul v-if="!sn.status">
+          <li v-bind:class="{paddingLfet20: checkBoxShow}">
+            <label v-show="checkBoxShow" :for= "sn.arr[0]" v-bind:class="{on: checkboxNames[index]}">
+            </label>
+            <input type="checkbox" :id="sn.arr[0]" v-model="checkboxNames[index]">
+            {{index+1}}
+          </li>
+          <li><input :value="sn.arr[0]" disabled="disabled"></li>
+          <li><input :value="sn.arr[1]" disabled="disabled"></li>
+          <li>{{sn.arr[4]}}</li>
+        </ul>
+        <ul v-else v-for="(i,index1) in sn.arr[1].length" :class="{on: sn.arr[2][index1]}">
+          <li v-if="index1 == 0" v-bind:class="{paddingLfet20: checkBoxShow}">
+            <label v-show="checkBoxShow" :for= "sn.arr[0]" v-bind:class="{on: checkboxNames[index]}">
+            </label>
+            <input type="checkbox" :id="sn.arr[0]" v-model="checkboxNames[index]">
+            {{index+1}}
+          </li>
+          <li v-else="index1 == 0"></li>
+
+          <li v-if="index1 == 0"><input :value="sn.arr[0]" disabled="disabled"></li>
+          <li v-else></li>
+
+          <li><input :value="sn.arr[1][i-1]" disabled="disabled"></li>
+          <li>{{sn.arr[4]}}</li>
+        </ul>
+      </div>
     </li>
     <p>{{checkboxNames}}</p>
   </ul>
@@ -42,12 +55,19 @@ Vue.use(Vuex)
     },
     computed: {
       sns() {
-        console.log('success')
+        console.log('0000000000')
         console.log(this.$store.state.SN)
         return this.$store.state.SN
       },
       checkBoxShow() {
         return this.$store.state.checkBoxShow
+      },
+      isTr3() {
+        return this.$store.state.isTr3
+      },
+      snArr() {
+        console.log(this.$store.state.snArr)
+        return this.$store.state.snArr
       }
     },
     methods: {
@@ -110,6 +130,19 @@ Vue.use(Vuex)
   &>li{
     width: 100%;
     border-bottom: 1px solid $borderIn;
+    ul{
+      position: relative;
+      height: $f30;
+      border-bottom: 1px solid $borderIn;
+    }
+    ul.on{
+      input, li, p{
+        color: red
+      }
+    }
+    ul:last-child{
+      border-bottom: none;
+    }
     li{
       width: 2.8125rem;
       height: $f30;
@@ -121,6 +154,13 @@ Vue.use(Vuex)
       padding: 0 $f4;
       box-sizing: border-box;
       overflow-y: hidden;
+    }
+    li.tr2in1{
+      width: 5.625rem;
+      input{
+        text-align: center;
+      }
+      
     }
     li:after{
       display: block;
@@ -140,6 +180,11 @@ Vue.use(Vuex)
     }
     li.paddingLfet20{
       padding-left: $f20;
+    }
+  }
+  div.on{
+    input,li,ul,p{
+      color: red
     }
   }
 }
