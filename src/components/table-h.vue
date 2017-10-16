@@ -1,5 +1,5 @@
 <template>
-  <ul v-bind:class="{tableH1: isTr3 && !isOP}" class="clearfix table-h">
+  <ul :class="{tableH1: isTr3 && !isOP}" class="clearfix table-h">
     <li v-for="name in names">{{name}}</li>
   </ul>
 </template>

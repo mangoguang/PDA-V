@@ -41,9 +41,6 @@ export default {
       return this.$store.state.detailBoxShow
     },
     snDetail() {
-      console.log(11111111111)
-      console.log(this)
-      console.log(this.$store.state.snDetail)
       return this.$store.state.snDetail
     }
   },

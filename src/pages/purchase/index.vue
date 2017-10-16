@@ -122,6 +122,7 @@ export default {
     this.getOrderList()
     this.setTableH()
     this.$store.commit('loadingShow', true)
+    this.$store.commit('isOP', true)
   },
   mounted() {
     this.loadingShow(false)

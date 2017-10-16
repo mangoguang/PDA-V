@@ -68,6 +68,7 @@ export default {
       height: document.documentElement.clientHeight,
       focusStatus: true,
       opNum: this.$route.params.num,
+      // 按钮对应的数据
       status1: 0,
       status2: 0,
       status3: 0,
@@ -80,12 +81,18 @@ export default {
       showCheckbox: true,
       btnStatus: [true, false, false, false],
       // 用于判断是否添加sn数组的status属性
-      addStatus: true
+      addStatus: true,
+      // ifVerify为true，即在应扫按钮亮是才可扫码校验
+      ifVerify: false
     }
   },
   watch: {
     'inputVal': function() {
-      this.verify()
+      if (this.ifVerify) {
+        this.verify()
+      } else {
+        alert('请切换到应扫状态！')
+      }
     }
   },
   computed: {
@@ -97,6 +104,9 @@ export default {
     },
     snArr() {
       return this.$store.state.snArr
+    },
+    sns() {
+      return this.$store.state.SN
     }
   },
   methods: {
@@ -105,22 +115,32 @@ export default {
       this.$store.commit('tableH', ['序号', '物料描述', '数量'])
       this.setIsTr3(true)
       this.btnStatus = [true, false, false, false]
+      this.turnArr(this.snArr)
+      this.ifVerify = false
     },
     btn2() {
       this.$store.commit('tableH', ['序号', '描述', '条码', '状态'])
       this.setIsTr3(false)
       this.btnStatus = [false, true, false, false]
+      this.turnArr(this.snArr)
+      this.ifVerify = true
     },
     btn3() {
       this.$store.commit('tableH', ['序号', '描述', '条码', '状态'])
       this.setIsTr3(false)
       this.btnStatus = [false, false, true, false]
-      this.filtrateArr(this.snArr)
+      this.turnArr(this.snArr)
+      this.filtrateArr(true)
+      console.log(this.sns)
+      this.ifVerify = false
     },
     btn4() {
       this.$store.commit('tableH', ['序号', '描述', '条码', '状态'])
       this.setIsTr3(false)
       this.btnStatus = [false, false, false, true]
+      this.turnArr(this.snArr)
+      this.filtrateArr(false)
+      this.ifVerify = false
     },
     setIsTr3(x) {
       this.$store.commit('isTr3', x)
@@ -183,7 +203,6 @@ export default {
         let arr = data.MT_Purchase_GetSN_Resp.Header
         // 讲sn码列表数组保存到store
         _this.$store.commit('snArr', arr)
-        console.log(_this.snArr)
         // 计算产品数量
         _this.status1 = arr.length
         _this.turnArr(arr)
@@ -193,17 +212,49 @@ export default {
         _this.loadingShow(false)
       })
     },
+    verify() {
+      let num = this.inputVal
+      // 过滤误操作
+      if (num.length > 22) {
+        let _this = this
+        for (let i in _this.snArr) {
+          if (_this.snArr[i].item === null || _this.snArr[i].item === undefined) {
+            if (num == _this.snArr[i].ZTIAOM) {
+              _this.snArr[i].status = true
+              _this.$store.commit('snArr', _this.snArr)
+              _this.turnArr(_this.snArr)
+              _this.status3++
+              _this.status4 = _this.status2 - _this.status3
+            }
+          } else {
+            for (let j in _this.snArr[i].item) {
+              if (num == _this.snArr[i].item[j].ZTIAOMA_FB) {
+                _this.snArr[i].item[j].status = true
+                _this.$store.commit('snArr', _this.snArr)
+                _this.turnArr(_this.snArr)
+                _this.status3++
+                _this.status4 = _this.status2 - _this.status3
+              }
+            }
+          }
+        }
+      }
+    },
+    // 转化成组件table-tr-sn.vue的通用数组数据
     turnArr(arr) {
       // 临时数组
       let trArr = []
+      // 用于计算应扫数量
       let num = 0
       if (arr.length >= 0) {
         for (let i in arr) {
           num++
+          // 用于获取数据时的第一次添加数组属性操作
           if (this.addStatus) {
             arr[i].status = false
           }
           let temp = {}
+          // 是否分包
           if (arr[i].item === null || arr[i].item === undefined) {
             temp.status = false
             temp.arr = []
@@ -237,46 +288,119 @@ export default {
           trArr.push(temp)
         }
       }
+      // 标示SN码是否扫描的状态数组
       this.setSN(trArr)
       this.status2 = num
+      if (this.addStatus) {
+        this.status4 = num
+      }
     },
-    verify() {
-      let num = this.inputVal
-      if (num.length > 22) {
-        let _this = this
-        for (let i in _this.snArr) {
-          if (_this.snArr[i].item === null || _this.snArr[i].item === undefined) {
-            if (num == _this.snArr[i].ZTIAOM) {
-              _this.snArr[i].status = true
-              _this.$store.commit('snArr', _this.snArr)
-              _this.turnArr(_this.snArr)
+    // ifScan参数为true则筛选已扫，为false则筛选未扫
+    filtrateArr(ifScan) {
+      let Arr = this.sns.concat()
+      function delArr(arr) {
+        let gettype = Object.prototype.toString
+        for (let i in arr) {
+          // 如果不是分包
+          if (gettype.call(arr[i].arr[1]) === '[object String]') {
+            if (ifScan) {
+              if (!Arr[i].arr[5]) {
+                arr.splice(i, 1)
+                delArr(arr)
+              }
+            } else {
+              if (Arr[i].arr[5]) {
+                arr.splice(i, 1)
+                delArr(arr)
+              }
             }
           } else {
-            for (let j in _this.snArr[i].item) {
-              if (num == _this.snArr[i].item[j].ZTIAOMA_FB) {
-                _this.snArr[i].item[j].status = true
-                _this.$store.commit('snArr', _this.snArr)
-                _this.turnArr(_this.snArr)
+            for (let j in arr[i].arr[2]) {
+              if (ifScan) {
+                if (!arr[i].arr[2][j]) {
+                  arr[i].arr[1].splice(j, 1)
+                  arr[i].arr[2].splice(j, 1)
+                  delArr(arr)
+                }
+              } else {
+                if (arr[i].arr[2][j]) {
+                  arr[i].arr[1].splice(j, 1)
+                  arr[i].arr[2].splice(j, 1)
+                  delArr(arr)
+                }
               }
             }
           }
         }
+        return arr
       }
-    },
-    filtrateArr() {
-      let arr = this.snArr.concat()
-      for (let i in arr) {
-        if (arr.item === null || arr.item === undefined) {
-          
-        } else {
-          console.log(arr[i])
-          // if (arr[i].arr[5]) {
-          //   arr.splice(i, 1)
-          // }
+      // 将分包的空数组去除
+      function reDelArr(arr) {
+        for (let i in arr) {
+          if (arr[i].arr[1].length === 0) {
+            arr.splice(i, 1)
+            reDelArr(arr)
+          }
         }
+        return arr
       }
-      console.log(arr)
-      this.turnArr(arr)
+      // let gettype = Object.prototype.toString
+      // let trArr = []
+      // 筛选已扫描
+      // if (ifScan) {
+      //   for (let i in Arr) {
+      //     // 如果不是分包
+      //     if (gettype.call(Arr[i].arr[1]) === '[object String]') {
+      //       if (Arr[i].arr[5]) {
+      //         trArr.push(Arr[i])
+      //       }
+      //     // 如果为分包
+      //     } else {
+      //       for (let j in Arr[i].arr[2]) {
+      //         // 如果已扫
+      //         // if (Arr[i].arr[2][j]) {
+      //         //   if (trArr.length > 0) {
+      //         //     for (let x in trArr) {
+      //         //       if (trArr[x].arr[1].indexOf(Arr[i].arr[1][j]) === -1) {
+      //         //         trArr.push(Arr[i])
+      //         //       }
+      //         //     }
+      //         //   } else {
+      //         //     trArr.push(Arr[i])
+      //         //   }
+      //         // }
+      //       }
+      //     }
+      //   }
+      // }
+      this.setSN(reDelArr(delArr(Arr)))
+    },
+    // 检测此分包是否有分包sn码被扫描
+    checkSN(Arr, str, ifScan) {
+      let temp = false
+      let gettype = Object.prototype.toString
+      // 第一次调用函数，Arr为空数组
+      if (Arr.length > 0) {
+        for (let i in Arr) {
+          // 该元素是否为数组
+          if (gettype.call(Arr[i].arr[1]) !== '[object String]') {
+            // 筛选已扫的
+            if (ifScan) {
+              if (Arr[i].arr[1].indexOf(str) === -1) {
+                temp = true
+              }
+            // 筛选未扫的
+            } else {
+              if (Arr[i].arr[1].indexOf(str) === -1) {
+                temp = true
+              }
+            }
+          }
+        }
+      } else {
+        temp = true
+      }
+      return temp
     }
   },
   directives: {
@@ -292,9 +416,10 @@ export default {
     this.getSNList()
     this.setTableH()
     this.$store.commit('loadingShow', false)
+    this.$store.commit('tableH', ['序号', '物料描述', '数量'])
   },
   mounted() {
-
+    this.$store.commit('isOP', false)
   }
 }
 </script>

@@ -31,3 +31,13 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 
 npm v4.1.2    node v5.0.0   webpack v2.3.0环境下运行正常。（仅做参考）
 项目应用了vue-cli脚手架，同时整合了vue-router路由，引入了微信jssdk。使用vuex做状态管理。
+
+
+采购入库页面:
+	点击产品按钮：
+		state.tableH: ['序号', '物料', '描述', '数量']
+		isTr3: true
+
+		4500000277-171012100001-1/3
+		4500000277-171012000007
+		

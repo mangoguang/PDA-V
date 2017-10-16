@@ -22,6 +22,7 @@ const store = new Vuex.Store({
     checkBoxShow: false,
     orders: [],
     SN: [],
+    snCopy: [],
     snDetail: {},
     tableH: [],
     snStatus: [],
@@ -38,6 +39,7 @@ const store = new Vuex.Store({
     setOrders: (state, arr) => state.orders = arr,
     // 插入SN号数据
     setSN: (state, arr) => state.SN = arr,
+    snCopy: (state, arr) => state.snCopy = arr,
     // SN码详情框显示/隐藏  组件table-tr.vue
     detailBoxShow: (state, x) => state.detailBoxShow = x,
     // SN列表页checkbox复选框显示/隐藏   组件table-tr.vue
@@ -47,7 +49,7 @@ const store = new Vuex.Store({
     // table表头的标题
     tableH: (state, x) => state.tableH = x,
     // 表是否为三列
-    isOP: (state, x) => state.snStatus = x,
+    isOP: (state, x) => state.isOP = x,
     isTr3: (state, x) => state.isTr3 = x,
     // sn列表的校验状态数组
     snStatus: (state, x) => state.snStatus = arr,

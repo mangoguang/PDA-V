@@ -55,8 +55,6 @@ Vue.use(Vuex)
     },
     computed: {
       sns() {
-        console.log('0000000000')
-        console.log(this.$store.state.SN)
         return this.$store.state.SN
       },
       checkBoxShow() {
@@ -66,7 +64,6 @@ Vue.use(Vuex)
         return this.$store.state.isTr3
       },
       snArr() {
-        console.log(this.$store.state.snArr)
         return this.$store.state.snArr
       }
     },
