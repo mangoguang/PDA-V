@@ -17,8 +17,8 @@
             <input type="checkbox" :id="sn.arr[1]" v-model="checkboxVal[index]">
             {{index+1}}
           </li>
-          <li @click="showSNDetail(sn.arr[1], sn.arr[3], sn.arr[6], false)"><input :value="sn.arr[0]" disabled="disabled"></li>
-          <li><input :value="sn.arr[1]" disabled="disabled"></li>
+          <li><input :value="sn.arr[0]" disabled="disabled"></li>
+          <li @click="showSNDetail(sn.arr[1], sn.arr[3], sn.arr[6], false)"><input :value="sn.arr[1]" disabled="disabled"></li>
           <li>{{sn.arr[4]}}</li>
         </ul>
         <!-- 分包部分 -->

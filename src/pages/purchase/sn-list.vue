@@ -439,17 +439,40 @@ export default {
     setSureIn() {
       let _this = this
       let url = path.sap + 'purchase/confirm'
-      let params = "{ BUS_NO: this.BUS_NO, ZQRKZ: 1, ZDDLX: 1, ZGH: '11233' }"
+      let params = "{ 'Item': {BUS_NO: this.BUS_NO, ZQRKZ: 1, ZDDLX: 1, ZGH: '11233'} }"
+      // '{"Item": {"BUS_NO": "4500000240","ZDDLX": "1","ZQRKZ": "1","ZGH": "1"}}'
       this.putInShow = true
-      V.post(url, params).then(function(data) {
-        _this.putInShow = false
-        data = JSON.parse(data.responseText)
-        console.log('success')
-        console.log(data)
-      }).catch((res) => {
-        _this.putInShow = false
-        alert('请求超时！')
+      // $.post(url, params).then(function(data) {
+      //   _this.putInShow = false
+      // })
+      // $.post(url, params, function(response) {
+      //   _this.putInShow = false
+      //   console.log(response)
+      // })
+
+      $.ajax({
+        type: 'POST',
+        url: url,
+        data: params,
+        dataType: 'json',
+        timeout: 10000,
+        success: function(data) {
+          _this.putInShow = false
+          console.log(data)
+        },
+        error: function(xhr, type) {
+          alert('Ajax error!')
+        }
       })
+      // V.post(url, params).then(function(data) {
+      //   _this.putInShow = false
+      //   data = JSON.parse(data.responseText)
+      //   console.log('success')
+      //   console.log(data)
+      // }).catch((res) => {
+      //   _this.putInShow = false
+      //   alert('请求超时！')
+      // })
     }
   },
   directives: {
