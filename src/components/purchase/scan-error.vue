@@ -1,13 +1,22 @@
 <template>
     <div class="scanError">
       <div>
-        <p>扫描条码有误</p>
+        <p>{{errorMsg}}</p>
       </div>
     </div>
 </template>
 <script>
+import Vue from 'vue'
+import Vuex from 'vuex'
+Vue.use(Vuex)
+
   export default {
     name: 'scanError',
+    computed: {
+      errorMsg() {
+        return this.$store.state.errorMsg
+      }
+    },
     methods: {
 
     }
@@ -18,7 +27,7 @@
 @import "../../assets/css/common.css";
 
 .scanError{
-  display: none;
+  // display: none;
   position: absolute;
   top: 0;
   left: 0;

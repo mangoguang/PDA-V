@@ -28,7 +28,11 @@ const store = new Vuex.Store({
     snStatus: [],
     isTr3: true,
     isOP: true,
-    snArr: []
+    snArr: [],
+    canDel: false,
+    checkboxVal: [],
+    errorMsg: '',
+    ifFB: false
   },
   mutations: {
     // 皮肤选择
@@ -52,9 +56,15 @@ const store = new Vuex.Store({
     isOP: (state, x) => state.isOP = x,
     isTr3: (state, x) => state.isTr3 = x,
     // sn列表的校验状态数组
-    snStatus: (state, x) => state.snStatus = arr,
+    snStatus: (state, x) => state.snStatus = x,
     // 提交数组到store
-    snArr: (state, arr) => state.snArr = arr
+    snArr: (state, arr) => state.snArr = arr,
+    // 删除时标记是否选中
+    checkboxVal: (state, arr) => state.checkboxVal = arr,
+    // 扫描错误提示信息
+    errorMsg: (state, x) => state.errorMsg = x,
+    // 显示SN详情时是否为分包信息
+    ifFB: (state, x) => state.ifFB = x
   },
   actions: {
     incrementAsync({

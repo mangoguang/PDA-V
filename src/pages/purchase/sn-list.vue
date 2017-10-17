@@ -1,7 +1,7 @@
 <!-- <keep-alive> -->
 <template>
   <div class="snList">
-    <div @click="tableTrShow" v-show="errorShow">
+    <div @click="errorBoxHide" v-show="errorShow">
       <ScanError></ScanError>
     </div>
     <div @click="putIn" v-show="putInShow">
@@ -13,13 +13,13 @@
     <div class="headBox">
       <HeadComponent>
         <h1>采购入库操作</h1>
-        <button @click="checkBoxShowFn(showCheckbox)" class="delBtn"></button>
+        <button v-show="canDel" @click="checkBoxShowFn(showCheckbox)" class="delBtn"></button>
       </HeadComponent>
       <ul class="snBox clearfix">
         <li>
-          <p @click="test">单号：{{opNum}}</p>
+          <p>单号：{{opNum}}</p>
         </li>
-        <li>
+        <li v-show="canDel">
           <input type="text" v-model="inputVal" placeholder="条码" v-focus="focusStatus">
           <button @click="clearInput" class="clearInput"></button>
         </li>
@@ -36,8 +36,8 @@
       <TableTr class="contain" v-bind:style="{height: height+'px'}"></TableTr>
       <div @click="sureIn" v-if="!checkBoxShow && !btnStatus[0]"><Btn class="btn100 sure">确认入库</Btn></div>
       <ul class="delCancel clearfix">
-        <li @click="delSN" v-if="checkBoxShow"><Btn class="btn100 del">删除</Btn></li>
-        <li @click="cancel" v-if="checkBoxShow"><Btn class="btn100 gray cancel">取消</Btn></li>
+        <li @click="delSN" v-if="checkBoxShow && !btnStatus[0]"><Btn class="btn100 del">删除</Btn></li>
+        <li @click="cancel" v-if="checkBoxShow && !btnStatus[0]"><Btn class="btn100 gray cancel">取消</Btn></li>
       </ul>
     </div>
   </div>
@@ -56,6 +56,7 @@ import PutIn from '../../components/purchase/put-in'
 import SNDetail from '../../components/purchase/sn-detail'
 import Btn from '../../components/btn'
 import { path, V } from '../../js/variable.js'
+import $ from 'n-zepto'
 // import {pathLocal, V} from '../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -66,6 +67,7 @@ export default {
   data () {
     return {
       height: document.documentElement.clientHeight,
+      BUS_NO: '4500000277',
       focusStatus: true,
       opNum: this.$route.params.num,
       // 按钮对应的数据
@@ -74,16 +76,16 @@ export default {
       status3: 0,
       status4: 0,
       // 扫码错误弹框显示/隐藏
-      errorShow: true,
+      errorShow: false,
       putInShow: false,
       inputVal: '',
-      btnShow: true,
-      showCheckbox: true,
+      showCheckbox: false,
       btnStatus: [true, false, false, false],
       // 用于判断是否添加sn数组的status属性
       addStatus: true,
       // ifVerify为true，即在应扫按钮亮是才可扫码校验
-      ifVerify: false
+      ifVerify: false,
+      canDel: false
     }
   },
   watch: {
@@ -117,6 +119,7 @@ export default {
       this.btnStatus = [true, false, false, false]
       this.turnArr(this.snArr)
       this.ifVerify = false
+      this.canDel = false
     },
     btn2() {
       this.$store.commit('tableH', ['序号', '描述', '条码', '状态'])
@@ -124,6 +127,8 @@ export default {
       this.btnStatus = [false, true, false, false]
       this.turnArr(this.snArr)
       this.ifVerify = true
+      this.canDel = true
+      this.focusStatus = true
     },
     btn3() {
       this.$store.commit('tableH', ['序号', '描述', '条码', '状态'])
@@ -131,8 +136,8 @@ export default {
       this.btnStatus = [false, false, true, false]
       this.turnArr(this.snArr)
       this.filtrateArr(true)
-      console.log(this.sns)
       this.ifVerify = false
+      this.canDel = false
     },
     btn4() {
       this.$store.commit('tableH', ['序号', '描述', '条码', '状态'])
@@ -141,6 +146,7 @@ export default {
       this.turnArr(this.snArr)
       this.filtrateArr(false)
       this.ifVerify = false
+      this.canDel = false
     },
     setIsTr3(x) {
       this.$store.commit('isTr3', x)
@@ -151,14 +157,15 @@ export default {
     },
     // SN列表checkbox复选框显示/隐藏
     checkBoxShowFn(x) {
-      this.btnShow = false
-      this.showCheckbox = !this.showCheckbox
-      this.$store.commit('checkBoxShow', x)
+      if (this.canDel) {
+        this.showCheckbox = !this.showCheckbox
+        this.$store.commit('checkBoxShow', this.showCheckbox)
+      }
     },
     loadingShow: function(x) {
       this.$store.commit('loadingShow', x)
     },
-    tableTrShow() {
+    errorBoxHide() {
       this.errorShow = false
     },
     putIn() {
@@ -168,31 +175,27 @@ export default {
       this.inputVal = ''
     },
     sureIn() {
-      this.btnShow = false
+      this.setSureIn()
+      this.$store.commit('checkBoxShow', false)
+      this.showCheckbox = false
     },
     delSN() {
-      this.btnShow = true
+      this.$store.commit('checkBoxShow', false)
+      this.showCheckbox = false
     },
     cancel() {
-      this.btnShow = true
+      this.$store.commit('checkBoxShow', false)
+      this.showCheckbox = false
     },
     setSN(arr) {
       this.$store.commit('setSN', arr)
-    },
-    test() {
-      this.status = [1, 2, 3, 4]
-      // let url = path.sap + 'purchase/confirm'
-      // let params = '{"Item": {"BUS_NO": "4500000240","ZDDLX": "1","ZQRKZ": "1","ZGH": "1"}}'
-      // $.post(url, params, function(response) {
-      //   console.log(response)
-      // })
     },
     getSNList() {
       let _this = this
       _this.loadingShow(true)
       let url = path.sap + 'purchase/getsn'
       let params = {
-        BUS_NO: '4500000277',
+        BUS_NO: this.BUS_NO,
         ZDDLX: 1,
         WERKS: '1010',
         LGORT: '1001'
@@ -207,6 +210,7 @@ export default {
         _this.status1 = arr.length
         _this.turnArr(arr)
         _this.addStatus = false
+        console.log(arr)
       }).catch((res) => {
         alert('请求超时！')
         _this.loadingShow(false)
@@ -214,36 +218,90 @@ export default {
     },
     verify() {
       let num = this.inputVal
+      let arr = this.snArr
+      let _this = this
       // 过滤误操作
       if (num.length > 22) {
-        let _this = this
-        for (let i in _this.snArr) {
-          if (_this.snArr[i].item === null || _this.snArr[i].item === undefined) {
-            if (num == _this.snArr[i].ZTIAOM) {
-              _this.snArr[i].status = true
-              _this.$store.commit('snArr', _this.snArr)
-              _this.turnArr(_this.snArr)
-              _this.status3++
-              _this.status4 = _this.status2 - _this.status3
+        for (let i in arr) {
+          // 校验分包
+          if (arr[i].item === null || arr[i].item === undefined) {
+            if (num == arr[i].ZTIAOM) {
+              this.verifyAjax(arr, arr[i].ZTIAOM, i).then(function(data) {
+                // 校验成功
+                if (data.ZXXLX == 'S') {
+                  arr[i].status = true
+                  _this.$store.commit('snArr', arr)
+                  _this.turnArr(arr)
+                  _this.status3++
+                  _this.status4 = _this.status2 - _this.status3
+                  _this.inputVal = ''
+                  _this.focusStatus = true
+                } else {
+                  _this.errorShow = true
+                  _this.$store.commit('errorMsg', data.ZTXXX)
+                  _this.inputVal = ''
+                  // alert(data.ZTXXX)
+                }
+              })
             }
           } else {
-            for (let j in _this.snArr[i].item) {
-              if (num == _this.snArr[i].item[j].ZTIAOMA_FB) {
-                _this.snArr[i].item[j].status = true
-                _this.$store.commit('snArr', _this.snArr)
-                _this.turnArr(_this.snArr)
-                _this.status3++
-                _this.status4 = _this.status2 - _this.status3
+            for (let j in arr[i].item) {
+              if (num == arr[i].item[j].ZTIAOMA_FB) {
+                this.verifyAjax(arr, arr[i].item[j].ZTIAOMA_FB, i).then(function(data) {
+                  // 校验成功
+                  if (data.ZXXLX == 'S') {
+                    arr[i].item[j].status = true
+                    _this.$store.commit('snArr', arr)
+                    _this.turnArr(arr)
+                    _this.status3++
+                    _this.status4 = _this.status2 - _this.status3
+                    _this.inputVal = ''
+                    _this.focusStatus = true
+                  } else {
+                    _this.errorShow = true
+                    _this.$store.commit('errorMsg', data.ZTXXX)
+                    _this.inputVal = ''
+                    // alert(data.ZTXXX)
+                  }
+                })
               }
             }
           }
         }
       }
     },
+    verifyAjax(arr, ztiaom, i) {
+      let url = path.sap + 'purchase/verify'
+      let params = {
+        BUS_NO: arr[i].BUS_NO,
+        ITEM_NO: arr[i].ITEM_NO,
+        ZDDLX: 1,
+        ZTIAOM: ztiaom,
+        WERKS: arr[i].WERKS,
+        LGORT: arr[i].LGORT,
+        ZQRKZ: 0,
+        ZDEL: 0
+      }
+      let _this = this
+      let data = new Promise(function(resolve, reject) {
+        _this.loadingShow(true)
+        // 提交校验AJAX
+        V.get(url, params).then(function(data) {
+          _this.loadingShow(false)
+          data = JSON.parse(data.responseText)
+          resolve(data.MT_Purchase_Verify_Resp.Item)
+        }).catch((res) => {
+          alert('请求超时！')
+          _this.loadingShow(false)
+        })
+      })
+      return data
+    },
     // 转化成组件table-tr-sn.vue的通用数组数据
     turnArr(arr) {
       // 临时数组
       let trArr = []
+      let checkboxVal = []
       // 用于计算应扫数量
       let num = 0
       if (arr.length >= 0) {
@@ -257,6 +315,7 @@ export default {
           // 是否分包
           if (arr[i].item === null || arr[i].item === undefined) {
             temp.status = false
+            checkboxVal.push(false)
             temp.arr = []
             temp.arr[0] = arr[i].MATKL
             temp.arr[1] = arr[i].ZTIAOM
@@ -264,8 +323,10 @@ export default {
             temp.arr[3] = arr[i].BUS_NO
             temp.arr[4] = parseInt(arr[i].MENGE)
             temp.arr[5] = arr[i].status
+            temp.arr[6] = arr[i].ITEM_NO
           } else {
             temp.status = true
+            checkboxVal.push(false)
             temp.arr = []
             temp.arr[0] = arr[i].MATKL
             let arr1 = []
@@ -284,6 +345,7 @@ export default {
             temp.arr[3] = arr[i].BUS_NO
             temp.arr[4] = parseInt(arr[i].MENGE)
             temp.arr[5] = arr[i].status
+            temp.arr[6] = arr[i].ITEM_NO
           }
           trArr.push(temp)
         }
@@ -294,6 +356,7 @@ export default {
       if (this.addStatus) {
         this.status4 = num
       }
+      this.$store.commit('checkboxVal', checkboxVal)
     },
     // ifScan参数为true则筛选已扫，为false则筛选未扫
     filtrateArr(ifScan) {
@@ -344,35 +407,6 @@ export default {
         }
         return arr
       }
-      // let gettype = Object.prototype.toString
-      // let trArr = []
-      // 筛选已扫描
-      // if (ifScan) {
-      //   for (let i in Arr) {
-      //     // 如果不是分包
-      //     if (gettype.call(Arr[i].arr[1]) === '[object String]') {
-      //       if (Arr[i].arr[5]) {
-      //         trArr.push(Arr[i])
-      //       }
-      //     // 如果为分包
-      //     } else {
-      //       for (let j in Arr[i].arr[2]) {
-      //         // 如果已扫
-      //         // if (Arr[i].arr[2][j]) {
-      //         //   if (trArr.length > 0) {
-      //         //     for (let x in trArr) {
-      //         //       if (trArr[x].arr[1].indexOf(Arr[i].arr[1][j]) === -1) {
-      //         //         trArr.push(Arr[i])
-      //         //       }
-      //         //     }
-      //         //   } else {
-      //         //     trArr.push(Arr[i])
-      //         //   }
-      //         // }
-      //       }
-      //     }
-      //   }
-      // }
       this.setSN(reDelArr(delArr(Arr)))
     },
     // 检测此分包是否有分包sn码被扫描
@@ -401,6 +435,21 @@ export default {
         temp = true
       }
       return temp
+    },
+    setSureIn() {
+      let _this = this
+      let url = path.sap + 'purchase/confirm'
+      let params = "{ BUS_NO: this.BUS_NO, ZQRKZ: 1, ZDDLX: 1, ZGH: '11233' }"
+      this.putInShow = true
+      V.post(url, params).then(function(data) {
+        _this.putInShow = false
+        data = JSON.parse(data.responseText)
+        console.log('success')
+        console.log(data)
+      }).catch((res) => {
+        _this.putInShow = false
+        alert('请求超时！')
+      })
     }
   },
   directives: {

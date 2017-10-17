@@ -8,14 +8,23 @@
         class="close" 
         type="button"></button>
         <ul>
-          <li>订单来源号：<span>{{snDetail.BUS_NO}}</span></li>
-          <li>销售订单号：<span>000000000001</span></li>
-          <li>物料编码：<span>000000000001</span></li>
-          <li>物料描述：<span>A-01床架180*200</span></li>
-          <li>指令号：<span>00000000001</span></li>
-          <li>库存单位：<span>套</span></li>
-          <li>计划入库数：<span>50</span></li>
-          <li>实际入库数：<span>40</span></li>
+          <li>采购订单号/提货单：<span>{{snDetail.BUS_NO}}</span></li>
+          <li>销售订单号：<span>{{snDetail.VGBEL}}</span></li>
+          <li>物料编码：<span>{{snDetail.MATNR}}</span></li>
+          <li>物料描述：<span>{{snDetail.MATKL}}</span></li>
+          <li>库存单位：<span>{{snDetail.VRKME}}</span></li>
+          <li>计划交货数：<span>{{snDetail.MENGE}}</span></li>
+          <div v-if="ifFB">
+            <li>SN（条码）：<span>{{snDetail.Item.ZTIAOMA_FB}}</span></li>
+            <li>分包序号：<span>{{snDetail.Item.ZFBXH}}</span></li>
+            <li>分包描述：<span>{{snDetail.Item.ZFBMS}}</span></li>
+            <li>分包规格：<span>{{snDetail.Item.ZGUIG}}</span></li>
+            <li>包装件数：<span>{{snDetail.Item.ZFBSL}}</span></li>
+            <li>分包方式：<span>{{snDetail.Item.ZFBFS}}</span></li>
+          </div>
+<!--           <li>状态：<span>{{snDetail.ZJYZT}}</span></li> -->
+<!--           <li>库存代号：<span>{{snDetail.VGBEL}}</span></li>
+<li>库存地点：<span>{{snDetail.VGBEL}}</span></li> -->
         </ul>
       </div>
     </div>
@@ -41,7 +50,11 @@ export default {
       return this.$store.state.detailBoxShow
     },
     snDetail() {
+      console.log(this.$store.state.snDetail)
       return this.$store.state.snDetail
+    },
+    ifFB() {
+      return this.$store.state.ifFB
     }
   },
   methods: {

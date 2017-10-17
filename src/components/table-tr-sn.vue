@@ -1,6 +1,6 @@
 <template>
   <ul class="clearfix table-tr-sn">
-    <li v-for="(sn,index) in sns" @click="showSNDetail(sn.arr[3])">
+    <li v-for="(sn,index) in sns">
       <div v-if="isTr3">
         <ul>
           <li>{{index+1}}</li>
@@ -12,20 +12,21 @@
       <div v-else="isTr3" :class="{on: sn.arr[5]}">
         <ul v-if="!sn.status">
           <li v-bind:class="{paddingLfet20: checkBoxShow}">
-            <label v-show="checkBoxShow" :for= "sn.arr[0]" v-bind:class="{on: checkboxNames[index]}">
+            <label v-show="checkBoxShow" :for= "sn.arr[1]" :class="{on: checkboxVal[index]}">
             </label>
-            <input type="checkbox" :id="sn.arr[0]" v-model="checkboxNames[index]">
+            <input type="checkbox" :id="sn.arr[1]" v-model="checkboxVal[index]">
             {{index+1}}
           </li>
-          <li><input :value="sn.arr[0]" disabled="disabled"></li>
+          <li @click="showSNDetail(sn.arr[1], sn.arr[3], sn.arr[6], false)"><input :value="sn.arr[0]" disabled="disabled"></li>
           <li><input :value="sn.arr[1]" disabled="disabled"></li>
           <li>{{sn.arr[4]}}</li>
         </ul>
+        <!-- 分包部分 -->
         <ul v-else v-for="(i,index1) in sn.arr[1].length" :class="{on: sn.arr[2][index1]}">
           <li v-if="index1 == 0" v-bind:class="{paddingLfet20: checkBoxShow}">
-            <label v-show="checkBoxShow" :for= "sn.arr[0]" v-bind:class="{on: checkboxNames[index]}">
+            <label v-show="checkBoxShow" :for= "sn.arr[1][0]" :class="{on: checkboxVal[index]}">
             </label>
-            <input type="checkbox" :id="sn.arr[0]" v-model="checkboxNames[index]">
+            <input type="checkbox" :id="sn.arr[1][0]" v-model="checkboxVal[index]">
             {{index+1}}
           </li>
           <li v-else="index1 == 0"></li>
@@ -33,12 +34,11 @@
           <li v-if="index1 == 0"><input :value="sn.arr[0]" disabled="disabled"></li>
           <li v-else></li>
 
-          <li><input :value="sn.arr[1][i-1]" disabled="disabled"></li>
+          <li @click="showSNDetail(sn.arr[1][index1], sn.arr[3], sn.arr[6], true)"><input :value="sn.arr[1][i-1]" disabled="disabled"></li>
           <li>{{sn.arr[4]}}</li>
         </ul>
       </div>
     </li>
-    <p>{{checkboxNames}}</p>
   </ul>
 </template>
 <script>
@@ -50,7 +50,7 @@ Vue.use(Vuex)
     name: 'table-tr',
     data() {
       return {
-        checkboxNames: [true, false, true]
+        canDel: false
       }
     },
     computed: {
@@ -59,6 +59,9 @@ Vue.use(Vuex)
       },
       checkBoxShow() {
         return this.$store.state.checkBoxShow
+      },
+      checkboxVal() {
+        return this.$store.state.checkboxVal
       },
       isTr3() {
         return this.$store.state.isTr3
@@ -71,26 +74,29 @@ Vue.use(Vuex)
       loadingShow: function(x) {
         this.$store.commit('loadingShow', x)
       },
-      showSNDetail(sn) {
-        let _this = this
-        _this.loadingShow(true)
-        let url = path.sap + 'purchase/getinformation'
-        let params = {
-          BUS_NO: '4500000266',
-          ITEM_NO: '00010',
-          ZDDLX: 1,
-          ZTIAOM: '4500000266-171011000005'
+      showSNDetail(SN, BUS_NO, ITEM_NO, status) {
+        this.$store.commit('ifFB', status)
+        if (!this.checkBoxShow) {
+          let _this = this
+          _this.loadingShow(true)
+          let url = path.sap + 'purchase/getinformation'
+          let params = {
+            BUS_NO: BUS_NO,
+            ITEM_NO: ITEM_NO,
+            ZDDLX: 1,
+            ZTIAOM: SN
+          }
+          V.get(url, params).then(function(data) {
+            _this.loadingShow(false)
+            data = JSON.parse(data.responseText)
+            let arr = data.MT_Purchase_GetInformation_Resp.Header
+            _this.$store.commit('snDetail', arr)
+            _this.detailBoxShow(true)
+          }).catch((res) => {
+            alert('请求超时！')
+            _this.loadingShow(false)
+          })
         }
-        V.get(url, params).then(function(data) {
-          _this.loadingShow(false)
-          data = JSON.parse(data.responseText)
-          let arr = data.MT_Purchase_GetInformation_Resp.Header
-          _this.$store.commit('snDetail', arr)
-          _this.detailBoxShow(true)
-        }).catch((res) => {
-          alert('请求超时！')
-          _this.loadingShow(false)
-        })
       },
       detailBoxShow(x) {
         this.$store.commit('detailBoxShow', x)
