@@ -1,12 +1,12 @@
 <!-- <keep-alive> -->
 <template>
-  <div class="purchase">
+  <div class="modules">
     <div class="header">
       <HeadComponent>
         <h1>{{titName}}</h1>
       </HeadComponent>
       <div class="searchOrder">
-        <input v-model="searchNum" v-focus="focusStatus" type="text" placeholder="搜索生产入库单号">
+        <input v-model="searchNum" v-focus="focusStatus" type="text" :placeholder="'搜索' + titName + '单号'">
       </div>
     </div>
     <div class="table">
@@ -36,7 +36,7 @@ Vue.use(VueRouter)
 Vue.use(Vuex)
 
 export default {
-  name: 'Purchase',
+  name: 'Modules',
   components: {HeadComponent, TableH, TableTr},
   data () {
     return {
@@ -139,10 +139,12 @@ export default {
         // 销售备货
         if (this.salesName === 'salestockup') {
           this.salsesBtn = true
+          this.titName = '销售备货'
           data = data.MT_Salestockup_GetInCity_Resp.Document
         // 销售出库
         } else {
           this.salsesBtn = false
+          this.titName = '销售出库'
           data = data.MT_Salesoutput_GetInCity_Resp.Document
         }
         for (let i in data) {

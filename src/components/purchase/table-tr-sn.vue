@@ -3,7 +3,7 @@
     <li v-for="(sn,index) in sns">
       <ul>
         <li v-bind:class="{paddingLfet20: checkBoxShow}">
-          <label v-show="checkBoxShow" :for= "sn[0]" v-bind:class="{on: checkboxNames[index]}">
+          <label v-show="checkBoxShow" :for= "sn[0]" :class="{on: checkboxNames[index]}">
           </label>
           <input type="checkbox" :id="sn[0]" v-model="checkboxNames[index]">
           {{index+1}}
