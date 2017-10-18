@@ -24,7 +24,7 @@ export var router = new VueRouter({
     name: 'Production',
     component: resolve => require(['../pages/production/index'], resolve)
   }, {
-    path: '/purchase',
+    path: '/modules/:module',
     name: 'Purchase',
     component: resolve => require(['../pages/purchase/index'], resolve)
   }, {

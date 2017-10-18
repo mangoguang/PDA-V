@@ -14,7 +14,7 @@
       <select id="warehouse" v-model="warehouseSel">
         <option v-for="warehouse in warehouses" :value="warehouse">{{ warehouse }}</option>
       </select>
-      <div v-on:click="select"><Btn>确定</Btn></div>
+      <div @click="select"><Btn>确定</Btn></div>
 <!--       <button @click="select" type="button">确定</button> -->
     </form>
   </div>
@@ -42,7 +42,7 @@ export default {
       factorySel: '',
       warehouseSel: '',
       warehouseStatus: false,
-      name: '刘淑婷'
+      name: this.$route.query.name
     }
   },
   computed: {
@@ -54,12 +54,12 @@ export default {
     },
     select: function() {
       localStorage.setItem('factoryMsg', '{factory: "' + this.factorySel + '",warehouse: "' + this.warehouseSel + '"}')
-      this.$router.push({ path: '/module' })
+      this.$router.push({ path: '/module?name=' + this.name + '&factory=' + this.factorySel + '&warehouse=' + this.warehouseSel })
     },
     setWarehouse: function() {
       let _this = this
-      let url = path.local + '/warehouse_sel.php'
-      // let url = pathOA + '/PDAWareHouse.jsp'
+      // let url = path.local + '/warehouse_sel.php'
+      let url = path.oa + '/PDAWareHouse.jsp'
       let obj = this.getAccountMsg()
       // 获取本地存储账号信息
       let params = {
@@ -109,8 +109,10 @@ export default {
       let _this = this
       // 获取本地存储的账号信息
       let obj = this.getAccountMsg()
-      let url = path.local + '/factory_sel.php'
-      // let url = path.oa + '/PDAFactory.jsp'
+      // let url = path.local + '/factory_sel.php'
+      let url = path.oa + '/PDAFactory.jsp'
+      console.log(111)
+      console.log(obj)
       let params = {
         // name: this.factorySel,
         // password: this.warehouseSel
@@ -132,8 +134,6 @@ export default {
       })
       this.getFactorySel()
     }
-  },
-  created: function () {
   },
   mounted() {
     this.setFactorys()

@@ -15,12 +15,12 @@
           <li>库存单位：<span>{{snDetail.VRKME}}</span></li>
           <li>计划交货数：<span>{{snDetail.MENGE}}</span></li>
           <div v-if="ifFB">
-            <li>SN（条码）：<span>{{snDetail.Item.ZTIAOMA_FB}}</span></li>
-            <li>分包序号：<span>{{snDetail.Item.ZFBXH}}</span></li>
-            <li>分包描述：<span>{{snDetail.Item.ZFBMS}}</span></li>
-            <li>分包规格：<span>{{snDetail.Item.ZGUIG}}</span></li>
-            <li>包装件数：<span>{{snDetail.Item.ZFBSL}}</span></li>
-            <li>分包方式：<span>{{snDetail.Item.ZFBFS}}</span></li>
+            <li>SN（条码）：<span>{{snDetailFB.ZTIAOMA_FB}}</span></li>
+            <li>分包序号：<span>{{snDetailFB.ZFBXH}}</span></li>
+            <li>分包描述：<span>{{snDetailFB.ZFBMS}}</span></li>
+            <li>分包规格：<span>{{snDetailFB.ZGUIG}}</span></li>
+            <li>包装件数：<span>{{snDetailFB.ZFBSL}}</span></li>
+            <li>分包方式：<span>{{snDetailFB.ZFBFS}}</span></li>
           </div>
 <!--           <li>状态：<span>{{snDetail.ZJYZT}}</span></li> -->
 <!--           <li>库存代号：<span>{{snDetail.VGBEL}}</span></li>
@@ -35,7 +35,9 @@
 <script>
 import Vue from 'vue'
 import Vuex from 'vuex'
+import VueRouter from 'vue-router'
 // import {pathLocal, V} from '../js/variable.js'
+Vue.use(VueRouter)
 Vue.use(Vuex)
 
 export default {
@@ -55,6 +57,9 @@ export default {
     },
     ifFB() {
       return this.$store.state.ifFB
+    },
+    snDetailFB() {
+      return this.$store.state.snDetailFB
     }
   },
   methods: {

@@ -25,6 +25,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
+import md5 from 'js-md5'
 import { path, V } from '../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -50,13 +51,13 @@ export default {
     login: function() {
       let _this = this
       let params = {
-          name: 'mango',
-          password: '123456'
-          // account: this.account,
-          // password: this.password
+          // name: 'mango',
+          // password: '123456'
+          account: this.account,
+          password: md5(this.password).toLocaleUpperCase()
         }
-      // let url = path.oa + '/PDAUserCheck.jsp'
-      let url = path.local + '/login.php'
+      let url = path.oa + '/PDAUserCheck.jsp'
+      // let url = path.local + '/login.php'
       if (_this.canClick) {
         _this.canClick = false
         _this.loadingShow(true)
@@ -66,8 +67,8 @@ export default {
           if (data.status) {
             // 保存账号密码到本地存储
             localStorage.setItem('accountMsg', "{account: '" + _this.account + "'," +
-              "password: '" + _this.password + "'}")
-            _this.$router.push({ path: '/select' })
+              "password: '" + md5(_this.password).toLocaleUpperCase() + "'}")
+            _this.$router.push({ path: '/select?name=' + data.name })
           } else {
             alert('账号或者密码错误！')
           }
@@ -94,7 +95,7 @@ export default {
     if (accountMsg) {
       let obj = eval('(' + accountMsg + ')')
       this.account = obj.account
-      this.password = obj.password
+      this.password = md5(obj.password).toLocaleUpperCase()
       console.log(obj)
     } else {
       console.log('没有本地存储')

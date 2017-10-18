@@ -32,7 +32,10 @@ const store = new Vuex.Store({
     canDel: false,
     checkboxVal: [],
     errorMsg: '',
-    ifFB: false
+    ifFB: false,
+    snDetailFB: [],
+    moduleName: '',
+    salesName: ''
   },
   mutations: {
     // 皮肤选择
@@ -64,7 +67,15 @@ const store = new Vuex.Store({
     // 扫描错误提示信息
     errorMsg: (state, x) => state.errorMsg = x,
     // 显示SN详情时是否为分包信息
-    ifFB: (state, x) => state.ifFB = x
+    ifFB: (state, x) => state.ifFB = x,
+    // sn详情的分包信息
+    snDetailFB: (state, arr) => state.snDetailFB = arr,
+
+    /* 销售备货和销售出库 */
+    // 模块名称
+    moduleName: (state, x) => state.moduleName = x,
+    // 销售模块分类
+    salesName: (state, x) => state.salesName = x
   },
   actions: {
     incrementAsync({

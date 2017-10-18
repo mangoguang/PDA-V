@@ -56,7 +56,6 @@ import PutIn from '../../components/purchase/put-in'
 import SNDetail from '../../components/purchase/sn-detail'
 import Btn from '../../components/btn'
 import { path, V } from '../../js/variable.js'
-import $ from 'n-zepto'
 // import {pathLocal, V} from '../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -67,7 +66,7 @@ export default {
   data () {
     return {
       height: document.documentElement.clientHeight,
-      BUS_NO: '4500000277',
+      BUS_NO: '4500000266',
       focusStatus: true,
       opNum: this.$route.params.num,
       // 按钮对应的数据
@@ -206,8 +205,10 @@ export default {
         let arr = data.MT_Purchase_GetSN_Resp.Header
         // 讲sn码列表数组保存到store
         _this.$store.commit('snArr', arr)
+        console.log(arr.length)
         // 计算产品数量
         _this.status1 = arr.length
+        console.log(_this.status1)
         _this.turnArr(arr)
         _this.addStatus = false
         console.log(arr)
@@ -225,10 +226,10 @@ export default {
         for (let i in arr) {
           // 校验分包
           if (arr[i].item === null || arr[i].item === undefined) {
-            if (num == arr[i].ZTIAOM) {
+            if (num === arr[i].ZTIAOM) {
               this.verifyAjax(arr, arr[i].ZTIAOM, i).then(function(data) {
                 // 校验成功
-                if (data.ZXXLX == 'S') {
+                if (data.ZXXLX === 'S') {
                   arr[i].status = true
                   _this.$store.commit('snArr', arr)
                   _this.turnArr(arr)
@@ -246,10 +247,10 @@ export default {
             }
           } else {
             for (let j in arr[i].item) {
-              if (num == arr[i].item[j].ZTIAOMA_FB) {
+              if (num === arr[i].item[j].ZTIAOMA_FB) {
                 this.verifyAjax(arr, arr[i].item[j].ZTIAOMA_FB, i).then(function(data) {
                   // 校验成功
-                  if (data.ZXXLX == 'S') {
+                  if (data.ZXXLX === 'S') {
                     arr[i].item[j].status = true
                     _this.$store.commit('snArr', arr)
                     _this.turnArr(arr)
@@ -299,6 +300,7 @@ export default {
     },
     // 转化成组件table-tr-sn.vue的通用数组数据
     turnArr(arr) {
+      this.loadingShow(true)
       // 临时数组
       let trArr = []
       let checkboxVal = []
@@ -357,6 +359,7 @@ export default {
         this.status4 = num
       }
       this.$store.commit('checkboxVal', checkboxVal)
+      this.loadingShow(false)
     },
     // ifScan参数为true则筛选已扫，为false则筛选未扫
     filtrateArr(ifScan) {
@@ -439,40 +442,13 @@ export default {
     setSureIn() {
       let _this = this
       let url = path.sap + 'purchase/confirm'
-      let params = "{ 'Item': {BUS_NO: this.BUS_NO, ZQRKZ: 1, ZDDLX: 1, ZGH: '11233'} }"
-      // '{"Item": {"BUS_NO": "4500000240","ZDDLX": "1","ZQRKZ": "1","ZGH": "1"}}'
+      let params = "{ 'Item': {BUS_NO: " + this.BUS_NO + ", ZQRKZ: 1, ZDDLX: 1, ZGH: '11233'} }"
       this.putInShow = true
-      // $.post(url, params).then(function(data) {
-      //   _this.putInShow = false
-      // })
-      // $.post(url, params, function(response) {
-      //   _this.putInShow = false
-      //   console.log(response)
-      // })
-
-      $.ajax({
-        type: 'POST',
-        url: url,
-        data: params,
-        dataType: 'json',
-        timeout: 10000,
-        success: function(data) {
-          _this.putInShow = false
-          console.log(data)
-        },
-        error: function(xhr, type) {
-          alert('Ajax error!')
-        }
+      V.post(url, params).then(function(data) {
+        _this.putInShow = false
+        console.log(data)
+        // data = JSON.parse(data.responseText)
       })
-      // V.post(url, params).then(function(data) {
-      //   _this.putInShow = false
-      //   data = JSON.parse(data.responseText)
-      //   console.log('success')
-      //   console.log(data)
-      // }).catch((res) => {
-      //   _this.putInShow = false
-      //   alert('请求超时！')
-      // })
     }
   },
   directives: {
@@ -538,10 +514,11 @@ export default {
       margin: $f10 $f10 0 0 ;
       text-align: center;
       color: #fff;
-      font-size: $f14;
+      font-size: $f10;
       line-height: $f30;
       border-radius: $f4;
       background: #b8b8b8;
+      overflow-y: hidden;
     }
   }
   .snBox{

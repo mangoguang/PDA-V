@@ -91,6 +91,7 @@ Vue.use(Vuex)
             data = JSON.parse(data.responseText)
             let arr = data.MT_Purchase_GetInformation_Resp.Header
             _this.$store.commit('snDetail', arr)
+            _this.$store.commit('snDetailFB', arr.Item)
             _this.detailBoxShow(true)
           }).catch((res) => {
             alert('请求超时！')

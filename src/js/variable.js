@@ -27,8 +27,13 @@ function VueAjax() {
 
 		let ajax = new Promise(function(resolve, reject) {
 			let sendStr = ''
-			for (let i in params) {
-				sendStr = sendStr.concat(i, '=', params[i], '&')
+			let gettype = Object.prototype.toString
+			if (gettype.call(params) === '[object String]') {
+				sendStr = params
+			} else {
+				for (let i in params) {
+					sendStr = sendStr.concat(i, '=', params[i], '&')
+				}
 			}
 
 			xmlhttp.open('POST', url, true)

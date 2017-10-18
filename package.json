@@ -17,6 +17,7 @@
     "babel-polyfill": "^6.26.0",
     "brace-expansion": "^1.1.8",
     "has-ansi": "^3.0.0",
+    "js-md5": "^0.6.1",
     "jsonp": "^0.2.1",
     "normalize.css": "^7.0.0",
     "vue-router": "^2.2.0"

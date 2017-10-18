@@ -2,12 +2,12 @@
 <template>
   <div class="module" v-bind:style="{height: height+'px'}">
     <HeadComponent>
-      <h1>仓库</h1>
+      <h1>{{warehouse}}</h1>
     </HeadComponent>
     <ul class="clearfix">
       <li 
       v-for="(module,index) in modules" 
-      @click="toModule(module.coding,module.jurisdiction)" 
+      @click="toModule(module.coding, module.jurisdiction, module.name)" 
       v-bind:style="{
         background: 'url(./static/images/modules/module'+(index+1)+'.png) no-repeat',
         backgroundSize: '100% 100%'}"
@@ -38,7 +38,8 @@ export default {
       height: document.documentElement.clientHeight,
       account: null,
       password: null,
-      modules: null
+      modules: null,
+      warehouse: this.$route.query.warehouse
     }
   },
   computed: {
@@ -59,11 +60,11 @@ export default {
     },
     jurisdiction: function() {
       let _this = this
-      // let url = path.oa + '/PDAPermission.jsp'
-      let url = path.local + '/jurisdiction.php'
+      let url = path.oa + '/PDAPermission.jsp'
+      // let url = path.local + '/jurisdiction.php'
       let params = {
-        account: 11605002,
-        password: 'ADF00707A1C0154A9AD8EDB57C8646F4',
+        account: this.account,
+        password: this.password,
         factory: '工厂一',
         warehouse: '仓库二'
       }
@@ -83,14 +84,21 @@ export default {
       })
     },
     // 跳转对应模块
-    toModule: function(module, status) {
+    toModule: function(module, status, moduleName) {
       if (status) {
-        this.$router.push({ path: '/' + module })
+        this.$router.push({ path: '/modules/' + module + '?warehouse=' + this.warehouse + '&moduleName=' + moduleName })
       }
+    },
+    getAccountMsg: function() {
+      let accountMsg = localStorage.getItem('accountMsg')
+      let obj = eval('(' + accountMsg + ')')
+      return obj
     }
   },
   created: function() {
-
+    let obj = this.getAccountMsg()
+    this.account = obj.account
+    this.password = obj.password
   },
   mounted() {
     this.jurisdiction()
