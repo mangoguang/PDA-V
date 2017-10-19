@@ -86,7 +86,7 @@ export default {
     // 跳转对应模块
     toModule: function(module, status, moduleName) {
       if (status) {
-        this.$router.push({ path: '/modules/' + module + '?warehouse=' + this.warehouse + '&moduleName=' + moduleName })
+        this.$router.push({ path: '/modules/' + module + '?warehouse=' + this.warehouse + '&moduleName=' + moduleName + '&factory=' + this.$route.query.factory })
       }
     },
     getAccountMsg: function() {

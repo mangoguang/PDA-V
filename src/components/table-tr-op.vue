@@ -28,7 +28,7 @@ Vue.use(Vuex)
     },
     methods: {
       toOrderDetail(num) {
-        this.$router.push({ path: '/snList/' + num })
+        this.$router.push({ path: '/snList/' + num + '?name=' + this.$route.params.module + '&moduleName=' + this.$route.query.moduleName + '&warehouse=' + this.$route.query.warehouse + '&factory=' + this.$route.query.factory })
       }
     }
   }

@@ -12,7 +12,7 @@
     </div>
     <div class="headBox">
       <HeadComponent>
-        <h1>采购入库操作</h1>
+        <h1>{{moduleName}}</h1>
         <button v-show="canDel" @click="checkBoxShowFn(showCheckbox)" class="delBtn"></button>
       </HeadComponent>
       <ul class="snBox clearfix">
@@ -84,7 +84,8 @@ export default {
       addStatus: true,
       // ifVerify为true，即在应扫按钮亮是才可扫码校验
       ifVerify: false,
-      canDel: false
+      canDel: false,
+      moduleName: this.$route.query.moduleName
     }
   },
   watch: {
@@ -189,33 +190,114 @@ export default {
     setSN(arr) {
       this.$store.commit('setSN', arr)
     },
-    getSNList() {
+    snListUrl() {
+      let temp = ''
+      let params = {}
+      if (this.$route.query.name === 'stock') {
+        temp = 'salestockup'
+        params = {
+          VBELN: '80000256',
+          WERKS: '1010',
+          LGORT: '1001'
+        }
+      } else {
+        temp = 'purchase'
+        params = {
+          BUS_NO: this.BUS_NO,
+          ZDDLX: 1,
+          WERKS: '1010',
+          LGORT: '1001'
+        }
+      }
+      let url = path.sap + temp + '/getsn'
+      this.getSNList(url, params)
+    },
+    getSNList(url, params) {
       let _this = this
       _this.loadingShow(true)
-      let url = path.sap + 'purchase/getsn'
-      let params = {
-        BUS_NO: this.BUS_NO,
-        ZDDLX: 1,
-        WERKS: '1010',
-        LGORT: '1001'
-      }
       V.get(url, params).then(function(data) {
         _this.loadingShow(false)
         data = JSON.parse(data.responseText)
-        let arr = data.MT_Purchase_GetSN_Resp.Header
-        // 讲sn码列表数组保存到store
-        _this.$store.commit('snArr', arr)
-        console.log(arr.length)
-        // 计算产品数量
-        _this.status1 = arr.length
-        console.log(_this.status1)
-        _this.turnArr(arr)
+        _this.turnArrParams(data)
         _this.addStatus = false
-        console.log(arr)
       }).catch((res) => {
         alert('请求超时！')
         _this.loadingShow(false)
       })
+    },
+    turnArrParams(data) {
+      let arr = ''
+      if (this.$route.query.name === 'stock') {
+        arr = data.MT_Salestockup_GetSN_Resp.Header
+      } else {
+        arr = data.MT_Purchase_GetSN_Resp.Header
+      }
+      // 讲sn码列表数组保存到store
+      this.$store.commit('snArr', arr)
+      this.turnArr(arr)
+    },
+    // 转化成组件table-tr-sn.vue的通用数组数据
+    turnArr(arr) {
+      // 计算产品数量
+      this.status1 = arr.length
+      // 临时数组
+      let trArr = []
+      let checkboxVal = []
+      // 用于计算应扫数量
+      let num = 0
+      if (arr.length >= 0) {
+        for (let i in arr) {
+          num++
+          // 用于获取数据时的第一次添加数组属性操作
+          if (this.addStatus) {
+            arr[i].status = false
+          }
+          let temp = {}
+          // 是否分包
+          if (arr[i].item === null || arr[i].item === undefined) {
+            temp.status = false
+            checkboxVal.push(false)
+            temp.arr = []
+            temp.arr[0] = arr[i].MATKL // 物料描述
+            temp.arr[1] = arr[i].ZTIAOM // SN条码
+            temp.arr[2] = arr[i].LGOBE // 库存地点描述
+            temp.arr[3] = arr[i].BUS_NO // 采购订单号/内向交货单
+            temp.arr[4] = parseInt(arr[i].MENGE) // 计划交货数
+            temp.arr[5] = arr[i].status // 是否校验状态码
+            temp.arr[6] = arr[i].ITEM_NO // 行号
+          } else {
+            temp.status = true
+            checkboxVal.push(false)
+            temp.arr = []
+            temp.arr[0] = arr[i].MATKL
+            let arr1 = []
+            let arr2 = []
+            for (let j in arr[i].item) {
+              num++
+              if (this.addStatus) {
+                arr2.push(false)
+              } else {
+                arr2.push(arr[i].item[j].status)
+              }
+              arr1.push(arr[i].item[j].ZTIAOMA_FB)
+            }
+            temp.arr[1] = arr1
+            temp.arr[2] = arr2
+            temp.arr[3] = arr[i].BUS_NO
+            temp.arr[4] = parseInt(arr[i].MENGE)
+            temp.arr[5] = arr[i].status
+            temp.arr[6] = arr[i].ITEM_NO
+          }
+          trArr.push(temp)
+        }
+      }
+      // 标示SN码是否扫描的状态数组
+      this.setSN(trArr)
+      this.status2 = num
+      if (this.addStatus) {
+        this.status4 = num
+      }
+      this.$store.commit('checkboxVal', checkboxVal)
     },
     verify() {
       let num = this.inputVal
@@ -297,69 +379,6 @@ export default {
         })
       })
       return data
-    },
-    // 转化成组件table-tr-sn.vue的通用数组数据
-    turnArr(arr) {
-      this.loadingShow(true)
-      // 临时数组
-      let trArr = []
-      let checkboxVal = []
-      // 用于计算应扫数量
-      let num = 0
-      if (arr.length >= 0) {
-        for (let i in arr) {
-          num++
-          // 用于获取数据时的第一次添加数组属性操作
-          if (this.addStatus) {
-            arr[i].status = false
-          }
-          let temp = {}
-          // 是否分包
-          if (arr[i].item === null || arr[i].item === undefined) {
-            temp.status = false
-            checkboxVal.push(false)
-            temp.arr = []
-            temp.arr[0] = arr[i].MATKL
-            temp.arr[1] = arr[i].ZTIAOM
-            temp.arr[2] = arr[i].LGOBE
-            temp.arr[3] = arr[i].BUS_NO
-            temp.arr[4] = parseInt(arr[i].MENGE)
-            temp.arr[5] = arr[i].status
-            temp.arr[6] = arr[i].ITEM_NO
-          } else {
-            temp.status = true
-            checkboxVal.push(false)
-            temp.arr = []
-            temp.arr[0] = arr[i].MATKL
-            let arr1 = []
-            let arr2 = []
-            for (let j in arr[i].item) {
-              num++
-              if (this.addStatus) {
-                arr2.push(false)
-              } else {
-                arr2.push(arr[i].item[j].status)
-              }
-              arr1.push(arr[i].item[j].ZTIAOMA_FB)
-            }
-            temp.arr[1] = arr1
-            temp.arr[2] = arr2
-            temp.arr[3] = arr[i].BUS_NO
-            temp.arr[4] = parseInt(arr[i].MENGE)
-            temp.arr[5] = arr[i].status
-            temp.arr[6] = arr[i].ITEM_NO
-          }
-          trArr.push(temp)
-        }
-      }
-      // 标示SN码是否扫描的状态数组
-      this.setSN(trArr)
-      this.status2 = num
-      if (this.addStatus) {
-        this.status4 = num
-      }
-      this.$store.commit('checkboxVal', checkboxVal)
-      this.loadingShow(false)
     },
     // ifScan参数为true则筛选已扫，为false则筛选未扫
     filtrateArr(ifScan) {
@@ -461,7 +480,7 @@ export default {
     }
   },
   created: function () {
-    this.getSNList()
+    this.snListUrl()
     this.setTableH()
     this.$store.commit('loadingShow', false)
     this.$store.commit('tableH', ['序号', '物料描述', '数量'])
