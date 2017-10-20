@@ -18,7 +18,7 @@
             {{index+1}}
           </li>
           <li><input :value="sn.arr[0]" disabled="disabled"></li>
-          <li @click="showSNDetail(sn.arr[1], sn.arr[3], sn.arr[6], false)"><input :value="sn.arr[1]" disabled="disabled"></li>
+          <li @click="snDetailUrl(sn.arr[1], sn.arr[3], sn.arr[6], false)"><input :value="sn.arr[1]" disabled="disabled"></li>
           <li>{{sn.arr[4]}}</li>
         </ul>
         <!-- 分包部分 -->
@@ -34,7 +34,7 @@
           <li v-if="index1 == 0"><input :value="sn.arr[0]" disabled="disabled"></li>
           <li v-else></li>
 
-          <li @click="showSNDetail(sn.arr[1][index1], sn.arr[3], sn.arr[6], true)"><input :value="sn.arr[1][i-1]" disabled="disabled"></li>
+          <li @click="snDetailUrl(sn.arr[1][index1], sn.arr[3], sn.arr[6], true)"><input :value="sn.arr[1][i-1]" disabled="disabled"></li>
           <li>{{sn.arr[4]}}</li>
         </ul>
       </div>
@@ -50,11 +50,13 @@ Vue.use(Vuex)
     name: 'table-tr',
     data() {
       return {
-        canDel: false
+        canDel: false,
+        urlParams: this.$route.query.name
       }
     },
     computed: {
       sns() {
+        console.log(this.$store.state.SN)
         return this.$store.state.SN
       },
       checkBoxShow() {
@@ -68,40 +70,82 @@ Vue.use(Vuex)
       },
       snArr() {
         return this.$store.state.snArr
+      },
+      salesName() {
+        return this.$store.state.salesName
       }
     },
     methods: {
       loadingShow: function(x) {
         this.$store.commit('loadingShow', x)
       },
-      showSNDetail(SN, BUS_NO, ITEM_NO, status) {
-        this.$store.commit('ifFB', status)
-        if (!this.checkBoxShow) {
-          let _this = this
-          _this.loadingShow(true)
-          let url = path.sap + 'purchase/getinformation'
-          let params = {
+      // (SN, BUS_NO, ITEM_NO, status)
+      snDetailUrl(SN, BUS_NO, ITEM_NO, status) {
+        let _this = this
+        let params = {}
+        // 销售备货模块
+        if (this.urlParams === 'stock') {
+          this.urlParams = this.salesName
+          params = {
+            VBELN: '80000256',
+            POSNR: 10,
+            ZTIAOM: SN
+          }
+        // 采购入库模块
+        } else if (this.urlParams === 'purchase') {
+          params = {
             BUS_NO: BUS_NO,
             ITEM_NO: ITEM_NO,
             ZDDLX: 1,
             ZTIAOM: SN
           }
-          V.get(url, params).then(function(data) {
-            _this.loadingShow(false)
-            data = JSON.parse(data.responseText)
-            let arr = data.MT_Purchase_GetInformation_Resp.Header
-            _this.$store.commit('snDetail', arr)
-            _this.$store.commit('snDetailFB', arr.Item)
-            _this.detailBoxShow(true)
-          }).catch((res) => {
-            alert('请求超时！')
-            _this.loadingShow(false)
-          })
         }
+        let url = path.sap + this.urlParams + '/getinformation'
+        this.$store.commit('ifFB', status)
+        this.showSNDetail(url, params).then(function(data) {
+          console.log('99999')
+          console.log(data)
+          let arr = []
+          // 采购入库模块
+          if (_this.urlParams === 'purchase') {
+            arr = data.MT_Purchase_GetInformation_Resp.Header
+          } else if (_this.urlParams === 'stock') {
+            // 销售备货模块
+            if (_this.salesName === 'salestockup') {
+              arr = data.MT_Salestockup_GetInformation_Resp.Header
+            } else {
+              // 销售出库模块
+              arr = data.MT_Salesoutput_GetInformation_Resp.Header
+            }
+          }
+          _this.$store.commit('snDetail', arr)
+          _this.$store.commit('snDetailFB', arr.Item)
+          _this.detailBoxShow(true)
+        })
+      },
+      showSNDetail(url, params) {
+        let _this = this
+        let data = new Promise(function(resolve, reject) {
+          if (!_this.checkBoxShow) {
+            _this.loadingShow(true)
+            V.get(url, params).then(function(data) {
+              _this.loadingShow(false)
+              data = JSON.parse(data.responseText)
+              resolve(data)
+            }).catch((res) => {
+              alert('请求超时！')
+              _this.loadingShow(false)
+            })
+          }
+        })
+        return data
       },
       detailBoxShow(x) {
         this.$store.commit('detailBoxShow', x)
       }
+    },
+    created: function() {
+      this.$store.commit('isTr3', true)
     }
   }
 </script>

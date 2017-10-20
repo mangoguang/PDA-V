@@ -18,17 +18,37 @@ Vue.use(Vuex)
     name: 'table-tr',
     data() {
       return {
-
+        // moduleName: this.$route.query.moduleName
       }
     },
     computed: {
       orders() {
         return this.$store.state.orders
+      },
+      salesName() {
+        return this.$store.state.salesName
+      },
+      moduleName() {
+        return this.$store.state.moduleName
       }
     },
     methods: {
       toOrderDetail(num) {
-        this.$router.push({ path: '/snList/' + num + '?name=' + this.$route.params.module + '&moduleName=' + this.$route.query.moduleName + '&warehouse=' + this.$route.query.warehouse + '&factory=' + this.$route.query.factory })
+        this.$router.push({ path: '/snList/' + num + '?name=' + this.$route.params.module + '&moduleName=' + this.moduleName + '&warehouse=' + this.$route.query.warehouse + '&factory=' + this.$route.query.factory })
+      }
+    },
+    created: function() {
+      console.log(this.moduleName)
+      if (this.$route.params.module === 'stock') {
+        console.log('success')
+        // 销售备货
+        if (this.salesName === 'salestockup') {
+          this.$store.commit('moduleName', '销售备货')
+        } else {
+          this.$store.commit('moduleName', '销售出库')
+        }
+      } else if (this.$route.params.module === 'purchase') {
+        this.$store.commit('moduleName', '采购入库')
       }
     }
   }

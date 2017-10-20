@@ -85,7 +85,9 @@ export default {
       // ifVerify为true，即在应扫按钮亮是才可扫码校验
       ifVerify: false,
       canDel: false,
-      moduleName: this.$route.query.moduleName
+      moduleName: this.$route.query.moduleName,
+      urlParams: this.$route.query.name,
+      orderType: 1
     }
   },
   watch: {
@@ -188,7 +190,7 @@ export default {
       this.showCheckbox = false
     },
     setSN(arr) {
-      this.$store.commit('setSN', arr)
+      this.$store.commit('SN', arr)
     },
     snListUrl() {
       let temp = ''
@@ -196,9 +198,9 @@ export default {
       if (this.$route.query.name === 'stock') {
         temp = 'salestockup'
         params = {
-          VBELN: '80000256',
+          VBELN: '80000259',
           WERKS: '1010',
-          LGORT: '1001'
+          LGORT: '3001'
         }
       } else {
         temp = 'purchase'
@@ -226,12 +228,16 @@ export default {
       })
     },
     turnArrParams(data) {
+      console.log('success')
+      console.log(data)
       let arr = ''
       if (this.$route.query.name === 'stock') {
         arr = data.MT_Salestockup_GetSN_Resp.Header
       } else {
         arr = data.MT_Purchase_GetSN_Resp.Header
       }
+      console.log('success')
+      console.log(arr)
       // 讲sn码列表数组保存到store
       this.$store.commit('snArr', arr)
       this.turnArr(arr)
@@ -239,7 +245,11 @@ export default {
     // 转化成组件table-tr-sn.vue的通用数组数据
     turnArr(arr) {
       // 计算产品数量
-      this.status1 = arr.length
+      if (arr === undefined || arr.length === undefined) {
+        this.status1 = 0
+      } else {
+        this.status1 = arr.length
+      }
       // 临时数组
       let trArr = []
       let checkboxVal = []
@@ -262,9 +272,15 @@ export default {
             temp.arr[1] = arr[i].ZTIAOM // SN条码
             temp.arr[2] = arr[i].LGOBE // 库存地点描述
             temp.arr[3] = arr[i].BUS_NO // 采购订单号/内向交货单
-            temp.arr[4] = parseInt(arr[i].MENGE) // 计划交货数
+            temp.arr[4] = parseInt(arr[i].LFIMG) // 计划交货数
             temp.arr[5] = arr[i].status // 是否校验状态码
-            temp.arr[6] = arr[i].ITEM_NO // 行号
+            // 采购入库模块
+            if (this.urlParams === 'purchase') {
+              temp.arr[6] = arr[i].ITEM_NO // 行号
+            // 销售备货模块
+            } else if (this.urlParams === 'stock') {
+
+            }
           } else {
             temp.status = true
             checkboxVal.push(false)
@@ -284,7 +300,7 @@ export default {
             temp.arr[1] = arr1
             temp.arr[2] = arr2
             temp.arr[3] = arr[i].BUS_NO
-            temp.arr[4] = parseInt(arr[i].MENGE)
+            temp.arr[4] = parseInt(arr[i].LFIMG)
             temp.arr[5] = arr[i].status
             temp.arr[6] = arr[i].ITEM_NO
           }
@@ -480,6 +496,11 @@ export default {
     }
   },
   created: function () {
+    if (this.urlParams === 'purchase') {
+      this.orderType = 1
+    } else if (this.urlParams === 'stock') {
+      this.orderType = 2
+    }
     this.snListUrl()
     this.setTableH()
     this.$store.commit('loadingShow', false)

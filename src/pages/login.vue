@@ -189,6 +189,7 @@ li:last-child{
 @each $skin, $col, $subCol, $strongCol, $btnBgCol, $btnBgSubCol, $loginBg in $skin-data {
   .#{$skin} {
     .login{
+      // 解决办法是采用js实现
       background: $loginBg no-repeat;
       background-size: 100% 100%;
       li{

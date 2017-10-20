@@ -45,7 +45,7 @@ const store = new Vuex.Store({
     // 插入订单号数据
     setOrders: (state, arr) => state.orders = arr,
     // 插入SN号数据
-    setSN: (state, arr) => state.SN = arr,
+    SN: (state, arr) => state.SN = arr,
     snCopy: (state, arr) => state.snCopy = arr,
     // SN码详情框显示/隐藏  组件table-tr.vue
     detailBoxShow: (state, x) => state.detailBoxShow = x,

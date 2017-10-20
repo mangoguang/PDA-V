@@ -77,6 +77,16 @@ export default {
     loadingShow: function(x) {
       this.$store.commit('loadingShow', x)
     },
+    // url
+    orderListParams() {
+      let url = ''
+      if (this.moduleName === 'stock') {
+        url = path.sap + this.salesName + '/getcity?WERKS=1010&LGORT=1001'
+      } else if (this.moduleName === 'purchase') {
+        url = path.sap + this.moduleName + '/getcity?WERKS=1010&LGORT=1001'
+      }
+      return url
+    },
     // 从后台获取订单列表
     getOrderList: function(url) {
       let _this = this
@@ -111,16 +121,6 @@ export default {
       }
       this.setOrders(arr)
     },
-    // url
-    orderListParams() {
-      let url = ''
-      if (this.moduleName === 'stock') {
-        url = path.sap + this.salesName + '/getcity?WERKS=1010&LGORT=1001'
-      } else {
-        url = path.sap + this.moduleName + '/getcity?WERKS=1010&LGORT=1001'
-      }
-      return url
-    },
     // 转化数组
     setTrArr(data) {
       // 转化成table-tr组件使用的数组
@@ -140,18 +140,20 @@ export default {
         if (this.salesName === 'salestockup') {
           this.salsesBtn = true
           this.titName = '销售备货'
+          this.$store.commit('moduleName', '销售备货')
           data = data.MT_Salestockup_GetInCity_Resp.Document
         // 销售出库
         } else {
           this.salsesBtn = false
           this.titName = '销售出库'
+          this.$store.commit('moduleName', '销售出库')
           data = data.MT_Salesoutput_GetInCity_Resp.Document
         }
         for (let i in data) {
           let temp = []
-          temp[0] = data[i].VBELN
+          temp[0] = data[i].BUS_NO
           temp[1] = this.warehouse
-          temp[2] = data[i].ORT01
+          temp[2] = data[i].LGOBE
           trArr.push(temp)
         }
       }
