@@ -56,6 +56,7 @@ Vue.use(Vuex)
     },
     computed: {
       sns() {
+        console.log('00000')
         console.log(this.$store.state.SN)
         return this.$store.state.SN
       },

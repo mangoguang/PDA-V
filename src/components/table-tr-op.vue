@@ -1,6 +1,6 @@
 <template>
   <ul class="clearfix table-tr-op">
-    <li v-for="(order,index) in orders" @click="toOrderDetail('4500000277')">
+    <li v-for="(order,index) in orders" @click="toOrderDetail('4500000275')">
       <ul>
         <li>{{index+1}}</li>
         <li>{{order[0]}}</li>
