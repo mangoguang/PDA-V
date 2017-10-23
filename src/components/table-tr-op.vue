@@ -1,6 +1,6 @@
 <template>
   <ul class="clearfix table-tr-op">
-    <li v-for="(order,index) in orders" @click="toOrderDetail('4500000275')">
+    <li v-for="(order,index) in orders" @click="toOrderDetail('4500000266')">
       <ul>
         <li>{{index+1}}</li>
         <li>{{order[0]}}</li>
@@ -34,7 +34,12 @@ Vue.use(Vuex)
     },
     methods: {
       toOrderDetail(num) {
-        this.$router.push({ path: '/snList/' + num + '?name=' + this.$route.params.module + '&moduleName=' + this.moduleName + '&warehouse=' + this.$route.query.warehouse + '&factory=' + this.$route.query.factory })
+        // if (this.salesName === 'salestockup') {
+        //   nextPageName = 'addSNList'
+        // } else {
+        let nextPageName = 'snList'
+        // }
+        this.$router.push({ path: '/' + nextPageName + '/' + num + '?name=' + this.$route.params.module + '&moduleName=' + this.moduleName + '&warehouse=' + this.$route.query.warehouse + '&factory=' + this.$route.query.factory })
       }
     },
     created: function() {

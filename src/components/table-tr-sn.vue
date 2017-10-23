@@ -88,7 +88,7 @@ Vue.use(Vuex)
         if (this.urlParams === 'stock') {
           this.urlParams = this.salesName
           params = {
-            VBELN: '80000256',
+            VBELN: '80000259',
             POSNR: 10,
             ZTIAOM: SN
           }
