@@ -66,7 +66,7 @@ export default {
   data () {
     return {
       height: document.documentElement.clientHeight,
-      BUS_NO: '4500000266',
+      BUS_NO: '4500000277',
       focusStatus: true,
       opNum: this.$route.params.num,
       // 按钮对应的数据
@@ -212,9 +212,9 @@ export default {
       let temp = ''
       let params = {}
       if (this.$route.query.name === 'stock') {
-        temp = 'salestockup'
+        temp = this.urlParams
         params = {
-          VBELN: '80000259',
+          VBELN: '80000265',
           WERKS: '1010',
           LGORT: '3001'
         }
@@ -265,6 +265,8 @@ export default {
     },
     // 转化成组件table-tr-sn.vue的通用数组数据
     turnArr(arr) {
+      console.log('xxx')
+      console.log(arr)
       // 计算产品数量
       if (arr === undefined || arr.length === undefined) {
         this.status1 = 0
@@ -285,7 +287,8 @@ export default {
           }
           let temp = {}
           // 是否分包
-          if (arr[i].item === null || arr[i].item === undefined) {
+          // if (arr[i].item === null || arr[i].item === undefined) {
+          if (!arr[0].item[0]) {
             temp.status = false
             checkboxVal.push(false)
             temp.arr = []
@@ -333,7 +336,7 @@ export default {
     // 校验sn码
     verify() {
       let num = this.inputVal
-      if (num.length === 23 || num.length >= 27) {
+      if (num.length === 23 || num.length === 22 || num.length >= 27) {
         if (this.orderType === 1) {
           this.verify1()
         } else {
@@ -400,38 +403,48 @@ export default {
       let _this = this
       this.verifyAjax(this.verifyUrl2()).then(function(data) {
         data = data.MT_Salestockup_Verify_Resp.Item
-        let snArr = cloneObj(_this.snArr)
-        let temp = cloneObj(_this.fbData)
-        let ifPush = true
-        // 非分包/合包订单
-        if (temp.item === undefined || temp.item === null) {
-          temp.ZTIAOM = ZTIAOM
-          temp.status = true
-        } else {
-          // 分包/合包订单
-          let number = _this.inputVal.split('-')[2].split('/')[0]
-          let ZTIAOM = _this.inputVal.slice(0, 23)
-          // 该SN码是否存在
-          for (let i in snArr) {
-            if (snArr[i].ZTIAOM === ZTIAOM) {
-              snArr[i].item[parseInt(number) - 1].ZTIAOMA_FB = _this.inputVal
-              snArr[i].item[parseInt(number) - 1].status = true
-              ifPush = false
-            } else {
-              ifPush = true
+        // if (data.ZXXLX === 'S') {
+          console.log(888)
+          console.log(_this.fbData)
+          let snArr = cloneObj(_this.snArr)
+          let temp = cloneObj(_this.fbData)
+          let ifPush = true
+          // 分包
+          if (temp.item[0] !== undefined) {
+            let number = _this.inputVal.split('-')[2].split('/')[0]
+            let ZTIAOM = _this.inputVal.slice(0, 23)
+            // 该SN码是否存在
+            for (let i in snArr) {
+              if (snArr[i].ZTIAOM === ZTIAOM) {
+                snArr[i].item[parseInt(number) - 1].ZTIAOMA_FB = _this.inputVal
+                snArr[i].item[parseInt(number) - 1].status = true
+                ifPush = false
+              } else {
+                ifPush = true
+              }
             }
-          }
-          if (ifPush) {
+            if (ifPush) {
+              temp.ZTIAOM = ZTIAOM
+              let obj = temp.item[parseInt(number - 1)]
+              obj.ZTIAOMA_FB = _this.inputVal
+              obj.status = true
+              snArr.push(temp)
+            }
+          } else {
+            let ZTIAOM = _this.inputVal
+            // 合包/标准
             temp.ZTIAOM = ZTIAOM
-            let obj = temp.item[parseInt(number - 1)]
-            obj.ZTIAOMA_FB = _this.inputVal
-            obj.status = true
+            temp.status = true
             snArr.push(temp)
           }
-        }
-        _this.setSNArr(snArr)
-        _this.turnArr(snArr)
-        })
+          _this.setSNArr(snArr)
+          _this.turnArr(snArr)
+        // } else {
+        //   _this.errorShow = true
+        //   _this.$store.commit('errorMsg', data.ZTXXX)
+        //   _this.inputVal = ''
+        // }
+      })
     },
     // verifyUrl1为采购入库校验参数
     verifyUrl1 (arr, ztiaom, i) {
@@ -561,8 +574,15 @@ export default {
     },
     setSureIn() {
       let _this = this
-      let url = path.sap + 'purchase/confirm'
-      let params = "{ 'Item': {BUS_NO: " + this.BUS_NO + ", ZQRKZ: 1, ZDDLX: 1, ZGH: '11233'} }"
+      let params = ''
+      if (this.$route.query.name === 'stock') {
+        if (this.salesName === 'salestockup') {
+          params = "{ 'Item': {VBELN: 80000259, ZGH: '11605002', ZQRKZ: 1 }}"
+        }
+      } else if (this.$route.query.name === 'purchase') {
+        params = "{ 'Item': {BUS_NO: " + this.BUS_NO + ", ZQRKZ: 1, ZDDLX: 1, ZGH: '11233'} }"
+      }
+      let url = path.sap + this.urlParams + '/confirm'
       this.putInShow = true
       V.post(url, params).then(function(data) {
         _this.putInShow = false
@@ -583,6 +603,7 @@ export default {
     if (this.urlParams === 'purchase') {
       this.orderType = 1
     } else if (this.urlParams === 'stock') {
+      this.urlParams = this.salesName
       this.orderType = 2
     }
     this.snListUrl()

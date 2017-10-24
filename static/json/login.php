@@ -4,7 +4,7 @@ header('Access-Control-Allow-Origin: *');
 $name = $_POST["name"];
 $password = $_POST["password"];
 
-$data = array("name" => $name, "password" => $password, 'status' => true);
+$data = array("name" => $name, "password" => $password, 'status' => 'true');
 print_r(json_encode($data));
 
 // print_r($_POST['name']);

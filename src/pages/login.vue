@@ -1,6 +1,6 @@
 <!-- <keep-alive> -->
 <template>
-  <div class="login" v-bind:style="{height: height+'px'}">
+  <div class="login" v-bind:style="{height: height+'px', background: 'url(./static/images/skinImg/' + skinCol + 'bg.jpg)','background-size': '100% 100%'}">
     <form>
       <h1>欢迎使用扫描枪</h1>
       <ul>
@@ -38,7 +38,8 @@ export default {
       account: null,
       password: null,
       // 按钮是否可点击
-      canClick: true
+      canClick: true,
+      skinCol: ''
     }
   },
   computed: {
@@ -64,10 +65,10 @@ export default {
         V.post(url, params).then(function(data) {
           _this.canClick = true
           _this.loadingShow(false)
-          if (data.status) {
+          if (data.status === 'true') {
             // 保存账号密码到本地存储
             localStorage.setItem('accountMsg', "{account: '" + _this.account + "'," +
-              "password: '" + md5(_this.password).toLocaleUpperCase() + "'}")
+              "password: '" + _this.password + "'}")
             _this.$router.push({ path: '/select?name=' + data.name })
           } else {
             alert('账号或者密码错误！')
@@ -82,21 +83,23 @@ export default {
   },
   created: function () {
     // 获取本地存储的皮肤值
-    let skinCol = localStorage.getItem('skinCol')
-    console.log(skinCol)
-    console.log('success')
-    if (skinCol) {
+    this.skinCol = localStorage.getItem('skinCol')
+    if (this.skinCol) {
     // 检测是否存在本地存储皮肤值
-      this.$store.commit('changeSkin', skinCol)
+      this.$store.commit('changeSkin', this.skinCol)
+    } else {
+      this.skinCol = 'skinA'
+      this.$store.commit('changeSkin', 'skinA')
+      localStorage.setItem('skinCol', 'skinA')
     }
 
     // 获取本地存储账号信息
     let accountMsg = localStorage.getItem('accountMsg')
+    console.log(accountMsg)
     if (accountMsg) {
       let obj = eval('(' + accountMsg + ')')
       this.account = obj.account
-      this.password = md5(obj.password).toLocaleUpperCase()
-      console.log(obj)
+      this.password = obj.password
     } else {
       console.log('没有本地存储')
     }
@@ -113,8 +116,6 @@ export default {
 @import "./../assets/css/common.css";
 
 .login{
-  background: $s1loginBg no-repeat;
-  background-size: 100% 100%;
   form{
     position: absolute;
     top: 50%;
@@ -186,12 +187,9 @@ li:last-child{
   margin-top: $f20;
 }
 
-@each $skin, $col, $subCol, $strongCol, $btnBgCol, $btnBgSubCol, $loginBg in $skin-data {
+@each $skin, $col, $subCol, $strongCol, $btnBgCol, $btnBgSubCol in $skin-data {
   .#{$skin} {
     .login{
-      // 解决办法是采用js实现
-      background: $loginBg no-repeat;
-      background-size: 100% 100%;
       li{
         input{
           color: $btnBgCol;

@@ -6,7 +6,7 @@ $module2 = array("name" => "采购入库", "jurisdiction" => true, "coding" => "
 $module3 = array("name" => "退货入库", "jurisdiction" => true, "coding" => "salesReturn", "imgurl" => './salesReturn.png');
 $module4 = array("name" => "调拨入库", "jurisdiction" => true, "coding" => "allotIn", "imgurl" => './allotIn.png');
 $module5 = array("name" => "调拨出库", "jurisdiction" => true, "coding" => "allotOut", "imgurl" => './allotOut.png');
-$module6 = array("name" => "备货出库", "jurisdiction" => false, "coding" => "stock", "imgurl" => './stock.png');
+$module6 = array("name" => "备货出库", "jurisdiction" => true, "coding" => "stock", "imgurl" => './stock.png');
 $module7 = array("name" => "扫码查询", "jurisdiction" => true, "coding" => "scanSearch", "imgurl" => './scanSearch.png');
 $module8 = array("name" => "系统设置", "jurisdiction" => true, "coding" => "setting", "imgurl" => './setting.png');
 $module9 = array("name" => "仓库盘点", "jurisdiction" => false, "coding" => "check", "imgurl" => './check.png');

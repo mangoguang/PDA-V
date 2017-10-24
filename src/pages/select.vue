@@ -27,6 +27,7 @@ import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import {path, V} from '../js/variable'
 import Btn from '../components/btn'
+import md5 from 'js-md5'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -64,7 +65,7 @@ export default {
       // 获取本地存储账号信息
       let params = {
         account: obj.account,
-        password: obj.password,
+        password: md5(obj.password).toLocaleUpperCase(),
         factory: this.factorySel
       }
 
@@ -115,9 +116,9 @@ export default {
       console.log(obj)
       let params = {
         // name: this.factorySel,
-        // password: this.warehouseSel
+        // password: md5(this.warehouseSel).toLocaleUpperCase()
         account: obj.account,
-        password: obj.password
+        password: md5(obj.password).toLocaleUpperCase()
       }
 
       _this.loadingShow(true)

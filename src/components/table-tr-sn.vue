@@ -56,7 +56,7 @@ Vue.use(Vuex)
     },
     computed: {
       sns() {
-        console.log('00000')
+        console.log('sssssssssss')
         console.log(this.$store.state.SN)
         return this.$store.state.SN
       },
@@ -88,7 +88,7 @@ Vue.use(Vuex)
         if (this.urlParams === 'stock') {
           this.urlParams = this.salesName
           params = {
-            VBELN: '80000259',
+            VBELN: '80000265',
             POSNR: 10,
             ZTIAOM: SN
           }
@@ -104,23 +104,27 @@ Vue.use(Vuex)
         let url = path.sap + this.urlParams + '/getinformation'
         this.$store.commit('ifFB', status)
         this.showSNDetail(url, params).then(function(data) {
-          console.log('99999')
-          console.log(data)
           let arr = []
           // 采购入库模块
           if (_this.urlParams === 'purchase') {
             arr = data.MT_Purchase_GetInformation_Resp.Header
-          } else if (_this.urlParams === 'stock') {
+          } else if (_this.urlParams === 'salestockup') {
             // 销售备货模块
-            if (_this.salesName === 'salestockup') {
-              arr = data.MT_Salestockup_GetInformation_Resp.Header
-            } else {
-              // 销售出库模块
-              arr = data.MT_Salesoutput_GetInformation_Resp.Header
-            }
+            console.log('succ')
+            arr = data.MT_Salestockup_GetInformation_Resp.Header
+          } else if (_this.urlParams === 'salesoutput') {
+            // 销售出库模块
+            arr = data.MT_Salesoutput_GetInformation_Resp.Header
           }
+          console.log('successsssss')
+          console.log(data)
+          console.log(_this.urlParams)
           _this.$store.commit('snDetail', arr)
-          _this.$store.commit('snDetailFB', arr.Item)
+          if (_this.urlParams === 'purchase') {
+            _this.$store.commit('snDetailFB', arr.Item)
+          } else {
+            _this.$store.commit('snDetailFB', arr.item)
+          }
           _this.detailBoxShow(true)
         })
       },

@@ -27,6 +27,7 @@ import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import {path, V} from '../js/variable'
 import HeadComponent from '../components/header'
+import md5 from 'js-md5'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -64,7 +65,7 @@ export default {
       // let url = path.local + '/jurisdiction.php'
       let params = {
         account: this.account,
-        password: this.password,
+        password: md5(this.password).toLocaleUpperCase(),
         factory: '工厂一',
         warehouse: '仓库二'
       }
@@ -85,6 +86,7 @@ export default {
     },
     // 跳转对应模块
     toModule: function(module, status, moduleName) {
+      console.log('1212121')
       if (status) {
         this.$router.push({ path: '/modules/' + module + '?warehouse=' + this.warehouse + '&moduleName=' + moduleName + '&factory=' + this.$route.query.factory })
       }
