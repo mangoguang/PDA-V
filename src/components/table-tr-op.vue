@@ -1,10 +1,10 @@
 <template>
   <ul class="clearfix table-tr-op">
-    <li v-for="(order,index) in orders" @click="toOrderDetail('4500000266')">
+    <li v-for="(order,index) in orders" @click="toOrderDetail(order[0])">
       <ul>
         <li>{{index+1}}</li>
         <li>{{order[0]}}</li>
-        <li>{{order[1]}}</li>
+        <li><input :value="order[1]" disabled="disabled"></li>
         <li>{{order[2]}}</li>
       </ul>
     </li>
@@ -39,7 +39,7 @@ Vue.use(Vuex)
         // } else {
         let nextPageName = 'snList'
         // }
-        this.$router.push({ path: '/' + nextPageName + '/' + num + '?name=' + this.$route.params.module + '&moduleName=' + this.moduleName + '&warehouse=' + this.$route.query.warehouse + '&factory=' + this.$route.query.factory })
+        this.$router.push({ path: '/' + nextPageName + '/' + num + '?name=' + this.$route.params.module + '&moduleName=' + this.moduleName + '&warehouse=' + this.$route.query.warehouse + '&warehouseNum=' + this.$route.query.warehouseNum + '&factoryNum=' + this.$route.query.factoryNum })
       }
     },
     created: function() {
@@ -80,6 +80,7 @@ Vue.use(Vuex)
       position: relative;
       padding: 0 $f4;
       box-sizing: border-box;
+      overflow-y: hidden;
     }
     li:nth-child(2),li:nth-child(4){
       overflow-y: hidden;

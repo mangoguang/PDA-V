@@ -1,6 +1,7 @@
 <!-- <keep-alive> -->
 <template>
   <div class="snList">
+    <div class="h25"></div>
     <div @click="errorBoxHide" v-show="errorShow">
       <ScanError></ScanError>
     </div>
@@ -66,7 +67,8 @@ export default {
   data () {
     return {
       height: document.documentElement.clientHeight,
-      BUS_NO: '4500000277',
+      BUS_NO: this.$route.params.num,
+      // BUS_NO: '4500000266',
       focusStatus: true,
       opNum: this.$route.params.num,
       // 按钮对应的数据
@@ -90,7 +92,10 @@ export default {
       // 1为可以获取订单列表，2为不可获取且为分包，3为合包，4为不是分包也不是合包
       orderType: 1,
       // 用于判断是否第一次push数组
-      firstPush: true
+      firstPush: true,
+      factory: this.$route.query.factory,
+      factoryNum: this.$route.query.factoryNum,
+      warehouseNum: this.$route.query.warehouseNum
     }
   },
   watch: {
@@ -214,17 +219,17 @@ export default {
       if (this.$route.query.name === 'stock') {
         temp = this.urlParams
         params = {
-          VBELN: '80000265',
-          WERKS: '1010',
-          LGORT: '3001'
+          VBELN: this.opNum,
+          WERKS: this.factoryNum,
+          LGORT: this.warehouseNum
         }
       } else {
         temp = 'purchase'
         params = {
           BUS_NO: this.BUS_NO,
           ZDDLX: 1,
-          WERKS: '1010',
-          LGORT: '1001'
+          WERKS: this.factoryNum,
+          LGORT: this.warehouseNum
         }
       }
       let url = path.sap + temp + '/getsn'
@@ -247,7 +252,7 @@ export default {
       let arr = ''
       if (this.$route.query.name === 'stock') {
         arr = data.MT_Salestockup_GetSN_Resp.Header
-      } else {
+      } else if (this.$route.query.name === 'purchase') {
         arr = data.MT_Purchase_GetSN_Resp.Header
       }
       // 讲sn码列表数组保存到store
@@ -256,8 +261,6 @@ export default {
         this.setSNArr(arr)
       } else {
         // 销售备货
-        // let snArr = []
-        // snArr[0] = arr
         this.setSNArr([])
         this.setFbData(arr)
       }

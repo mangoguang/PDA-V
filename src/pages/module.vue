@@ -1,15 +1,27 @@
 <!-- <keep-alive> -->
 <template>
   <div class="module" v-bind:style="{height: height+'px'}">
+    <div class="h25"></div>
     <HeadComponent>
       <h1>{{warehouse}}</h1>
     </HeadComponent>
     <ul class="clearfix">
       <li 
       v-for="(module,index) in modules" 
+      v-if="module.jurisdiction === 'true'"
       @click="toModule(module.coding, module.jurisdiction, module.name)" 
-      v-bind:style="{
-        background: 'url(./static/images/modules/module'+(index+1)+'.png) no-repeat',
+      :style="{
+        background: 'url(./static/images/skinImg/' + skinCol + '/module' +(index+1) + (index+1) + '.png) no-repeat',
+        backgroundSize: '100% 100%'}"
+        @mouseover="addClass">
+        <p>{{module.name}}</p>
+      </li>
+      <li 
+      v-for="(module,index) in modules" 
+      v-if="module.jurisdiction === 'false'"
+      @click="toModule(module.coding, module.jurisdiction, module.name)" 
+      :style="{
+        background: 'url(./static/images/skinImg/' + skinCol + '/module' +(index+1)+'.png) no-repeat',
         backgroundSize: '100% 100%'}"
         @mouseover="addClass">
         <p>{{module.name}}</p>
@@ -17,6 +29,7 @@
     </ul>
     <button type="button" @click="changeSkin('skinA')">skinA</button>
     <button type="button" @click="changeSkin('skinB')">skinB</button>
+    <button type="button" @click="changeSkin('skinC')">skinC</button>
   </div>
 </template>
 <!-- </keep-alive> -->
@@ -36,11 +49,14 @@ export default {
   components: {HeadComponent},
   data () {
     return {
+      // skinCol: this.$store.state.skinCol,
       height: document.documentElement.clientHeight,
       account: null,
       password: null,
       modules: null,
-      warehouse: this.$route.query.warehouse
+      warehouse: this.$route.query.warehouse,
+      factoryNum: this.$route.query.factoryNum,
+      warehouseNum: this.$route.query.warehouseNum
     }
   },
   computed: {
@@ -66,8 +82,8 @@ export default {
       let params = {
         account: this.account,
         password: md5(this.password).toLocaleUpperCase(),
-        factory: '工厂一',
-        warehouse: '仓库二'
+        factory: this.factoryNum,
+        warehouse: this.warehouseNum
       }
 
       _this.loadingShow(true)
@@ -86,9 +102,10 @@ export default {
     },
     // 跳转对应模块
     toModule: function(module, status, moduleName) {
-      console.log('1212121')
-      if (status) {
-        this.$router.push({ path: '/modules/' + module + '?warehouse=' + this.warehouse + '&moduleName=' + moduleName + '&factory=' + this.$route.query.factory })
+      if (status === 'true') {
+        this.$router.push({ path: '/modules/' + module + '?warehouse=' + this.warehouse + '&warehouseNum=' + this.warehouseNum + '&moduleName=' + moduleName + '&factoryNum=' + this.factoryNum })
+      } else {
+        alert('您没有读取该模块内容的权限。')
       }
     },
     getAccountMsg: function() {

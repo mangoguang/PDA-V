@@ -56,8 +56,6 @@ Vue.use(Vuex)
     },
     computed: {
       sns() {
-        console.log('sssssssssss')
-        console.log(this.$store.state.SN)
         return this.$store.state.SN
       },
       checkBoxShow() {
@@ -88,7 +86,7 @@ Vue.use(Vuex)
         if (this.urlParams === 'stock') {
           this.urlParams = this.salesName
           params = {
-            VBELN: '80000265',
+            VBELN: BUS_NO,
             POSNR: 10,
             ZTIAOM: SN
           }

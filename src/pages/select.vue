@@ -8,11 +8,11 @@
     </div>
     
     <form>
-      <select id="factorys" v-model="factorySel" @change="setWarehouse">
-        <option v-for="factory in factorys" :value="factory">{{ factory }}</option>
+      <select id="factorys" v-model="factorySelNum" @change="setWarehouse">
+        <option v-for="factory in factorys" :value="factory.code">{{ factory.name }}</option>
       </select>
-      <select id="warehouse" v-model="warehouseSel">
-        <option v-for="warehouse in warehouses" :value="warehouse">{{ warehouse }}</option>
+      <select id="warehouse" v-model="warehouseSelNum">
+        <option v-for="warehouse in warehouses" :value="warehouse.code">{{ warehouse.name }}</option>
       </select>
       <div @click="select"><Btn>确定</Btn></div>
 <!--       <button @click="select" type="button">确定</button> -->
@@ -42,6 +42,8 @@ export default {
       warehouses: [],
       factorySel: '',
       warehouseSel: '',
+      factorySelNum: '',
+      warehouseSelNum: '',
       warehouseStatus: false,
       name: this.$route.query.name
     }
@@ -54,8 +56,8 @@ export default {
       this.$store.commit('loadingShow', x)
     },
     select: function() {
-      localStorage.setItem('factoryMsg', '{factory: "' + this.factorySel + '",warehouse: "' + this.warehouseSel + '"}')
-      this.$router.push({ path: '/module?name=' + this.name + '&factory=' + this.factorySel + '&warehouse=' + this.warehouseSel })
+      localStorage.setItem('factoryMsg', '{factory: "' + this.factorySel + '",warehouse: "' + this.warehouseSel + '", factorySelNum: "' + this.factorySelNum + '", warehouseSelNum: "' + this.warehouseSelNum + '"}')
+      this.$router.push({ path: '/module?name=' + this.name + '&factoryNum=' + this.factorySelNum + '&warehouseNum=' + this.warehouseSelNum + '&warehouse=' + this.warehouseSel })
     },
     setWarehouse: function() {
       let _this = this
@@ -66,23 +68,25 @@ export default {
       let params = {
         account: obj.account,
         password: md5(obj.password).toLocaleUpperCase(),
-        factory: this.factorySel
+        factory: this.factorySelNum
       }
 
       _this.loadingShow(true)
       V.post(url, params).then(function(data) {
         _this.loadingShow(false)
-        console.log('success')
-        console.log(data)
         if (data.status) {
           _this.warehouses = data.warehouse
           if (_this.warehouseStatus) {
             // 更改默认仓库
-            _this.warehouseSel = data.warehouse[0]
+            _this.warehouseSel = data.warehouse[0].name
           } else {
-            _this.warehouseStatus = true
+            let factoryMsg = localStorage.getItem('factoryMsg')
+            if (!factoryMsg) {
+              _this.warehouseSel = data.warehouse[0].name
+            } else {
+              _this.warehouseStatus = true
+            }
           }
-          console.log(data.warehouse)
         }
       }).catch((res) => {
         alert('您的网络有问题。')
@@ -100,9 +104,11 @@ export default {
       let factoryObj = eval('(' + factoryMsg + ')')
       if (factoryMsg) {
         this.factorySel = factoryObj.factory
+        this.factorySelNum = factoryObj.factorySelNum
         this.warehouseSel = factoryObj.warehouse
+        this.warehouseSelNum = factoryObj.warehouseSelNum
       } else {
-        console.log('没有本地存储')
+        // this.factorySel = this.factorys[0].name
       }
     },
     // 设置工厂列表
@@ -112,8 +118,6 @@ export default {
       let obj = this.getAccountMsg()
       // let url = path.local + '/factory_sel.php'
       let url = path.oa + '/PDAFactory.jsp'
-      console.log(111)
-      console.log(obj)
       let params = {
         // name: this.factorySel,
         // password: md5(this.warehouseSel).toLocaleUpperCase()
@@ -124,9 +128,9 @@ export default {
       _this.loadingShow(true)
       V.post(url, params).then(function(data) {
         _this.loadingShow(false)
-        console.log(data)
         if (data.status) {
           _this.factorys = data.factorys
+          _this.factorySel = data.factorys[0].name
           _this.setWarehouse()
         }
       }).catch((res) => {
@@ -136,8 +140,11 @@ export default {
       this.getFactorySel()
     }
   },
-  mounted() {
+  created() {
     this.setFactorys()
+  },
+  mounted() {
+
   }
 }
 </script>

@@ -35,5 +35,18 @@ export default{
 }
 </script>
 
-<style>
+<style lang="scss">
+@import "./assets/sass/variable.scss";
+@import "./assets/css/common.css";
+.h25{
+  height: 25px;
+  width: 100%;
+}
+@each $skin, $col, $subCol, $strongCol, $btnBgCol, $btnBgSubCol in $skin-data {
+  .#{$skin} {
+    .h25{
+      background: $col;
+    }
+  }
+}
 </style>

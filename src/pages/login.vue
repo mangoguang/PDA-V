@@ -1,6 +1,6 @@
 <!-- <keep-alive> -->
 <template>
-  <div class="login" v-bind:style="{height: height+'px', background: 'url(./static/images/skinImg/' + skinCol + 'bg.jpg)','background-size': '100% 100%'}">
+  <div class="login" v-bind:style="{height: height+'px', background: 'url(./static/images/skinImg/' + skinCol + '/bg.png)','background-size': '100% 100%'}">
     <form>
       <h1>欢迎使用扫描枪</h1>
       <ul>

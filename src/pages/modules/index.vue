@@ -1,6 +1,7 @@
 <!-- <keep-alive> -->
 <template>
   <div class="modules">
+    <div class="h25"></div>
     <div class="header">
       <HeadComponent>
         <h1>{{titName}}</h1>
@@ -48,7 +49,9 @@ export default {
       focusStatus: true,
       titName: this.$route.query.moduleName,
       moduleName: this.$route.params.module,
+      factoryNum: this.$route.query.factoryNum,
       warehouse: this.$route.query.warehouse,
+      warehouseNum: this.$route.query.warehouseNum,
       salsesBtn: true
     }
   },
@@ -81,9 +84,9 @@ export default {
     orderListParams() {
       let url = ''
       if (this.moduleName === 'stock') {
-        url = path.sap + this.salesName + '/getcity?WERKS=1010&LGORT=1001'
+        url = path.sap + this.salesName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
       } else if (this.moduleName === 'purchase') {
-        url = path.sap + this.moduleName + '/getcity?WERKS=1010&LGORT=1001'
+        url = path.sap + this.moduleName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
       }
       return url
     },
@@ -243,6 +246,7 @@ export default {
   position: absolute;
   bottom: 0;
   left: 0;
+  background: #fff;
   li{
     float: left;
     height: $f40;

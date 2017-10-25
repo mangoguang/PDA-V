@@ -32,10 +32,17 @@ $s1btnBgCol: #334559;//按钮背景色
 $s1btnBgSubCol: #465e7e;//按钮点击背景色
 
 // 皮肤B变量
-$s2Col: #007a00;
+$s2Col: #31c3b0;
 $s2SubCol: #28a191;
 $s2StrongCol: #c3314d;
 $s2btnBgCol: #28a191;
 $s2btnBgSubCol: #22877a;
 
-$skin-data: (skinA, $s1Col, $s1SubCol, $s1StrongCol, $s1btnBgCol, $s1btnBgSubCol),(skinB, $s2Col, $s2SubCol, $s2StrongCol, $s2btnBgCol, $s2btnBgSubCol);
+// 皮肤C变量
+$s3Col: #2f354a;
+$s3SubCol: #aeb5c4;
+$s3StrongCol: #7994ce;
+$s3btnBgCol: #7994ce;
+$s3btnBgSubCol: #6b82b5;
+
+$skin-data: (skinA, $s1Col, $s1SubCol, $s1StrongCol, $s1btnBgCol, $s1btnBgSubCol),(skinB, $s2Col, $s2SubCol, $s2StrongCol, $s2btnBgCol, $s2btnBgSubCol),(skinC, $s3Col, $s3SubCol, $s3StrongCol, $s3btnBgCol, $s3btnBgSubCol);
