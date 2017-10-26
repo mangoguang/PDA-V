@@ -81,12 +81,12 @@ export default {
       putInShow: false,
       inputVal: '',
       showCheckbox: false,
-      btnStatus: [true, false, false, false],
+      btnStatus: [false, true, false, false],
       // 用于判断是否添加sn数组的status属性
       addStatus: true,
       // ifVerify为true，即在应扫按钮亮是才可扫码校验
       ifVerify: false,
-      canDel: false,
+      canDel: true,
       moduleName: this.$route.query.moduleName,
       urlParams: this.$route.query.name,
       // 1为可以获取订单列表，2为不可获取且为分包，3为合包，4为不是分包也不是合包
@@ -290,8 +290,8 @@ export default {
           }
           let temp = {}
           // 是否分包
-          // if (arr[i].item === null || arr[i].item === undefined) {
-          if (!arr[0].item[0]) {
+          // if (arr[i].Item === null || arr[i].Item === undefined) {
+          if (!arr[0].Item[0]) {
             temp.status = false
             checkboxVal.push(false)
             temp.arr = []
@@ -309,14 +309,14 @@ export default {
             temp.arr[0] = arr[i].MATKL
             let arr1 = []
             let arr2 = []
-            for (let j in arr[i].item) {
+            for (let j in arr[i].Item) {
               num++
               if (this.addStatus) {
                 arr2.push(false)
               } else {
-                arr2.push(arr[i].item[j].status)
+                arr2.push(arr[i].Item[j].status)
               }
-              arr1.push(arr[i].item[j].ZTIAOMA_FB)
+              arr1.push(arr[i].Item[j].ZTIAOMA_FB)
             }
             temp.arr[1] = arr1
             temp.arr[2] = arr2
@@ -354,7 +354,7 @@ export default {
       // 过滤误操作
       for (let i in arr) {
         // 校验分包
-        if (arr[i].item === null || arr[i].item === undefined) {
+        if (arr[i].Item === null || arr[i].Item === undefined) {
           if (num === arr[i].ZTIAOM) {
             this.verifyAjax(this.verifyUrl1(arr, arr[i].ZTIAOM, i)).then(function(data) {
               data = data.MT_Purchase_Verify_Resp.Item
@@ -377,13 +377,13 @@ export default {
           }
         } else {
           // 校验不是分包
-          for (let j in arr[i].item) {
-            if (num === arr[i].item[j].ZTIAOMA_FB) {
-              this.verifyAjax(this.verifyUrl(arr, arr[i].item[j].ZTIAOMA_FB, i)).then(function(data) {
+          for (let j in arr[i].Item) {
+            if (num === arr[i].Item[j].ZTIAOMA_FB) {
+              this.verifyAjax(this.verifyUrl(arr, arr[i].Item[j].ZTIAOMA_FB, i)).then(function(data) {
                 data = data.MT_Purchase_Verify_Resp.Item
                 // 校验成功
                 if (data.ZXXLX === 'S') {
-                  arr[i].item[j].status = true
+                  arr[i].Item[j].status = true
                   _this.setSNArr(arr)
                   _this.turnArr(arr)
                   _this.status3++
@@ -413,14 +413,14 @@ export default {
           let temp = cloneObj(_this.fbData)
           let ifPush = true
           // 分包
-          if (temp.item[0] !== undefined) {
+          if (temp.Item[0] !== undefined) {
             let number = _this.inputVal.split('-')[2].split('/')[0]
             let ZTIAOM = _this.inputVal.slice(0, 23)
             // 该SN码是否存在
             for (let i in snArr) {
               if (snArr[i].ZTIAOM === ZTIAOM) {
-                snArr[i].item[parseInt(number) - 1].ZTIAOMA_FB = _this.inputVal
-                snArr[i].item[parseInt(number) - 1].status = true
+                snArr[i].Item[parseInt(number) - 1].ZTIAOMA_FB = _this.inputVal
+                snArr[i].Item[parseInt(number) - 1].status = true
                 ifPush = false
               } else {
                 ifPush = true
@@ -428,7 +428,7 @@ export default {
             }
             if (ifPush) {
               temp.ZTIAOM = ZTIAOM
-              let obj = temp.item[parseInt(number - 1)]
+              let obj = temp.Item[parseInt(number - 1)]
               obj.ZTIAOMA_FB = _this.inputVal
               obj.status = true
               snArr.push(temp)
@@ -612,7 +612,8 @@ export default {
     this.snListUrl()
     this.setTableH()
     this.$store.commit('loadingShow', false)
-    this.$store.commit('tableH', ['序号', '物料描述', '数量'])
+    this.$store.commit('tableH', ['序号', '描述', '条码', '状态'])
+    this.focusStatus = true
   },
   mounted() {
     this.$store.commit('isOP', false)
@@ -722,7 +723,7 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
-    padding-top: 4.90625rem;
+    padding-top: 5.6875rem;
     box-sizing: border-box;
     overflow-x: hidden;
     z-index: -1;

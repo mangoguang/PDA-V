@@ -11,7 +11,7 @@
       v-if="module.jurisdiction === 'true'"
       @click="toModule(module.coding, module.jurisdiction, module.name)" 
       :style="{
-        background: 'url(./static/images/skinImg/' + skinCol + '/module' +(index+1) + (index+1) + '.png) no-repeat',
+        background: 'url(./static/images/skinImg/' + skinCol + '/' + module.coding + '.png) no-repeat',
         backgroundSize: '100% 100%'}"
         @mouseover="addClass">
         <p>{{module.name}}</p>
@@ -21,7 +21,7 @@
       v-if="module.jurisdiction === 'false'"
       @click="toModule(module.coding, module.jurisdiction, module.name)" 
       :style="{
-        background: 'url(./static/images/skinImg/' + skinCol + '/module' +(index+1)+'.png) no-repeat',
+        background: 'url(./static/images/skinImg/' + skinCol + '/' + module.coding +'_1.png) no-repeat',
         backgroundSize: '100% 100%'}"
         @mouseover="addClass">
         <p>{{module.name}}</p>

@@ -57,6 +57,12 @@ export default {
     },
     select: function() {
       localStorage.setItem('factoryMsg', '{factory: "' + this.factorySel + '",warehouse: "' + this.warehouseSel + '", factorySelNum: "' + this.factorySelNum + '", warehouseSelNum: "' + this.warehouseSelNum + '"}')
+      // 仓库名称与代号保持一致
+      for (let i in this.warehouses) {
+        if (this.warehouses[i].code === this.warehouseSelNum) {
+          this.warehouseSel = this.warehouses[i].name
+        }
+      }
       this.$router.push({ path: '/module?name=' + this.name + '&factoryNum=' + this.factorySelNum + '&warehouseNum=' + this.warehouseSelNum + '&warehouse=' + this.warehouseSel })
     },
     setWarehouse: function() {

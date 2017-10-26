@@ -148,7 +148,7 @@ Vue.use(Vuex)
       }
     },
     created: function() {
-      this.$store.commit('isTr3', true)
+      this.$store.commit('isTr3', false)
     }
   }
 </script>

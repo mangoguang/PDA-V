@@ -8,6 +8,7 @@
       </HeadComponent>
       <div class="searchOrder">
         <input v-model="searchNum" v-focus="focusStatus" type="text" :placeholder="'搜索' + titName + '单号'">
+        <button @click="clearInput" class="clearBtn" type="button"></button>
       </div>
     </div>
     <div class="table">
@@ -79,6 +80,9 @@ export default {
     },
     loadingShow: function(x) {
       this.$store.commit('loadingShow', x)
+    },
+    clearInput() {
+      this.searchNum = ''
     },
     // url
     orderListParams() {
@@ -208,12 +212,13 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  padding-top: 3.4375rem;
+  padding-top: 4.2188rem;
   box-sizing: border-box;
   overflow-x: hidden;
   z-index: -1;
 }
 .searchOrder{
+  position: relative;
   height: .78125rem;
   padding: $f5 0;
   input{
@@ -226,6 +231,15 @@ export default {
     color: #fff;
     font-size: $f16;
     text-align: center;
+  }
+  button.clearBtn{
+    position: absolute;
+    top: $f10;
+    right: 20%;
+    width: $f12;
+    height: $f12;
+    background: url(../../assets/img/purchase/6_delect.png) no-repeat;
+    background-size: 100% 100%;
   }
   input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
     color: #fff;
