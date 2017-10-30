@@ -39,7 +39,11 @@ Vue.use(Vuex)
         // } else {
         let nextPageName = 'snList'
         // }
-        this.$router.push({ path: '/' + nextPageName + '/' + num + '?name=' + this.$route.params.module + '&moduleName=' + this.moduleName + '&warehouse=' + this.$route.query.warehouse + '&warehouseNum=' + this.$route.query.warehouseNum + '&factoryNum=' + this.$route.query.factoryNum })
+        let temp = this.$route.params.module
+        if (temp === 'stock') {
+          temp = this.salesName
+        }
+        this.$router.push({ path: '/' + nextPageName + '/' + num + '?name=' + temp + '&moduleName=' + this.moduleName + '&warehouse=' + this.$route.query.warehouse + '&warehouseNum=' + this.$route.query.warehouseNum + '&factoryNum=' + this.$route.query.factoryNum })
       }
     },
     created: function() {

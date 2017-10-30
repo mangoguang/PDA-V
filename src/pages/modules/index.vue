@@ -213,6 +213,7 @@ export default {
   top: 0;
   left: 0;
   padding-top: 4.2188rem;
+  padding-bottom: 1.5rem;
   box-sizing: border-box;
   overflow-x: hidden;
   z-index: -1;

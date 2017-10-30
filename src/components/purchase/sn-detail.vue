@@ -13,7 +13,7 @@
           <li>物料编码：<span>{{snDetail.MATNR}}</span></li>
           <li>物料描述：<span>{{snDetail.MATKL}}</span></li>
           <li>库存单位：<span>{{snDetail.VRKME}}</span></li>
-          <li>计划交货数：<span>{{snDetail.MENGE}}</span></li>
+          <li>计划交货数：<span>{{parseInt(snDetail.LFIMG)}}</span></li>
           <div v-if="ifFB">
             <li>SN（条码）：<span>{{snDetailFB.ZTIAOMA_FB}}</span></li>
             <li>分包序号：<span>{{snDetailFB.ZFBXH}}</span></li>
@@ -60,6 +60,8 @@ export default {
       return this.$store.state.ifFB
     },
     snDetailFB() {
+      console.log('777')
+      console.log(this.$store.state.snDetailFB)
       return this.$store.state.snDetailFB
     }
   },

@@ -83,8 +83,7 @@ Vue.use(Vuex)
         let _this = this
         let params = {}
         // 销售备货模块
-        if (this.urlParams === 'stock') {
-          this.urlParams = this.salesName
+        if (this.urlParams === 'salestockup' || this.urlParams === 'salesoutput') {
           params = {
             VBELN: BUS_NO,
             POSNR: 10,
@@ -100,6 +99,9 @@ Vue.use(Vuex)
           }
         }
         let url = path.sap + this.urlParams + '/getinformation'
+        console.log('successsssssssa')
+        console.log(url)
+        console.log(params)
         this.$store.commit('ifFB', status)
         this.showSNDetail(url, params).then(function(data) {
           let arr = []
@@ -108,21 +110,15 @@ Vue.use(Vuex)
             arr = data.MT_Purchase_GetInformation_Resp.Header
           } else if (_this.urlParams === 'salestockup') {
             // 销售备货模块
-            console.log('succ')
             arr = data.MT_Salestockup_GetInformation_Resp.Header
           } else if (_this.urlParams === 'salesoutput') {
             // 销售出库模块
             arr = data.MT_Salesoutput_GetInformation_Resp.Header
           }
-          console.log('successsssss')
-          console.log(data)
-          console.log(_this.urlParams)
-          _this.$store.commit('snDetail', arr)
-          if (_this.urlParams === 'purchase') {
-            _this.$store.commit('snDetailFB', arr.Item)
-          } else {
-            _this.$store.commit('snDetailFB', arr.item)
+          if (arr.Item) {
+            _this.$store.commit('snDetailFB', arr.Item[0])
           }
+          _this.$store.commit('snDetail', arr)
           _this.detailBoxShow(true)
         })
       },
@@ -149,6 +145,9 @@ Vue.use(Vuex)
     },
     created: function() {
       this.$store.commit('isTr3', false)
+      if (this.urlParams === 'stock') {
+        this.urlParams = this.salesName
+      }
     }
   }
 </script>
@@ -188,7 +187,7 @@ Vue.use(Vuex)
     }
     ul.on{
       input, li, p{
-        color: red
+        color: #38ce54;
       }
     }
     ul:last-child{
@@ -235,7 +234,7 @@ Vue.use(Vuex)
   }
   div.on{
     input,li,ul,p{
-      color: red
+      color: #38ce54;
     }
   }
 }
