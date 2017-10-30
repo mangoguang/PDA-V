@@ -34,6 +34,7 @@ module.exports = {
     "no-useless-escape": 0,
     "no-undef": 0,
     "no-eval": 0,
-    "no-new": 0
+    "no-new": 0,
+    "operator-linebreak": 0
   }
 }
