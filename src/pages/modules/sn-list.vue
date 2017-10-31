@@ -319,7 +319,7 @@ export default {
       if (arr.length >= 0) {
         for (let i in arr) {
           num++
-          // 用于获取数据时的第一次添加数组属性操作
+          // 页面初次加载时执行
           if (this.addStatus) {
             arr[i].status = false
           }
@@ -338,15 +338,16 @@ export default {
             if (this.checkStatus(arr[i].ZJYZT, this.urlParams)) {
               temp.arr[5] = true
             } else {
-              // temp.arr[5] = arr[i].status // 是否校验状态码
-              temp.arr[5] = false // 是否校验状态码
+              temp.arr[5] = arr[i].status // 是否校验状态码
+              // temp.arr[5] = false // 是否校验状态码
             }
             temp.arr[6] = arr[i].ITEM_NO // 行号
           } else {
             // 分包
             if (arr[i].Item[0].ZFBFS === 1) {
-              temp.status = false
+              temp.status = true
             } else if (arr[i].Item[0].ZFBFS === 2) {
+              // 合包
               if (this.checkStatus(arr[i].ZJYZT, this.urlParams)) {
                 temp.status = true
               } else {
@@ -360,17 +361,14 @@ export default {
             let arr2 = []
             for (let j in arr[i].Item) {
               num++
+              // 页面初次加载时执行
               if (this.addStatus) {
                 arr2.push(false)
-              } else {
-                if (this.checkStatus(arr[i].Item[j].ZJYZT, this.urlParams)) {
-                  arr2.push(true)
-                } else {
-                  // arr2.push(arr[i].Item[j].status) // 是否校验状态码
-                  arr2.push(false) // 是否校验状态码
-                }
               }
               arr1.push(arr[i].Item[j].ZTIAOMA_FB)
+              if (this.checkStatus(arr[i].Item[j].ZJYZT, this.urlParams)) {
+                arr2[j] = true
+              }
             }
             temp.arr[1] = arr1
             temp.arr[2] = arr2
@@ -380,8 +378,8 @@ export default {
             if (this.checkStatus(arr[i].ZJYZT, this.urlParams)) {
               temp.arr[5] = true
             } else {
-              // temp.arr[5] = arr[i].status // 是否校验状态码
-              temp.arr[5] = false // 是否校验状态码
+              temp.arr[5] = arr[i].status // 是否校验状态码
+              // temp.arr[5] = false // 是否校验状态码
             }
           }
           trArr.push(temp)
@@ -752,7 +750,7 @@ export default {
       } else if (this.urlParams === 'salesoutput') {
         params = "{ 'item': {VBELN: " + this.BUS_NO + ", ZGH: '11608050', ZQRKZ: 1 }}"
       } else if (this.urlParams === 'purchase') {
-        params = "{ 'item': {BUS_NO: " + this.BUS_NO + ", ZQRKZ: 1, ZDDLX: 1, ZGH: '11233'} }"
+        params = "{ 'item': {BUS_NO: " + this.BUS_NO + ", ZQRKZ: 1, ZDDLX: 1, ZGH: '11608050'} }"
       }
       let url = path.sap + this.urlParams + '/confirm'
       this.putInShow = true
