@@ -18,7 +18,7 @@
       </HeadComponent>
       <ul class="snBox clearfix">
         <li>
-          <p>单号：{{opNum}}</p>
+          <input :value="'单号：' + opNum" disabled="disabled">
         </li>
         <li v-show="canDel">
           <input type="text" v-model="inputVal" placeholder="条码" v-focus="focusStatus">
@@ -225,6 +225,10 @@ export default {
           WERKS: this.factoryNum,
           LGORT: this.warehouseNum
         }
+      } else if (temp === 'product') {
+        params = {
+          ZRKDH: 'RK1710220001'
+        }
       }
       let url = path.sap + temp + '/getsn'
       this.getSNList(url, params)
@@ -256,20 +260,28 @@ export default {
         if (data.MT_Purchase_GetSN_Resp.Header) {
           arr = data.MT_Purchase_GetSN_Resp.Header
         }
+      } else if (this.urlParams === 'product') {
+        if (data.MT_Product_GetSN_Resp.Header.Item) {
+          arr = data.MT_Product_GetSN_Resp.Header.Item
+          for (let i in arr) {
+            arr[i].status = false
+          }
+        }
       }
       // 讲sn码列表数组保存到store
       // 采购入库模块
       if (this.orderType === 1) {
         this.setSNArr(arr)
-      } else {
+      } else if (this.orderType === 2) {
         // 销售备货
         this.setSNArr(arr)
         this.setFbData(arr[0])
+      } else if (this.orderType === 3) {
+        this.setSNArr(arr)
       }
       this.turnArr(arr)
     },
     checkStatus(ZJYZT, urlParams) {
-      console.log('00001111')
       let status = false
       if (urlParams === 'purchase') {
         if (ZJYZT === 1) {
@@ -331,16 +343,20 @@ export default {
             checkboxVal.push(false)
             temp.arr = []
             temp.arr[0] = arr[i].MATKL // 物料描述
-            temp.arr[1] = arr[i].ZTIAOM // SN条码
+            if (this.urlParams === 'product') {
+              temp.arr[1] = arr[i].ZDEZTMA // SN条码
+              temp.arr[5] = arr[i].status
+            } else {
+              temp.arr[1] = arr[i].ZTIAOM // SN条码
+              if (this.checkStatus(arr[i].ZJYZT, this.urlParams)) {
+              temp.arr[5] = true
+              } else {
+                temp.arr[5] = arr[i].status // 是否校验状态码
+              }
+            }
             temp.arr[2] = arr[i].LGOBE // 库存地点描述
             temp.arr[3] = arr[i].BUS_NO // 采购订单号/内向交货单
             temp.arr[4] = parseInt(arr[i].LFIMG) // 计划交货数
-            if (this.checkStatus(arr[i].ZJYZT, this.urlParams)) {
-              temp.arr[5] = true
-            } else {
-              temp.arr[5] = arr[i].status // 是否校验状态码
-              // temp.arr[5] = false // 是否校验状态码
-            }
             temp.arr[6] = arr[i].ITEM_NO // 行号
           } else {
             // 分包
@@ -401,8 +417,10 @@ export default {
       if (num.length === 23 || num.length === 22 || num.length >= 27) {
         if (this.orderType === 1) {
           this.verify1()
-        } else {
+        } else if (this.orderType === 2) {
           this.verify2()
+        } else {
+          this.verify3()
         }
       }
     },
@@ -603,6 +621,18 @@ export default {
         }
       })
     },
+    verify3() {
+      let temp = this.snArr
+      for (let i in temp) {
+        if (temp[i].ZDEZTMA === this.inputVal) {
+          temp[i].status = true
+          this.status3++
+          this.status4--
+        }
+      }
+      this.setSNArr(temp)
+      this.turnArr(temp)
+    },
     // verifyUrl1为采购入库校验参数
     verifyUrl1 (arr, i) {
       let params = {}
@@ -745,19 +775,51 @@ export default {
     setSureIn() {
       let _this = this
       let params = ''
+      let url = ''
       if (this.urlParams === 'salestockup') {
         params = "{ 'item': {VBELN: " + this.BUS_NO + ", ZGH: '11608050', ZQRKZ: 1 }}"
       } else if (this.urlParams === 'salesoutput') {
         params = "{ 'item': {VBELN: " + this.BUS_NO + ", ZGH: '11608050', ZQRKZ: 1 }}"
       } else if (this.urlParams === 'purchase') {
         params = "{ 'item': {BUS_NO: " + this.BUS_NO + ", ZQRKZ: 1, ZDDLX: 1, ZGH: '11608050'} }"
+      } else if (this.urlParams === 'product') {
+        let myDate = new Date()
+        function turnDate(num) {
+          if (num < 10) {
+            num = '0' + num
+          }
+          return num
+        }
+        params = {
+          ZRKDH: this.BUS_NO,
+          ZGZRY: '11608050',
+          ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
+          ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
+          LGORT: this.warehouseNum
+        }
       }
-      let url = path.sap + this.urlParams + '/confirm'
+      if (this.urlParams === 'product') {
+        url = path.sap + this.urlParams + '/orderpost'
+      } else {
+        url = path.sap + this.urlParams + '/confirm'
+      }
       this.putInShow = true
-      V.post(url, params).then(function(data) {
-        _this.putInShow = false
-        // data = JSON.parse(data.responseText)
-      })
+      if (this.urlParams === 'product') {
+        if (this.status4 === 0) {
+          V.get(url, params).then(function(data) {
+            _this.putInShow = false
+            // data = JSON.parse(data.responseText)
+          })
+        } else {
+          alert('条码未扫完，不可提交数据！')
+          _this.putInShow = false
+        }
+      } else {
+        V.post(url, params).then(function(data) {
+          _this.putInShow = false
+          // data = JSON.parse(data.responseText)
+        })
+      }
     }
   },
   directives: {
@@ -776,8 +838,8 @@ export default {
       this.orderType = 2
     } else if (this.urlParams === 'salesoutput') {
       this.orderType = 1
-    } else if (this.urlParams === 'production') {
-      this.orderType = 2
+    } else if (this.urlParams === 'product') {
+      this.orderType = 3
     }
     this.snListUrl()
     this.setTableH()
@@ -863,6 +925,12 @@ export default {
       height: $f12;
       background: url(../../assets/img/purchase/6_delect.png) no-repeat;
       background-size: $f12 $f12;
+    }
+    input[disabled="disabled"]{
+      width: 4.6rem;
+      padding-right: 0;
+      color: #fff;
+      border-bottom: none;
     }
     input{
       position: relative;

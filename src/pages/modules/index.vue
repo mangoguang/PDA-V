@@ -91,7 +91,7 @@ export default {
       //   url = path.sap + this.salesName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
       // } else if (this.moduleName === 'purchase') {
       //   url = path.sap + this.moduleName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
-      // } else if (this.moduleName === 'production') {
+      // } else if (this.moduleName === 'product') {
       //   url = path.sap + this.moduleName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
       // }
       return url
@@ -118,7 +118,7 @@ export default {
       let arr = []
       let str = this.searchNum
       let temp = ''
-      if (this.moduleName === 'production') {
+      if (this.moduleName === 'product') {
         temp = '生产入库'
         this.$router.push({ path: '/snList/' + str + '?name=' + this.moduleName + '&moduleName=' + temp + '&warehouse=' + this.$route.query.warehouse + '&warehouseNum=' + this.$route.query.warehouseNum + '&factoryNum=' + this.$route.query.factoryNum })
       } else {
@@ -199,7 +199,7 @@ export default {
     // 设置销售模块分类
     this.setSalesName('salestockup')
     let _this = this
-    if (this.moduleName !== 'production') {
+    if (this.moduleName !== 'product') {
       this.getOrderList(this.orderListParams()).then(function(data) {
         _this.setTrArr(data)
       })
