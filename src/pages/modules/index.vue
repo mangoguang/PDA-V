@@ -43,7 +43,7 @@ export default {
   data () {
     return {
       height: document.documentElement.clientHeight,
-      orderArr: [{'num': '00002401', 'warehouse': '凯奇仓库', 'area': '内蒙古'}, {'num': '00002402', 'warehouse': '凯奇仓库', 'area': '内蒙古'}, {'num': '00002403', 'warehouse': '凯奇仓库', 'area': '内蒙古'}],
+      orderArr: [],
       // 将获取的订单列表保存到本地
       orders: [],
       searchNum: '',
@@ -86,12 +86,14 @@ export default {
     },
     // url
     orderListParams() {
-      let url = ''
-      if (this.moduleName === 'stock') {
-        url = path.sap + this.salesName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
-      } else if (this.moduleName === 'purchase') {
-        url = path.sap + this.moduleName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
-      }
+      let url = path.sap + this.moduleName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
+      // if (this.moduleName === 'stock') {
+      //   url = path.sap + this.salesName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
+      // } else if (this.moduleName === 'purchase') {
+      //   url = path.sap + this.moduleName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
+      // } else if (this.moduleName === 'production') {
+      //   url = path.sap + this.moduleName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
+      // }
       return url
     },
     // 从后台获取订单列表
@@ -115,18 +117,24 @@ export default {
     searchOrder() {
       let arr = []
       let str = this.searchNum
-      if (str === '') {
-        arr = this.orders
+      let temp = ''
+      if (this.moduleName === 'production') {
+        temp = '生产入库'
+        this.$router.push({ path: '/snList/' + str + '?name=' + this.moduleName + '&moduleName=' + temp + '&warehouse=' + this.$route.query.warehouse + '&warehouseNum=' + this.$route.query.warehouseNum + '&factoryNum=' + this.$route.query.factoryNum })
       } else {
-        let orderArr = this.orders
-        for (let i in orderArr) {
-          let Str = orderArr[i][0].toString()
-          if (Str.indexOf(str) !== -1) {
-            arr.push(orderArr[i])
+        if (str === '') {
+          arr = this.orders
+        } else {
+          let orderArr = this.orders
+          for (let i in orderArr) {
+            let Str = orderArr[i][0].toString()
+            if (Str.indexOf(str) !== -1) {
+              arr.push(orderArr[i])
+            }
           }
         }
+        this.setOrders(arr)
       }
-      this.setOrders(arr)
     },
     // 转化数组
     setTrArr(data) {
@@ -191,10 +199,13 @@ export default {
     // 设置销售模块分类
     this.setSalesName('salestockup')
     let _this = this
-    this.getOrderList(this.orderListParams()).then(function(data) {
-      _this.setTrArr(data)
-    })
+    if (this.moduleName !== 'production') {
+      this.getOrderList(this.orderListParams()).then(function(data) {
+        _this.setTrArr(data)
+      })
+    }
     this.setTableH()
+    this.setOrders(this.orders)
     this.$store.commit('loadingShow', true)
     this.$store.commit('isOP', true)
   },

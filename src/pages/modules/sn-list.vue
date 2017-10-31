@@ -776,6 +776,8 @@ export default {
       this.orderType = 2
     } else if (this.urlParams === 'salesoutput') {
       this.orderType = 1
+    } else if (this.urlParams === 'production') {
+      this.orderType = 2
     }
     this.snListUrl()
     this.setTableH()

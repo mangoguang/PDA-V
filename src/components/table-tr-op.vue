@@ -37,13 +37,12 @@ Vue.use(Vuex)
         // if (this.salesName === 'salestockup') {
         //   nextPageName = 'addSNList'
         // } else {
-        let nextPageName = 'snList'
         // }
         let temp = this.$route.params.module
         if (temp === 'stock') {
           temp = this.salesName
         }
-        this.$router.push({ path: '/' + nextPageName + '/' + num + '?name=' + temp + '&moduleName=' + this.moduleName + '&warehouse=' + this.$route.query.warehouse + '&warehouseNum=' + this.$route.query.warehouseNum + '&factoryNum=' + this.$route.query.factoryNum })
+        this.$router.push({ path: '/snList/' + num + '?name=' + temp + '&moduleName=' + this.moduleName + '&warehouse=' + this.$route.query.warehouse + '&warehouseNum=' + this.$route.query.warehouseNum + '&factoryNum=' + this.$route.query.factoryNum })
       }
     },
     created: function() {
