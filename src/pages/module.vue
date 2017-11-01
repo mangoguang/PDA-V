@@ -92,6 +92,11 @@ export default {
         if (data.status) {
           console.log(data)
           _this.modules = data.permissions
+          // for (let i in _this.modules) {
+          //   if (_this.modules[i].coding === 'salesReturn') {
+          //     _this.modules[i].coding = 'salesreturn'
+          //   }
+          // }
         } else {
           alert('数据获取失败！')
         }

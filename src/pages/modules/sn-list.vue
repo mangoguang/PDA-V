@@ -781,7 +781,7 @@ export default {
       } else if (this.urlParams === 'salesoutput') {
         params = "{ 'item': {VBELN: " + this.BUS_NO + ", ZGH: '11608050', ZQRKZ: 1 }}"
       } else if (this.urlParams === 'purchase') {
-        params = "{ 'item': {BUS_NO: " + this.BUS_NO + ", ZQRKZ: 1, ZDDLX: 1, ZGH: '11608050'} }"
+        params = "{ 'Item': {BUS_NO: " + this.BUS_NO + ", ZQRKZ: 1, ZDDLX: 1, ZGH: '11608050'} }"
       } else if (this.urlParams === 'product') {
         let myDate = new Date()
         function turnDate(num) {

@@ -70,8 +70,8 @@ Vue.use(Vuex)
       snArr() {
         return this.$store.state.snArr
       },
-      salesName() {
-        return this.$store.state.salesName
+      bottomBtnName() {
+        return this.$store.state.bottomBtnName
       }
     },
     methods: {
@@ -99,28 +99,27 @@ Vue.use(Vuex)
           }
         }
         let url = path.sap + this.urlParams + '/getinformation'
-        console.log('successsssssssa')
-        console.log(url)
-        console.log(params)
         this.$store.commit('ifFB', status)
-        this.showSNDetail(url, params).then(function(data) {
-          let arr = []
-          // 采购入库模块
-          if (_this.urlParams === 'purchase') {
-            arr = data.MT_Purchase_GetInformation_Resp.Header
-          } else if (_this.urlParams === 'salestockup') {
-            // 销售备货模块
-            arr = data.MT_Salestockup_GetInformation_Resp.Header
-          } else if (_this.urlParams === 'salesoutput') {
-            // 销售出库模块
-            arr = data.MT_Salesoutput_GetInformation_Resp.Header
-          }
-          if (arr.Item) {
-            _this.$store.commit('snDetailFB', arr.Item[0])
-          }
-          _this.$store.commit('snDetail', arr)
-          _this.detailBoxShow(true)
-        })
+        if (this.urlParams !== 'product') {
+          this.showSNDetail(url, params).then(function(data) {
+            let arr = []
+            // 采购入库模块
+            if (_this.urlParams === 'purchase') {
+              arr = data.MT_Purchase_GetInformation_Resp.Header
+            } else if (_this.urlParams === 'salestockup') {
+              // 销售备货模块
+              arr = data.MT_Salestockup_GetInformation_Resp.Header
+            } else if (_this.urlParams === 'salesoutput') {
+              // 销售出库模块
+              arr = data.MT_Salesoutput_GetInformation_Resp.Header
+            }
+            if (arr.Item) {
+              _this.$store.commit('snDetailFB', arr.Item[0])
+            }
+            _this.$store.commit('snDetail', arr)
+            _this.detailBoxShow(true)
+          })
+        }
       },
       showSNDetail(url, params) {
         let _this = this
@@ -146,7 +145,7 @@ Vue.use(Vuex)
     created: function() {
       this.$store.commit('isTr3', false)
       if (this.urlParams === 'stock') {
-        this.urlParams = this.salesName
+        this.urlParams = this.bottomBtnName
       }
     }
   }

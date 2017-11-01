@@ -35,7 +35,7 @@ const store = new Vuex.Store({
     ifFB: false,
     snDetailFB: [],
     moduleName: '',
-    salesName: 'salestockup',
+    bottomBtnName: 'salestockup',
     fbData: {}
   },
   mutations: {
@@ -76,7 +76,7 @@ const store = new Vuex.Store({
     // 模块名称
     moduleName: (state, x) => state.moduleName = x,
     // 销售模块分类
-    salesName: (state, x) => state.salesName = x,
+    bottomBtnName: (state, x) => state.bottomBtnName = x,
     // 销售备货扫描参数
     fbData: (state, obj) => state.fbData = obj
   },

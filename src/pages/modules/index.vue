@@ -18,9 +18,13 @@
       v-bind:style="{height: height+'px'}"
       ></TableTr>
     </div>
-    <ul class="stockBtn clearfix" v-if="moduleName === 'stock'">
-      <li :class="{on: salsesBtn}" @click="sales('salestockup')">销售备货</li>
-      <li :class="{on: !salsesBtn}" @click="sales('salesoutput')">销售出库</li>
+    <ul class="bottomBtn clearfix" v-if="moduleName === 'salestockup' || moduleName === 'salesoutput'">
+      <li :class="{on: bottomBtn}" @click="sales('salestockup')">销售备货</li>
+      <li :class="{on: !bottomBtn}" @click="sales('salesoutput')">销售出库</li>
+    </ul>
+    <ul class="bottomBtn clearfix" v-if="moduleName === 'productScan'">
+      <li :class="{on: productScanBtn}" @click="productScan('scanfw')">扫防伪码</li>
+      <li :class="{on: !productScanBtn}" @click="productScan('scanbq')">扫标签码</li>
     </ul>
   </div>
 </template>
@@ -53,12 +57,13 @@ export default {
       factoryNum: this.$route.query.factoryNum,
       warehouse: this.$route.query.warehouse,
       warehouseNum: this.$route.query.warehouseNum,
-      salsesBtn: true
+      bottomBtn: true,
+      productScanBtn: true
     }
   },
   computed: {
-    salesName() {
-      return this.$store.state.salesName
+    bottomBtnName() {
+      return this.$store.state.bottomBtnName
     }
   },
   watch: {
@@ -67,8 +72,8 @@ export default {
     }
   },
   methods: {
-    setSalesName(name) {
-      this.$store.commit('salesName', name)
+    setbottomBtnName(name) {
+      this.$store.commit('bottomBtnName', name)
     },
     // 设置表头标题
     setTableH() {
@@ -88,7 +93,7 @@ export default {
     orderListParams() {
       let url = path.sap + this.moduleName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
       // if (this.moduleName === 'stock') {
-      //   url = path.sap + this.salesName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
+      //   url = path.sap + this.bottomBtnName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
       // } else if (this.moduleName === 'purchase') {
       //   url = path.sap + this.moduleName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
       // } else if (this.moduleName === 'product') {
@@ -150,16 +155,16 @@ export default {
           temp[2] = data[i].ZDDLX
           trArr.push(temp)
         }
-      } else if (this.moduleName === 'stock') {
+      } else if (this.moduleName === 'salestockup' || this.moduleName === 'salesoutput') {
         // 销售备货
-        if (this.salesName === 'salestockup') {
-          this.salsesBtn = true
+        if (this.bottomBtnName === 'salestockup') {
+          this.bottomBtn = true
           this.titName = '销售备货'
           this.$store.commit('moduleName', '销售备货')
           data = data.MT_Salestockup_GetInCity_Resp.Document
         // 销售出库
         } else {
-          this.salsesBtn = false
+          this.bottomBtn = false
           this.titName = '销售出库'
           this.$store.commit('moduleName', '销售出库')
           data = data.MT_Salesoutput_GetInCity_Resp.Document
@@ -171,19 +176,24 @@ export default {
           temp[2] = data[i].LGOBE
           trArr.push(temp)
         }
+      } else if (this.moduleName === 'productScan') {
+
       }
       this.setOrders(trArr)
       // 将获取的数据保存到本地变量
       this.orders = trArr
     },
-    sales(salesName) {
+    sales(bottomBtnName) {
       let _this = this
-      if (this.salesName !== salesName) {
-        this.setSalesName(salesName)
+      if (this.bottomBtnName !== bottomBtnName) {
+        this.setbottomBtnName(bottomBtnName)
         this.getOrderList(this.orderListParams()).then(function(data) {
           _this.setTrArr(data)
         })
       }
+    },
+    productScan() {
+
     }
   },
   directives: {
@@ -197,9 +207,12 @@ export default {
   },
   created: function() {
     // 设置销售模块分类
-    this.setSalesName('salestockup')
+    this.setbottomBtnName('salestockup')
     let _this = this
     if (this.moduleName !== 'product') {
+      if (this.moduleName = 'stock') {
+        this.moduleName = 'salestockup'
+      }
       this.getOrderList(this.orderListParams()).then(function(data) {
         _this.setTrArr(data)
       })
@@ -268,7 +281,7 @@ export default {
   }
 }
 
-.stockBtn{
+.bottomBtn{
   position: absolute;
   bottom: 0;
   left: 0;
@@ -294,7 +307,7 @@ export default {
         background: $col;
       }
     }
-    .stockBtn{
+    .bottomBtn{
       li{
         color: $btnBgSubCol;
       }

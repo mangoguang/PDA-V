@@ -25,8 +25,8 @@ Vue.use(Vuex)
       orders() {
         return this.$store.state.orders
       },
-      salesName() {
-        return this.$store.state.salesName
+      bottomBtnName() {
+        return this.$store.state.bottomBtnName
       },
       moduleName() {
         return this.$store.state.moduleName
@@ -34,13 +34,13 @@ Vue.use(Vuex)
     },
     methods: {
       toOrderDetail(num) {
-        // if (this.salesName === 'salestockup') {
+        // if (this.bottomBtnName === 'salestockup') {
         //   nextPageName = 'addSNList'
         // } else {
         // }
         let temp = this.$route.params.module
         if (temp === 'stock') {
-          temp = this.salesName
+          temp = this.bottomBtnName
         }
         this.$router.push({ path: '/snList/' + num + '?name=' + temp + '&moduleName=' + this.moduleName + '&warehouse=' + this.$route.query.warehouse + '&warehouseNum=' + this.$route.query.warehouseNum + '&factoryNum=' + this.$route.query.factoryNum })
       }
@@ -50,7 +50,7 @@ Vue.use(Vuex)
       if (this.$route.params.module === 'stock') {
         console.log('success')
         // 销售备货
-        if (this.salesName === 'salestockup') {
+        if (this.bottomBtnName === 'salestockup') {
           this.$store.commit('moduleName', '销售备货')
         } else {
           this.$store.commit('moduleName', '销售出库')
