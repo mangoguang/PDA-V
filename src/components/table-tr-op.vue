@@ -1,12 +1,15 @@
 <template>
   <ul class="clearfix table-tr-op">
-    <li v-for="(order,index) in orders" @click="toOrderDetail(order[0])">
+    <li v-if="name !== 'productScan'" v-for="(order,index) in orders" @click="toOrderDetail(order[0])">
       <ul>
         <li>{{index+1}}</li>
         <li>{{order[0]}}</li>
         <li><input :value="order[1]" disabled="disabled"></li>
         <li>{{order[2]}}</li>
       </ul>
+    </li>
+    <li v-if="name === 'productScan'">
+      
     </li>
   </ul>
 </template>
@@ -18,7 +21,7 @@ Vue.use(Vuex)
     name: 'table-tr',
     data() {
       return {
-        // moduleName: this.$route.query.moduleName
+        name: this.$route.params.module
       }
     },
     computed: {
@@ -30,6 +33,9 @@ Vue.use(Vuex)
       },
       moduleName() {
         return this.$store.state.moduleName
+      },
+      productScanList() {
+        return this.$store.state.productScanList
       }
     },
     methods: {
@@ -46,7 +52,6 @@ Vue.use(Vuex)
       }
     },
     created: function() {
-      console.log(this.moduleName)
       if (this.$route.params.module === 'stock') {
         console.log('success')
         // 销售备货

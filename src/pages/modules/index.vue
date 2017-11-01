@@ -22,9 +22,9 @@
       <li :class="{on: bottomBtn}" @click="sales('salestockup')">销售备货</li>
       <li :class="{on: !bottomBtn}" @click="sales('salesoutput')">销售出库</li>
     </ul>
-    <ul class="bottomBtn clearfix" v-if="moduleName === 'productScan'">
-      <li :class="{on: productScanBtn}" @click="productScan('scanfw')">扫防伪码</li>
-      <li :class="{on: !productScanBtn}" @click="productScan('scanbq')">扫标签码</li>
+    <ul class="bottomBtn clearfix" v-if="moduleName === 'scanbq' || moduleName === 'scanfw'">
+      <li :class="{on: bottomBtn}" @click="productScan('scanfw')">扫防伪码</li>
+      <li :class="{on: !bottomBtn}" @click="productScan('scanbq')">扫标签码</li>
     </ul>
   </div>
 </template>
@@ -57,8 +57,7 @@ export default {
       factoryNum: this.$route.query.factoryNum,
       warehouse: this.$route.query.warehouse,
       warehouseNum: this.$route.query.warehouseNum,
-      bottomBtn: true,
-      productScanBtn: true
+      bottomBtn: true
     }
   },
   computed: {
@@ -68,7 +67,11 @@ export default {
   },
   watch: {
     'searchNum': function(val) {
-      this.searchOrder()
+      if (this.$route.params.module === 'productScan') {
+        this.scan()
+      } else {
+        this.searchOrder()
+      }
     }
   },
   methods: {
@@ -77,7 +80,14 @@ export default {
     },
     // 设置表头标题
     setTableH() {
-      this.$store.commit('tableH', ['序号', '入库单号', '归属仓库', '客户地址'])
+      if (this.$route.params.module === 'productScan') {
+        this.$store.commit('tableH', ['序号', '品名', '条码', '状态'])
+      } else {
+        this.$store.commit('tableH', ['序号', '入库单号', '归属仓库', '客户地址'])
+      }
+    },
+    setProductScanList(arr) {
+      this.$store.commit('productScanList', arr)
     },
     // 将订单列表提交到store
     setOrders(arr) {
@@ -91,7 +101,8 @@ export default {
     },
     // url
     orderListParams() {
-      let url = path.sap + this.moduleName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
+      let temp = this.moduleName
+      let url = path.sap + temp + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
       // if (this.moduleName === 'stock') {
       //   url = path.sap + this.bottomBtnName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
       // } else if (this.moduleName === 'purchase') {
@@ -118,6 +129,20 @@ export default {
       })
       return data
     },
+    // 生产扫描
+    scan() {
+      let _this = this
+      let url = path.sap + 'product/getorder'
+      let params = "{ 'Item': {SN: '" + this.searchNum + "'} }"
+      _this.putInShow = true
+      V.post(url, params).then(function(data) {
+        _this.putInShow = false
+        if (data.MT_Product_GetOrder_Resp.Item) {
+          data = data.MT_Product_GetOrder_Resp.Item
+          _this.setScanArr(data)
+        }
+      })
+    },
     // 检索订单号
     searchOrder() {
       let arr = []
@@ -140,6 +165,13 @@ export default {
         }
         this.setOrders(arr)
       }
+    },
+    // 转化生产扫描数组
+    setScanArr(data) {
+      let temp = []
+      temp[0] = data.MAKTX
+      temp[1] = data.ZDEZTMA
+      temp[2] = data.ZFBMS
     },
     // 转化数组
     setTrArr(data) {
@@ -185,6 +217,7 @@ export default {
     },
     sales(bottomBtnName) {
       let _this = this
+      this.moduleName = bottomBtnName
       if (this.bottomBtnName !== bottomBtnName) {
         this.setbottomBtnName(bottomBtnName)
         this.getOrderList(this.orderListParams()).then(function(data) {
@@ -192,8 +225,16 @@ export default {
         })
       }
     },
-    productScan() {
-
+    productScan(name) {
+      // let _this = this
+      // this.moduleName = this.bottomBtnName
+      if (name === 'scanfw') {
+        this.titName = '扫防伪码'
+        this.bottomBtn = true
+      } else {
+        this.titName = '扫标签码'
+        this.bottomBtn = false
+      }
     }
   },
   directives: {
@@ -206,16 +247,23 @@ export default {
     }
   },
   created: function() {
-    // 设置销售模块分类
-    this.setbottomBtnName('salestockup')
     let _this = this
     if (this.moduleName !== 'product') {
-      if (this.moduleName = 'stock') {
+      if (this.moduleName === 'stock') {
         this.moduleName = 'salestockup'
+        // 设置底部模块分类
+        this.setbottomBtnName('salestockup')
+      } else if (this.moduleName === 'productScan') {
+        this.moduleName = 'scanbq'
+        // 设置底部模块分类
+        this.setbottomBtnName('scanbq')
+        this.bottomBtn = false
       }
-      this.getOrderList(this.orderListParams()).then(function(data) {
-        _this.setTrArr(data)
-      })
+      if (this.$route.params.module !== 'productScan') {
+        this.getOrderList(this.orderListParams()).then(function(data) {
+          _this.setTrArr(data)
+        })
+      }
     }
     this.setTableH()
     this.setOrders(this.orders)
