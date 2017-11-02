@@ -8,8 +8,13 @@
         <li>{{order[2]}}</li>
       </ul>
     </li>
-    <li v-if="name === 'productScan'">
-      
+    <li v-if="name === 'productScan'" v-for="(arr, index) in productScanList">
+      <ul>
+        <li>{{index+1}}</li>
+        <li><input :value="arr[0]" disabled="disabled"></li>
+        <li><input :value="arr[1]" disabled="disabled"></li>
+        <li>{{arr[2]}}</li>
+      </ul>
     </li>
   </ul>
 </template>

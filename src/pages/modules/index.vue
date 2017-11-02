@@ -18,6 +18,7 @@
       v-bind:style="{height: height+'px'}"
       ></TableTr>
     </div>
+    <button v-if="moduleName === 'scanbq' || moduleName === 'scanfw'" @click="setIn" class="setIn" type="button">{{btnName}}</button>
     <ul class="bottomBtn clearfix" v-if="moduleName === 'salestockup' || moduleName === 'salesoutput'">
       <li :class="{on: bottomBtn}" @click="sales('salestockup')">销售备货</li>
       <li :class="{on: !bottomBtn}" @click="sales('salesoutput')">销售出库</li>
@@ -57,12 +58,16 @@ export default {
       factoryNum: this.$route.query.factoryNum,
       warehouse: this.$route.query.warehouse,
       warehouseNum: this.$route.query.warehouseNum,
-      bottomBtn: true
+      bottomBtn: true,
+      btnName: ''
     }
   },
   computed: {
     bottomBtnName() {
       return this.$store.state.bottomBtnName
+    },
+    productScanList() {
+      return this.$store.state.productScanList
     }
   },
   watch: {
@@ -168,13 +173,35 @@ export default {
     },
     // 转化生产扫描数组
     setScanArr(data) {
-      let temp = []
-      temp[0] = data.MAKTX
-      temp[1] = data.ZDEZTMA
-      temp[2] = data.ZFBMS
+      let temp = false
+      if (this.productScanList.length > 0) {
+        for (let i in this.productScanList) {
+          if (this.productScanList[i][1] === this.searchNum) {
+            temp = true
+          }
+        }
+      }
+      if (!temp) {
+        for (let i in data) {
+          let arr = []
+          arr[0] = data[i].MAKTX
+          if (data[i].ZDEZTMA === '') {
+            arr[1] = data[i].ZTIAOM
+          } else {
+            arr[1] = data[i].ZDEZTMA
+          }
+          arr[2] = data[i].ZFBMS
+          this.productScanList.push(arr)
+        }
+        this.setProductScanList(this.productScanList)
+      } else {
+
+      }
     },
     // 转化数组
     setTrArr(data) {
+      console.log('ssssssss')
+      console.log(data)
       // 转化成table-tr组件使用的数组
       let trArr = []
       // 采购入库模块
@@ -210,6 +237,15 @@ export default {
         }
       } else if (this.moduleName === 'productScan') {
 
+      } else if (this.moduleName === 'salesreturn') {
+        data = data.MT_SalesReturn_GetInCity_Resp.Document
+        for (let i in data) {
+          let temp = []
+          temp[0] = data[i].BUS_NO
+          temp[1] = this.warehouse
+          temp[2] = data[i].LGOBE
+          trArr.push(temp)
+        }
       }
       this.setOrders(trArr)
       // 将获取的数据保存到本地变量
@@ -235,6 +271,43 @@ export default {
         this.titName = '扫标签码'
         this.bottomBtn = false
       }
+    },
+    snArr() {
+      let arr = []
+      for (let i in this.productScanList) {
+        arr.push(this.productScanList[i][1])
+      }
+      return arr
+    },
+    setIn() {
+      let _this = this
+      let url = path.sap + 'product/generateorder'
+      let temp = ''
+      for (let i in this.snArr()) {
+        temp += 'Item:{ZTIAOM:"' + this.snArr()[i] + '"},'
+      }
+      temp = temp.substr(0, temp.length - 1)
+      let params = '{Header:{' +
+        'ZBMDH: 11,' +
+        'ZBMMC: 11,' +
+        'ZRKYY: 11,' +
+        'ZRKEQ: 11,' +
+        'ZRKSJ: 11,' +
+        temp +
+      '}}'
+      _this.putInShow = true
+      V.post(url, params).then(function(data) {
+        _this.putInShow = false
+        data = data.MT_Produt_GenerateOrder_Resp.Header
+        if (data.ZXXLX === 'S') {
+          _this.setProductScanList([])
+          _this.searchNum = ''
+        }
+        // if (data.MT_Product_GetOrder_Resp.Item) {
+        //   data = data.MT_Product_GetOrder_Resp.Item
+        //   _this.setScanArr(data)
+        // }
+      })
     }
   },
   directives: {
@@ -258,6 +331,7 @@ export default {
         // 设置底部模块分类
         this.setbottomBtnName('scanbq')
         this.bottomBtn = false
+        this.btnName = '打印出货标签'
       }
       if (this.$route.params.module !== 'productScan') {
         this.getOrderList(this.orderListParams()).then(function(data) {
@@ -344,6 +418,17 @@ export default {
   }
 }
 
+.setIn{
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  margin-left: -2.5rem;
+  height: $f40;
+  width: 5rem;
+  color: #fff;
+  font-size: $f17;
+}
+
 @each $skin, $col, $subCol, $strongCol, $btnBgCol, $btnBgSubCol in $skin-data {
   .#{$skin} {
     .head{
@@ -363,6 +448,9 @@ export default {
         background: $col;
         color: #fff;
       }
+    }
+    .setIn{
+      background: $col;
     }
   }
 }
