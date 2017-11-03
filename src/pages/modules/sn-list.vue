@@ -58,7 +58,7 @@ import SNDetail from '../../components/purchase/sn-detail'
 import Btn from '../../components/btn'
 import { path, V, cloneObj } from '../../js/variable.js'
 import $ from 'n-zepto'
-// import {pathLocal, V} from '../js/variable.js'
+// import apiFn from '../../js/lib/api.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -793,14 +793,15 @@ export default {
         params = "{ 'item': {VBELN: " + this.BUS_NO + ", ZGH: '11608050', ZQRKZ: 1 }}"
       } else if (this.urlParams === 'purchase') {
         // params = "{ 'Item': {BUS_NO: " + this.BUS_NO + ", ZQRKZ: 1, ZDDLX: 1, ZGH: '11608050'} }"
-        params = {
-          'Item': {
-            BUS_NO: this.BUS_NO,
-            ZQRKZ: 1,
-            ZDDLX: 1,
-            ZGH: '11608050'
-          }
-        }
+        // params = {
+        //   Item: {
+        //     BUS_NO: this.BUS_NO,
+        //     ZQRKZ: 1,
+        //     ZDDLX: 1,
+        //     ZGH: '11608050'
+        //   }
+        // }
+        params = "{BUS_NO: " + this.BUS_NO + ", ZQRKZ: 1, ZDDLX: 1, ZGH: '11608050'}"
       } else if (this.urlParams === 'product') {
         let myDate = new Date()
         function turnDate(num) {
@@ -835,26 +836,51 @@ export default {
         }
       } else {
         _this.putInShow = true
-        $.ajax({
-          type: 'POST',
-          url: url,
-          // post payload:
-          data: JSON.stringify(params),
-          contentType: 'application/json',
-          success: function(data) {
-            _this.putInShow = false
-          },
-          error: function(xhr, type) {
-            _this.putInShow = false
-          }
-        })
-        // V.post(url, params).then(function(data) {
-        //   _this.putInShow = false
-        //   // data = JSON.parse(data.responseText)
-        // }).catch((res) => {
-        //   alert('请求超时！')
-        //   _this.loadingShow(false)
+        // api.ajax({
+        //   url: url,
+        //   method: 'post',
+        //   async: false,
+        //   timeout: 30,
+        //   dataType: 'text',
+        //   returnAll: false,
+        //   data: params
+        // },
+        // function(ret, err) {
+        //   if (ret) {
+        //     alert('success!')
+        //     alert(JSON.stringify(ret))
+        //     alert(typeof (params))
+        //     alert(JSON.stringify(params))
+        //   } else {
+        //     alert('error!')
+        //     alert(JSON.stringify(err))
+        //     alert(typeof (params))
+        //     alert(JSON.stringify(params))
+        //   }
         // })
+        // $.post(url, params, function(response) {
+        //   console.log(response)
+        // })
+        // $.ajax({
+        //   type: 'POST',
+        //   url: url,
+        //   // post payload:
+        //   data: params,
+        //   contentType: 'application/json',
+        //   success: function(data) {
+        //     _this.putInShow = false
+        //   },
+        //   error: function(xhr, type) {
+        //     _this.putInShow = false
+        //   }
+        // })
+        V.post(url, params).then(function(data) {
+          _this.putInShow = false
+          // data = JSON.parse(data.responseText)
+        }).catch((res) => {
+          alert('请求超时！')
+          _this.loadingShow(false)
+        })
       }
     }
   },
