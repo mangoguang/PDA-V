@@ -57,7 +57,6 @@ import PutIn from '../../components/purchase/put-in'
 import SNDetail from '../../components/purchase/sn-detail'
 import Btn from '../../components/btn'
 import { path, V, cloneObj } from '../../js/variable.js'
-import $ from 'n-zepto'
 // import apiFn from '../../js/lib/api.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -801,7 +800,10 @@ export default {
         //     ZGH: '11608050'
         //   }
         // }
-        params = "{BUS_NO: " + this.BUS_NO + ", ZQRKZ: 1, ZDDLX: 1, ZGH: '11608050'}"
+        params = '{BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: 1, ZGH: "11608050"}'
+        // params = {
+        //   values: '{BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: 1, ZGH: "11608050"}'
+        // }
       } else if (this.urlParams === 'product') {
         let myDate = new Date()
         function turnDate(num) {
@@ -836,28 +838,31 @@ export default {
         }
       } else {
         _this.putInShow = true
-        // api.ajax({
-        //   url: url,
-        //   method: 'post',
-        //   async: false,
-        //   timeout: 30,
-        //   dataType: 'text',
-        //   returnAll: false,
-        //   data: params
-        // },
-        // function(ret, err) {
-        //   if (ret) {
-        //     alert('success!')
-        //     alert(JSON.stringify(ret))
-        //     alert(typeof (params))
-        //     alert(JSON.stringify(params))
-        //   } else {
-        //     alert('error!')
-        //     alert(JSON.stringify(err))
-        //     alert(typeof (params))
-        //     alert(JSON.stringify(params))
-        //   }
-        // })
+        // window.apiready = function() {
+        //   api.ajax({
+        //     url: url,
+        //     method: 'post',
+        //     async: false,
+        //     timeout: 30,
+        //     dataType: 'text',
+        //     returnAll: false,
+        //     data: params
+        //   },
+        //   function(ret, err) {
+        //     if (ret) {
+        //       alert('success!')
+        //       alert(JSON.stringify(ret))
+        //       alert(typeof (params))
+        //       alert(JSON.stringify(params))
+        //     } else {
+        //       alert('error!')
+        //       alert(JSON.stringify(err))
+        //       alert(typeof (params))
+        //       alert(JSON.stringify(params))
+        //     }
+        //   })
+        // }
+        // window.apiready()
         // $.post(url, params, function(response) {
         //   console.log(response)
         // })
