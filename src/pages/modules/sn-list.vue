@@ -90,7 +90,7 @@ export default {
       moduleName: this.$route.query.moduleName,
       urlParams: this.$route.query.name,
       // 1为可以获取订单列表，2为不可获取且为分包，3为合包，4为不是分包也不是合包
-      orderType: 1,
+      orderType: null,
       // 用于判断是否第一次push数组
       firstPush: true,
       factory: this.$route.query.factory,
@@ -221,7 +221,7 @@ export default {
       } else if (temp === 'purchase') {
         params = {
           BUS_NO: this.BUS_NO,
-          ZDDLX: 1,
+          ZDDLX: 2,
           WERKS: this.factoryNum,
           LGORT: this.warehouseNum
         }
@@ -651,7 +651,7 @@ export default {
         params.data = {
           BUS_NO: arr[i].BUS_NO,
           ITEM_NO: arr[i].ITEM_NO,
-          ZDDLX: 1,
+          ZDDLX: 2,
           ZTIAOM: this.inputVal,
           WERKS: arr[i].WERKS,
           LGORT: arr[i].LGORT,
@@ -800,7 +800,7 @@ export default {
         //     ZGH: '11608050'
         //   }
         // }
-        params = '{BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: 1, ZGH: "11608050"}'
+        params = '{BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: 2, ZGH: "11608050"}'
         // params = {
         //   values: '{BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: 1, ZGH: "11608050"}'
         // }

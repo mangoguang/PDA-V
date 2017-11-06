@@ -52,11 +52,19 @@ export default {
     login: function() {
       let _this = this
       let params = {
-          // name: 'mango',
-          // password: '123456'
-          account: this.account,
-          password: md5(this.password).toLocaleUpperCase()
-        }
+        // name: 'mango',
+        // password: '123456'
+        account: this.account,
+        password: md5(this.password).toLocaleUpperCase()
+      }
+      // let params = '{' +
+      //   'Item: {' +
+      //     'ZFWMA: "000C29CAC9E01EE7B08667FE666F6388",' +
+      //     'ZIP: "192.168.1.1",' +
+      //     'ZBQXH: "48"' +
+      //   '}' +
+      // '}'
+      // let url = path.sap + 'securitycode/print'
       let url = path.oa + '/PDAUserCheck.jsp'
       // let url = path.local + '/login.php'
       if (_this.canClick) {
@@ -78,6 +86,14 @@ export default {
           _this.canClick = true
           _this.loadingShow(false)
         })
+        // V.post(url, params).then(function(data) {
+        //   console.log(data)
+        //   _this.loadingShow(false)
+        // }).catch((res) => {
+        //   alert('请求超时！')
+        //   _this.canClick = true
+        //   _this.loadingShow(false)
+        // })
       }
     }
   },

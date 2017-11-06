@@ -2,7 +2,7 @@
     <div class="head">
       <button class="back" @click="back()" type="button"></button>
       <slot></slot>
-      <router-link to="/edit" class="edit"></router-link>
+      <router-link to="/setting" class="edit"></router-link>
     </div>
 </template>
 <script>

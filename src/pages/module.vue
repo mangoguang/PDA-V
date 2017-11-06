@@ -108,7 +108,11 @@ export default {
     // 跳转对应模块
     toModule: function(module, status, moduleName) {
       if (status === 'true') {
-        this.$router.push({ path: '/modules/' + module + '?warehouse=' + this.warehouse + '&warehouseNum=' + this.warehouseNum + '&moduleName=' + moduleName + '&factoryNum=' + this.factoryNum })
+        if (module === 'setting') {
+          this.$router.push({ path: '/setting' })
+        } else {
+          this.$router.push({ path: '/modules/' + module + '?warehouse=' + this.warehouse + '&warehouseNum=' + this.warehouseNum + '&moduleName=' + moduleName + '&factoryNum=' + this.factoryNum })
+        }
       } else {
         alert('您没有读取该模块内容的权限。')
       }

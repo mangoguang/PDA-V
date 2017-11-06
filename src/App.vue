@@ -38,7 +38,15 @@ export default{
 <style lang="scss">
 @import "./assets/sass/variable.scss";
 @import "./assets/css/common.css";
+body{
+  padding-top: 25px;
+  box-sizing: border-box;
+}
 .h25{
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
   height: 25px;
   width: 100%;
 }
