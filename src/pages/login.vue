@@ -2,7 +2,7 @@
 <template>
   <div class="login" v-bind:style="{height: height+'px', background: 'url(./static/images/skinImg/' + skinCol + '/bg.png)','background-size': '100% 100%'}">
     <form>
-      <h1>欢迎使用扫描枪</h1>
+      <h1 @click="test">欢迎使用扫描枪</h1>
       <ul>
         <li>
           <label for="account"></label>
@@ -49,6 +49,24 @@ export default {
     loadingShow: function(x) {
       this.$store.commit('loadingShow', x)
     },
+    test() {
+      let params = '{' +
+        'Item: {' +
+          'ZFWMA: "000C29CAC9E01EE7B08667FE666F6388",' +
+          'ZIP: "192.168.1.1",' +
+          'ZBQXH: "48"' +
+        '}' +
+      '}'
+      let url = path.sap + 'securitycode/print'
+      V.post(url, params).then(function(data) {
+        console.log(data)
+        _this.loadingShow(false)
+      }).catch((res) => {
+        alert('请求超时！')
+        _this.canClick = true
+        _this.loadingShow(false)
+      })
+    },
     login: function() {
       let _this = this
       let params = {
@@ -57,14 +75,6 @@ export default {
         account: this.account,
         password: md5(this.password).toLocaleUpperCase()
       }
-      // let params = '{' +
-      //   'Item: {' +
-      //     'ZFWMA: "000C29CAC9E01EE7B08667FE666F6388",' +
-      //     'ZIP: "192.168.1.1",' +
-      //     'ZBQXH: "48"' +
-      //   '}' +
-      // '}'
-      // let url = path.sap + 'securitycode/print'
       let url = path.oa + '/PDAUserCheck.jsp'
       // let url = path.local + '/login.php'
       if (_this.canClick) {
@@ -86,14 +96,6 @@ export default {
           _this.canClick = true
           _this.loadingShow(false)
         })
-        // V.post(url, params).then(function(data) {
-        //   console.log(data)
-        //   _this.loadingShow(false)
-        // }).catch((res) => {
-        //   alert('请求超时！')
-        //   _this.canClick = true
-        //   _this.loadingShow(false)
-        // })
       }
     }
   },

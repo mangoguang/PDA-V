@@ -3,6 +3,7 @@ function Path() {
 	this.local = 'http://localhost/PDA-V/static/json'
 	// this.local = 'http://mangoguang.cn/PDA/static/json'
 	this.sap = 'http://10.12.0.153:50100/RESTAdapter/'
+	// this.sap = 'http://10.12.0.154:50100/RESTAdapter/'
 }
 let path = new Path()
 

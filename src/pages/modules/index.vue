@@ -137,16 +137,37 @@ export default {
     // 生产扫描
     scan() {
       let _this = this
-      let url = path.sap + 'product/getorder'
-      let params = "{ 'Item': {SN: '" + this.searchNum + "'} }"
-      _this.putInShow = true
-      V.post(url, params).then(function(data) {
-        _this.putInShow = false
-        if (data.MT_Product_GetOrder_Resp.Item) {
-          data = data.MT_Product_GetOrder_Resp.Item
-          _this.setScanArr(data)
+      let url = ''
+      let params = ''
+      // 扫防伪码
+      if (this.bottomBtnName === 'scanbq') {
+        url = path.sap + 'product/getorder'
+        params = "{ 'Item': {SN: '" + this.searchNum + "'} }"
+        _this.putInShow = true
+        V.post(url, params).then(function(data) {
+          _this.putInShow = false
+          if (data.MT_Product_GetOrder_Resp.Item) {
+            data = data.MT_Product_GetOrder_Resp.Item
+            _this.setScanArr(data)
+          }
+        })
+      } else if (this.bottomBtnName === 'scanfw') {
+        // 扫标签码
+        url = path.sap + 'securitycode/verify'
+        params = {
+          ZFWMA: this.searchNum
         }
-      })
+        _this.putInShow = true
+        V.get(url, params).then(function(data) {
+          data = JSON.parse(data.responseText)
+          alert(_this.bottomBtnName)
+          _this.putInShow = false
+          if (data.MT_SecurityCode_Verify_Resp.Item) {
+            data = data.MT_SecurityCode_Verify_Resp.Item
+            _this.setScanArr(_this.searchNum)
+          }
+        })
+      }
     },
     // 检索订单号
     searchOrder() {
@@ -175,27 +196,39 @@ export default {
     setScanArr(data) {
       let temp = false
       if (this.productScanList.length > 0) {
+        // 检查该SN是否已扫描 true时表示已扫描，将不添加入productScanList打印数组
         for (let i in this.productScanList) {
           if (this.productScanList[i][1] === this.searchNum) {
             temp = true
           }
         }
       }
-      if (!temp) {
-        for (let i in data) {
-          let arr = []
-          arr[0] = data[i].MAKTX
-          if (data[i].ZDEZTMA === '') {
-            arr[1] = data[i].ZTIAOM
-          } else {
-            arr[1] = data[i].ZDEZTMA
+      // 扫标签码
+      if (this.bottomBtnName === 'scanbq') {
+        // SN条码未扫描
+        if (!temp) {
+          for (let i in data) {
+            let arr = []
+            arr[0] = data[i].MAKTX
+            if (data[i].ZDEZTMA === '') {
+              arr[1] = data[i].ZTIAOM
+            } else {
+              arr[1] = data[i].ZDEZTMA
+            }
+            arr[2] = data[i].ZFBMS
+            this.productScanList.push(arr)
           }
-          arr[2] = data[i].ZFBMS
-          this.productScanList.push(arr)
-        }
-        this.setProductScanList(this.productScanList)
-      } else {
+          this.setProductScanList(this.productScanList)
+        } else {
 
+        }
+      } else {
+        // 扫防伪码
+        if (!temp) {
+          let arr = ['', data, '']
+          this.productScanList.push(arr)
+          this.setProductScanList(this.productScanList)
+        }
       }
     },
     // 转化数组
@@ -266,10 +299,14 @@ export default {
       // this.moduleName = this.bottomBtnName
       if (name === 'scanfw') {
         this.titName = '扫防伪码'
+        this.btnName = '打印出货标签'
         this.bottomBtn = true
+        this.setbottomBtnName('scanfw')
       } else {
         this.titName = '扫标签码'
+        this.btnName = '打印入库单'
         this.bottomBtn = false
+        this.setbottomBtnName('scanbq')
       }
     },
     snArr() {
@@ -281,33 +318,83 @@ export default {
     },
     setIn() {
       let _this = this
-      let url = path.sap + 'product/generateorder'
       let temp = ''
-      for (let i in this.snArr()) {
-        temp += 'Item:{ZTIAOM:"' + this.snArr()[i] + '"},'
+      let url = ''
+      let params = ''
+      if (this.bottomBtnName === 'scanbq') {
+        for (let i in this.snArr()) {
+          temp += 'Item:{ZTIAOM:"' + this.snArr()[i] + '"},'
+        }
+        temp = temp.substr(0, temp.length - 1)
+        url = path.sap + 'product/generateorder'
+        params = '{Header:{' +
+          'ZBMDH: 11,' +
+          'ZBMMC: 11,' +
+          'ZRKYY: 11,' +
+          'ZRKEQ: 11,' +
+          'ZRKSJ: 11,' +
+          'ZIP: "192.168.1.1"' +
+          temp +
+        '}}'
+      } else {
+        params = '{' +
+          'Item: {' +
+            'ZFWMA: "000C29CAC9E01EE7B08667FE666F6388",' +
+            'ZIP: "192.168.1.1",' +
+            'ZBQXH: "48"' +
+          '}' +
+        '}'
+        url = path.sap + 'securitycode/print'
       }
-      temp = temp.substr(0, temp.length - 1)
-      let params = '{Header:{' +
-        'ZBMDH: 11,' +
-        'ZBMMC: 11,' +
-        'ZRKYY: 11,' +
-        'ZRKEQ: 11,' +
-        'ZRKSJ: 11,' +
-        temp +
-      '}}'
+      // let params = {
+      //   body: '{Header:{' +
+      //     'ZBMDH: 11,' +
+      //     'ZBMMC: 11,' +
+      //     'ZRKYY: 11,' +
+      //     'ZRKEQ: 11,' +
+      //     'ZRKSJ: 11,' +
+      //     temp +
+      //   '}}'
+      // }
       _this.putInShow = true
       V.post(url, params).then(function(data) {
         _this.putInShow = false
-        data = data.MT_Produt_GenerateOrder_Resp.Header
-        if (data.ZXXLX === 'S') {
-          _this.setProductScanList([])
-          _this.searchNum = ''
-        }
+        // data = data.MT_Produt_GenerateOrder_Resp.Header
+        // if (data.ZXXLX === 'S') {
+        //   _this.setProductScanList([])
+        //   _this.searchNum = ''
+        // }
         // if (data.MT_Product_GetOrder_Resp.Item) {
         //   data = data.MT_Product_GetOrder_Resp.Item
         //   _this.setScanArr(data)
         // }
       })
+
+      // window.apiready = function() {
+      //     api.ajax({
+      //       url: url,
+      //       method: 'post',
+      //       async: false,
+      //       timeout: 30,
+      //       dataType: 'text',
+      //       returnAll: false,
+      //       data: params
+      //     },
+      //     function(ret, err) {
+      //       if (ret) {
+      //         alert(JSON.stringify(ret))
+      //         _this.putInShow = false
+      //         data = data.MT_Produt_GenerateOrder_Resp.Header
+      //         if (data.ZXXLX === 'S') {
+      //           _this.setProductScanList([])
+      //           _this.searchNum = ''
+      //         }
+      //       } else {
+      //         alert(JSON.stringify(err))
+      //       }
+      //     })
+      //   }
+      //   window.apiready()
     }
   },
   directives: {
@@ -327,10 +414,10 @@ export default {
         // 设置底部模块分类
         this.setbottomBtnName('salestockup')
       } else if (this.moduleName === 'productScan') {
-        this.moduleName = 'scanbq'
+        this.moduleName = 'scanfw'
         // 设置底部模块分类
-        this.setbottomBtnName('scanbq')
-        this.bottomBtn = false
+        this.setbottomBtnName('scanfw')
+        this.bottomBtn = true
         this.btnName = '打印出货标签'
       }
       if (this.$route.params.module !== 'productScan') {

@@ -1,6 +1,6 @@
 <template>
   <ul class="clearfix table-tr-op">
-    <li v-if="name !== 'productScan'" v-for="(order,index) in orders" @click="toOrderDetail(order[0])">
+    <li v-if="name !== 'productScan'" v-for="(order,index) in orders" @click="toOrderDetail(order[0], order[2])">
       <ul>
         <li>{{index+1}}</li>
         <li>{{order[0]}}</li>
@@ -44,7 +44,7 @@ Vue.use(Vuex)
       }
     },
     methods: {
-      toOrderDetail(num) {
+      toOrderDetail(num, ZDDLX) {
         // if (this.bottomBtnName === 'salestockup') {
         //   nextPageName = 'addSNList'
         // } else {
@@ -53,7 +53,7 @@ Vue.use(Vuex)
         if (temp === 'stock') {
           temp = this.bottomBtnName
         }
-        this.$router.push({ path: '/snList/' + num + '?name=' + temp + '&moduleName=' + this.moduleName + '&warehouse=' + this.$route.query.warehouse + '&warehouseNum=' + this.$route.query.warehouseNum + '&factoryNum=' + this.$route.query.factoryNum })
+        this.$router.push({ path: '/snList/' + num + '?name=' + temp + '&moduleName=' + this.moduleName + '&warehouse=' + this.$route.query.warehouse + '&warehouseNum=' + this.$route.query.warehouseNum + '&factoryNum=' + this.$route.query.factoryNum + '&ZDDLX=' + ZDDLX })
       }
     },
     created: function() {

@@ -95,7 +95,8 @@ export default {
       firstPush: true,
       factory: this.$route.query.factory,
       factoryNum: this.$route.query.factoryNum,
-      warehouseNum: this.$route.query.warehouseNum
+      warehouseNum: this.$route.query.warehouseNum,
+      ZDDLX: this.$route.query.ZDDLX
     }
   },
   watch: {
@@ -221,7 +222,7 @@ export default {
       } else if (temp === 'purchase') {
         params = {
           BUS_NO: this.BUS_NO,
-          ZDDLX: 2,
+          ZDDLX: this.ZDDLX,
           WERKS: this.factoryNum,
           LGORT: this.warehouseNum
         }
@@ -294,7 +295,7 @@ export default {
     checkStatus(ZJYZT, urlParams) {
       let status = false
       if (urlParams === 'purchase') {
-        if (ZJYZT === 1) {
+        if (ZJYZT === 1 || ZJYZT === 9) {
           status = true
         } else {
           status = false
@@ -437,6 +438,8 @@ export default {
     verify1() {
       let num = this.inputVal
       let arr = this.snArr
+      console.log('popopo')
+      console.log(arr)
       let _this = this
       let fbtype = 0
       let index = 0
@@ -447,29 +450,31 @@ export default {
       for (let i in arr) {
         // 标准包装
         if (arr[i].Item === null || arr[i].Item === undefined) {
-          fbtype = 0
           if (num === arr[i].ZTIAOM) {
+            fbtype = 0
             index = i
           }
         } else {
           // 分包
           if (arr[i].Item[0].ZFBFS === 1) {
-            fbtype = 1
             for (let j in arr[i].Item) {
               if (num === arr[i].Item[j].ZTIAOMA_FB) {
+                fbtype = 1
                 index = i
                 subindex = j
               }
             }
           } else {
             // 合包
-            fbtype = 2
             if (num === arr[i].ZTIAOM) {
+              fbtype = 2
               index = i
             }
           }
         }
       }
+
+      console.log(fbtype)
 
       this.verifyAjax(this.verifyUrl1(arr, index)).then(function(data) {
         if (_this.urlParams === 'purchase') {
@@ -489,6 +494,7 @@ export default {
             _this.inputVal = ''
             _this.focusStatus = true
           } else if (fbtype === 1) {
+            alert('success')
             // 分包
             arr[index].Item[subindex].ZJYZT = _this.verifyStatus()
             _this.setSNArr(arr)
@@ -515,6 +521,7 @@ export default {
           // alert(data.ZTXXX)
         }
       })
+
       // for (let i in arr) {
       //   // 采购入库模块
       //   if (this.urlParams === 'purchase') {
@@ -651,7 +658,7 @@ export default {
         params.data = {
           BUS_NO: arr[i].BUS_NO,
           ITEM_NO: arr[i].ITEM_NO,
-          ZDDLX: 2,
+          ZDDLX: this.ZDDLX,
           ZTIAOM: this.inputVal,
           WERKS: arr[i].WERKS,
           LGORT: arr[i].LGORT,
@@ -782,6 +789,7 @@ export default {
       }
       return temp
     },
+    // 确认入库
     setSureIn() {
       let _this = this
       let params = ''
@@ -791,19 +799,10 @@ export default {
       } else if (this.urlParams === 'salesoutput') {
         params = "{ 'item': {VBELN: " + this.BUS_NO + ", ZGH: '11608050', ZQRKZ: 1 }}"
       } else if (this.urlParams === 'purchase') {
-        // params = "{ 'Item': {BUS_NO: " + this.BUS_NO + ", ZQRKZ: 1, ZDDLX: 1, ZGH: '11608050'} }"
-        // params = {
-        //   Item: {
-        //     BUS_NO: this.BUS_NO,
-        //     ZQRKZ: 1,
-        //     ZDDLX: 1,
-        //     ZGH: '11608050'
-        //   }
-        // }
-        params = '{BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: 2, ZGH: "11608050"}'
-        // params = {
-        //   values: '{BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: 1, ZGH: "11608050"}'
-        // }
+        // params = "{ 'Item': {BUS_NO: " + this.BUS_NO + ", ZQRKZ: 1, ZDDLX: this.ZDDLX, ZGH: '11608050'} }"
+        params = {
+          body: '{"Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: ' + this.ZDDLX + ', ZGH: "11608050"}},{"Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: ' + this.ZDDLX + ', ZGH: "11608050"}}'
+        }
       } else if (this.urlParams === 'product') {
         let myDate = new Date()
         function turnDate(num) {
@@ -838,31 +837,26 @@ export default {
         }
       } else {
         _this.putInShow = true
-        // window.apiready = function() {
-        //   api.ajax({
-        //     url: url,
-        //     method: 'post',
-        //     async: false,
-        //     timeout: 30,
-        //     dataType: 'text',
-        //     returnAll: false,
-        //     data: params
-        //   },
-        //   function(ret, err) {
-        //     if (ret) {
-        //       alert('success!')
-        //       alert(JSON.stringify(ret))
-        //       alert(typeof (params))
-        //       alert(JSON.stringify(params))
-        //     } else {
-        //       alert('error!')
-        //       alert(JSON.stringify(err))
-        //       alert(typeof (params))
-        //       alert(JSON.stringify(params))
-        //     }
-        //   })
-        // }
-        // window.apiready()
+        window.apiready = function() {
+          api.ajax({
+            url: url,
+            method: 'post',
+            async: false,
+            timeout: 30,
+            dataType: 'text',
+            returnAll: false,
+            data: params
+          },
+          function(ret, err) {
+            if (ret) {
+              alert(JSON.stringify(ret))
+              _this.putInShow = false
+            } else {
+              alert(JSON.stringify(err))
+            }
+          })
+        }
+        window.apiready()
         // $.post(url, params, function(response) {
         //   console.log(response)
         // })
@@ -879,13 +873,13 @@ export default {
         //     _this.putInShow = false
         //   }
         // })
-        V.post(url, params).then(function(data) {
-          _this.putInShow = false
-          // data = JSON.parse(data.responseText)
-        }).catch((res) => {
-          alert('请求超时！')
-          _this.loadingShow(false)
-        })
+        // V.post(url, params).then(function(data) {
+        //   _this.putInShow = false
+        //   // data = JSON.parse(data.responseText)
+        // }).catch((res) => {
+        //   alert('请求超时！')
+        //   _this.loadingShow(false)
+        // })
       }
     }
   },

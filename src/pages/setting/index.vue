@@ -11,8 +11,8 @@
       </li>
       <li>
         <label for="scanPlan">打印方案</label>
-        <select id="scanPlan" v-model="printPlanVal">
-          <option v-for="name in printPlanList" :value="name">{{ name }}</option>
+        <select id="scanPlan" v-model="printPlanVal" @change="setprintPlanVal()">
+          <option v-for="obj in printPlanList" :value="obj.ZBQMC">{{ obj.ZBQMC }}</option>
         </select>
         <span></span>
       </li>
@@ -76,7 +76,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import HeadComponent from '../../components/header'
-// import {pathOA} from '../../js/variable.js'
+import {path, V} from '../../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -86,8 +86,8 @@ export default {
   data () {
     return {
       height: document.documentElement.clientHeight,
-      printPlanList: ['防伪小条码', '标签码'], // 打印方案
-      printPlanVal: '防伪小条码',
+      printPlanList: [], // 打印方案
+      printPlanVal: localStorage.getItem('printPlanVal'),
       printList: ['理光PL-8800', '理光PL-8900'], // 标签打印机
       printVal: '理光PL-8800',
       fwPrintIPList: ['192.168.1.19', '192.168.32'], // 标签打印机ip
@@ -97,10 +97,10 @@ export default {
       typeList: ['skinA', 'skinB', 'skinC'], // 风格选择
       typeVal: localStorage.getItem('skinCol'),
       factoryList: ['工厂一', '工厂二', '工厂三'],
-      factorySel: '工厂一',
+      factorySel: '',
       factorySelNum: '',
       warehouseList: ['仓库一', '仓库二', '仓库三'],
-      warehouseSel: '仓库一',
+      warehouseSel: '',
       warehouseSelNum: ''
     }
   },
@@ -120,6 +120,16 @@ export default {
       localStorage.setItem('skinCol', this.typeVal)
       this.setSkinCol(this.typeVal)
     },
+    setprintPlanVal() {
+      let temp = ''
+      let arr = this.printPlanList
+      for (let i in arr) {
+        if (this.printPlanVal === arr[i].ZBQMC) {
+          temp = arr[i].ZBQXH
+        }
+      }
+      localStorage.setItem('printPlanMsg', '{name: "' + this.printPlanVal + '", num: "' + temp + '"}')
+    },
     getFactorySel: function() {
       // 获取本地存储默认工厂
       let factoryMsg = localStorage.getItem('factoryMsg')
@@ -133,10 +143,34 @@ export default {
         // this.factorySel = this.factorys[0].name
       }
     },
+    getModule() {
+      let _this = this
+      let url = path.sap + 'securitycode/getmodule'
+      let params = {}
+      _this.putInShow = true
+      V.get(url, params).then(function(data) {
+        _this.putInShow = false
+        data = JSON.parse(data.responseText).MT_SecurityCode_GetModule_Resp.Item
+        _this.printPlanList = data
+        if (!_this.printPlanVal) {
+          localStorage.setItem('printPlanMsg', '{nam: "' + data[0].ZBQMC + '", num: "' + data[0].ZBQXH + '"}')
+          _this.printPlanVal = data[0].ZBQMC
+        }
+      })
+    }
   },
   created() {
     this.loadingShow(false)
+    this.getFactorySel()
     this.setSkinCol(localStorage.getItem('skinCol'))
+    // 获取防伪打印模板
+    this.getModule()
+    let obj
+    let printPlanMsg = localStorage.getItem('printPlanMsg')
+    if (printPlanMsg) {
+      obj = eval('(' + printPlanMsg + ')')
+      this.printPlanVal = obj.name
+    }
   },
   mounted() {
 
