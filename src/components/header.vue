@@ -24,6 +24,7 @@
   position: relative;
   width: 100%;
   margin-bottom: -1px;
+  margin-top: 25px;
   h1{
     font-size: $f18;
     height: 1.5rem;
