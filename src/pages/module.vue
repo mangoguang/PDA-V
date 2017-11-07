@@ -27,9 +27,6 @@
         <p>{{module.name}}</p>
       </li>
     </ul>
-    <button type="button" @click="changeSkin('skinA')">skinA</button>
-    <button type="button" @click="changeSkin('skinB')">skinB</button>
-    <button type="button" @click="changeSkin('skinC')">skinC</button>
   </div>
 </template>
 <!-- </keep-alive> -->
@@ -70,10 +67,6 @@ export default {
     },
     loadingShow: function(x) {
       this.$store.commit('loadingShow', x)
-    },
-    changeSkin: function(skinCol) {
-      this.$store.commit('changeSkin', skinCol)
-      localStorage.setItem('skinCol', skinCol)
     },
     jurisdiction: function() {
       let _this = this

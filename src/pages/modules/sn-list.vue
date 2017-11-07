@@ -295,7 +295,7 @@ export default {
     checkStatus(ZJYZT, urlParams) {
       let status = false
       if (urlParams === 'purchase') {
-        if (ZJYZT === 1 || ZJYZT === 9) {
+        if (ZJYZT === 1 || ZJYZT === 9 || ZJYZT === 'Z') {
           status = true
         } else {
           status = false
@@ -491,17 +491,16 @@ export default {
             _this.turnArr(arr)
             _this.status3++
             _this.status4 = _this.status2 - _this.status3
-            _this.inputVal = ''
+            // _this.inputVal = ''
             _this.focusStatus = true
           } else if (fbtype === 1) {
-            alert('success')
             // 分包
             arr[index].Item[subindex].ZJYZT = _this.verifyStatus()
             _this.setSNArr(arr)
             _this.turnArr(arr)
             _this.status3++
             _this.status4 = _this.status2 - _this.status3
-            _this.inputVal = ''
+            // _this.inputVal = ''
             _this.focusStatus = true
           } else {
             // 合包
@@ -509,7 +508,7 @@ export default {
             // _this.setSNArr(arr)
             _this.turnArr(arr)
             alert('success')
-            _this.inputVal = ''
+            // _this.inputVal = ''
             _this.focusStatus = true
             console.log('00999')
             console.log(arr)
@@ -517,7 +516,7 @@ export default {
         } else {
           _this.errorShow = true
           _this.$store.commit('errorMsg', data.ZTXXX)
-          _this.inputVal = ''
+          // _this.inputVal = ''
           // alert(data.ZTXXX)
         }
       })
@@ -799,10 +798,10 @@ export default {
       } else if (this.urlParams === 'salesoutput') {
         params = "{ 'item': {VBELN: " + this.BUS_NO + ", ZGH: '11608050', ZQRKZ: 1 }}"
       } else if (this.urlParams === 'purchase') {
-        // params = "{ 'Item': {BUS_NO: " + this.BUS_NO + ", ZQRKZ: 1, ZDDLX: this.ZDDLX, ZGH: '11608050'} }"
-        params = {
-          body: '{"Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: ' + this.ZDDLX + ', ZGH: "11608050"}},{"Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: ' + this.ZDDLX + ', ZGH: "11608050"}}'
-        }
+        params = "{ 'Item': {BUS_NO: " + this.BUS_NO + ", ZQRKZ: 1, ZDDLX: " + this.ZDDLX + ", ZGH: '11608050'} }"
+        // params = {
+        //   body: '{"Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: ' + this.ZDDLX + ', ZGH: "11608050"}},{"Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: ' + this.ZDDLX + ', ZGH: "11608050"}}'
+        // }
       } else if (this.urlParams === 'product') {
         let myDate = new Date()
         function turnDate(num) {
@@ -828,6 +827,17 @@ export default {
       if (this.urlParams === 'product') {
         if (this.status4 === 0) {
           V.get(url, params).then(function(data) {
+            data = JSON.parse(data.responseText)
+            if (data.MT_Product_OrderPost_Resp.Item) {
+              data = data.MT_Product_OrderPost_Resp.Item
+              if (data.ZXXLX === 'S') {
+                alert('入库成功')
+              } else {
+                alert(data.ZTXXX)
+              }
+            } else {
+              alert('数据缺失！')
+            }
             _this.putInShow = false
             // data = JSON.parse(data.responseText)
           })
@@ -837,51 +847,66 @@ export default {
         }
       } else {
         _this.putInShow = true
-        window.apiready = function() {
-          api.ajax({
-            url: url,
-            method: 'post',
-            async: false,
-            timeout: 30,
-            dataType: 'text',
-            returnAll: false,
-            data: params
-          },
-          function(ret, err) {
-            if (ret) {
-              alert(JSON.stringify(ret))
-              _this.putInShow = false
-            } else {
-              alert(JSON.stringify(err))
-            }
-          })
-        }
-        window.apiready()
-        // $.post(url, params, function(response) {
-        //   console.log(response)
-        // })
-        // $.ajax({
-        //   type: 'POST',
-        //   url: url,
-        //   // post payload:
-        //   data: params,
-        //   contentType: 'application/json',
-        //   success: function(data) {
-        //     _this.putInShow = false
+        // window.apiready = function() {
+        //   api.ajax({
+        //     url: url,
+        //     method: 'post',
+        //     async: false,
+        //     timeout: 30,
+        //     dataType: 'text',
+        //     returnAll: false,
+        //     data: params
         //   },
-        //   error: function(xhr, type) {
-        //     _this.putInShow = false
-        //   }
-        // })
-        // V.post(url, params).then(function(data) {
-        //   _this.putInShow = false
-        //   // data = JSON.parse(data.responseText)
-        // }).catch((res) => {
-        //   alert('请求超时！')
-        //   _this.loadingShow(false)
-        // })
+        //   function(ret, err) {
+        //     if (ret) {
+        //       alert(JSON.stringify(ret))
+        //       _this.putInShow = false
+        //     } else {
+        //       alert(JSON.stringify(err))
+        //     }
+        //   })
+        // }
+        // window.apiready()
+        V.post(url, params).then(function(data) {
+          _this.putInShow = false
+          tip(data)
+        }).catch((res) => {
+          alert('请求超时！')
+          _this.loadingShow(false)
+        })
+        function tip(data) {
+          if (_this.urlParams === 'purchase') {
+            if (data.MT_Purchase_Confirm_Resp.Item) {
+              data = data.MT_Purchase_Confirm_Resp.Item
+              if (data.ZXXLX === 'S') {
+                alert('入库成功')
+              } else {
+                alert(data.ZTXXX)
+              }
+            }
+          } else if (_this.urlParams === 'salestockup') {
+            if (data.MT_Salestockup_Confirm_Resp.Item) {
+              data = data.MT_Salestockup_Confirm_Resp.Item
+              if (data.ZXXLX === 'S') {
+                alert('入库成功')
+              } else {
+                alert(data.ZTXXX)
+              }
+            }
+          } else if (_this.urlParams === 'salesoutput') {
+            if (data.MT_Salesoutput_Confirm_Resp.Item) {
+              data = data.MT_Salesoutput_Confirm_Resp.Item
+              if (data.ZXXLX === 'S') {
+                alert('入库成功')
+              } else {
+                alert(data.ZTXXX)
+              }
+            }
+          }
+        }
       }
     }
+
   },
   directives: {
     focus: {

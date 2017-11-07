@@ -81,6 +81,7 @@ export default {
         _this.canClick = false
         _this.loadingShow(true)
         V.post(url, params).then(function(data) {
+          console.log(data)
           _this.canClick = true
           _this.loadingShow(false)
           if (data.status === 'true') {
@@ -89,7 +90,13 @@ export default {
               "password: '" + _this.password + "'}")
             _this.$router.push({ path: '/select?name=' + data.name })
           } else {
-            alert('账号或者密码错误！')
+            if (data.type === '0') {
+              alert('该账号不存在！')
+            } else if (data.type === '1') {
+              alert('密码错误！')
+            } else {
+              alert('该账号已登录，不可重复登录！')
+            }
           }
         }).catch((res) => {
           alert('请求超时！')
@@ -134,6 +141,10 @@ export default {
 @import "./../assets/css/common.css";
 
 .login{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   form{
     position: absolute;
     top: 50%;

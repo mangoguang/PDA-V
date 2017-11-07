@@ -35,7 +35,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {path, V} from '../../js/variable.js'
+import {path, V, cloneObj} from '../../js/variable.js'
 import HeadComponent from '../../components/header'
 import TableH from '../../components/table-h'
 import TableTr from '../../components/table-tr-op'
@@ -139,34 +139,38 @@ export default {
       let _this = this
       let url = ''
       let params = ''
-      // 扫防伪码
-      if (this.bottomBtnName === 'scanbq') {
-        url = path.sap + 'product/getorder'
-        params = "{ 'Item': {SN: '" + this.searchNum + "'} }"
-        _this.putInShow = true
-        V.post(url, params).then(function(data) {
-          _this.putInShow = false
-          if (data.MT_Product_GetOrder_Resp.Item) {
-            data = data.MT_Product_GetOrder_Resp.Item
-            _this.setScanArr(data)
-          }
-        })
-      } else if (this.bottomBtnName === 'scanfw') {
+      let num = this.searchNum
+      if (num.length === 23 || num.length === 22 || num.length >= 27) {
         // 扫标签码
-        url = path.sap + 'securitycode/verify'
-        params = {
-          ZFWMA: this.searchNum
-        }
-        _this.putInShow = true
-        V.get(url, params).then(function(data) {
-          data = JSON.parse(data.responseText)
-          alert(_this.bottomBtnName)
-          _this.putInShow = false
-          if (data.MT_SecurityCode_Verify_Resp.Item) {
-            data = data.MT_SecurityCode_Verify_Resp.Item
-            _this.setScanArr(_this.searchNum)
+        if (this.bottomBtnName === 'scanbq') {
+          url = path.sap + 'product/getorder'
+          params = "{ 'Item': {SN: '" + num + "'} }"
+          _this.putInShow = true
+          V.post(url, params).then(function(data) {
+            _this.putInShow = false
+            if (data.MT_Product_GetOrder_Resp.Item) {
+              data = data.MT_Product_GetOrder_Resp.Item
+              _this.setScanArr(data)
+              _this.searchNum = ''
+            }
+          })
+        } else if (this.bottomBtnName === 'scanfw') {
+          // 扫防伪码
+          url = path.sap + 'securitycode/verify'
+          params = {
+            ZFWMA: num
           }
-        })
+          _this.putInShow = true
+          V.get(url, params).then(function(data) {
+            data = JSON.parse(data.responseText)
+            _this.putInShow = false
+            if (data.MT_SecurityCode_Verify_Resp.Item) {
+              data = data.MT_SecurityCode_Verify_Resp.Item
+              _this.setScanArr(_this.searchNum)
+              _this.searchNum = ''
+            }
+          })
+        }
       }
     },
     // 检索订单号
@@ -194,12 +198,16 @@ export default {
     },
     // 转化生产扫描数组
     setScanArr(data) {
+      console.log(data)
       let temp = false
+      let index = 0
+      console.log(this.productScanList)
       if (this.productScanList.length > 0) {
         // 检查该SN是否已扫描 true时表示已扫描，将不添加入productScanList打印数组
         for (let i in this.productScanList) {
           if (this.productScanList[i][1] === this.searchNum) {
             temp = true
+            index = i
           }
         }
       }
@@ -212,15 +220,24 @@ export default {
             arr[0] = data[i].MAKTX
             if (data[i].ZDEZTMA === '') {
               arr[1] = data[i].ZTIAOM
+              if (data[i].ZTIAOM === this.searchNum) {
+                arr[2] = data[i].ZFBMS
+                arr[3] = true
+              }
             } else {
               arr[1] = data[i].ZDEZTMA
+              if (data[i].ZDEZTMA === this.searchNum) {
+                arr[2] = data[i].ZFBMS
+                arr[3] = true
+              }
             }
-            arr[2] = data[i].ZFBMS
             this.productScanList.push(arr)
           }
           this.setProductScanList(this.productScanList)
         } else {
-
+          let Arr = cloneObj(this.productScanList)
+          Arr[index][3] = true
+          this.setProductScanList(Arr)
         }
       } else {
         // 扫防伪码
@@ -301,11 +318,13 @@ export default {
         this.titName = '扫防伪码'
         this.btnName = '打印出货标签'
         this.bottomBtn = true
+        this.searchNum = ''
         this.setbottomBtnName('scanfw')
       } else {
         this.titName = '扫标签码'
         this.btnName = '打印入库单'
         this.bottomBtn = false
+        this.searchNum = ''
         this.setbottomBtnName('scanbq')
       }
     },
@@ -333,29 +352,23 @@ export default {
           'ZRKYY: 11,' +
           'ZRKEQ: 11,' +
           'ZRKSJ: 11,' +
-          'ZIP: "192.168.1.1"' +
+          'ZIP: "192.168.1.1",' +
           temp +
         '}}'
       } else {
-        params = '{' +
-          'Item: {' +
-            'ZFWMA: "000C29CAC9E01EE7B08667FE666F6388",' +
+        console.log(this.snArr())
+        let arr = []
+        let snArr = this.snArr()
+        for (let i in snArr) {
+          arr[i] = 'Item: {' +
+            'ZFWMA: "' + snArr[i] + '",' +
             'ZIP: "192.168.1.1",' +
             'ZBQXH: "48"' +
-          '}' +
-        '}'
+          '}'
+        }
+        params = '{' + arr.join(',') + '}'
         url = path.sap + 'securitycode/print'
       }
-      // let params = {
-      //   body: '{Header:{' +
-      //     'ZBMDH: 11,' +
-      //     'ZBMMC: 11,' +
-      //     'ZRKYY: 11,' +
-      //     'ZRKEQ: 11,' +
-      //     'ZRKSJ: 11,' +
-      //     temp +
-      //   '}}'
-      // }
       _this.putInShow = true
       V.post(url, params).then(function(data) {
         _this.putInShow = false

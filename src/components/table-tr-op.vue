@@ -8,7 +8,7 @@
         <li>{{order[2]}}</li>
       </ul>
     </li>
-    <li v-if="name === 'productScan'" v-for="(arr, index) in productScanList">
+    <li v-if="name === 'productScan'" v-for="(arr, index) in productScanList" :class="{on: arr[3]}">
       <ul>
         <li>{{index+1}}</li>
         <li><input :value="arr[0]" disabled="disabled"></li>
@@ -58,7 +58,6 @@ Vue.use(Vuex)
     },
     created: function() {
       if (this.$route.params.module === 'stock') {
-        console.log('success')
         // 销售备货
         if (this.bottomBtnName === 'salestockup') {
           this.$store.commit('moduleName', '销售备货')
@@ -116,6 +115,14 @@ Vue.use(Vuex)
     }
     li.paddingLfet20{
       padding-left: $f20;
+    }
+  }
+  li.on{
+    input{
+      color: #38ce54;
+    }
+    li{
+      color: #38ce54;
     }
   }
 }

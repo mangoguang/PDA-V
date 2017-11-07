@@ -2,8 +2,7 @@ function Path() {
 	this.oa = 'http://10.12.0.53:8900/derucci/workflow/jsp'
 	this.local = 'http://localhost/PDA-V/static/json'
 	// this.local = 'http://mangoguang.cn/PDA/static/json'
-	this.sap = 'http://10.12.0.153:50100/RESTAdapter/'
-	// this.sap = 'http://10.12.0.154:50100/RESTAdapter/'
+	this.sap = 'http://10.12.0.154:50100/RESTAdapter/'
 }
 let path = new Path()
 
@@ -11,15 +10,15 @@ var cloneObj = function(obj) {
     let str = obj.constructor === Array ? [] : {}
     let newobj = obj.constructor === Array ? [] : {ß}
     if (typeof obj !== 'object') {
-        return
+      return
     } else if (window.JSON) {
-        str = JSON.stringify(obj) // 系列化对象
-        newobj = JSON.parse(str) // 还原
+      str = JSON.stringify(obj) // 系列化对象
+      newobj = JSON.parse(str) // 还原
     } else {
-        for (var i in obj) {
-            newobj[i] = typeof obj[i] === 'object' ?
-            cloneObj(obj[i]) : obj[i]
-        }
+      for (var i in obj) {
+        newobj[i] = typeof obj[i] === 'object' ?
+        cloneObj(obj[i]) : obj[i]
+      }
     }
     return newobj
 }

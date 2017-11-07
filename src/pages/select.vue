@@ -57,6 +57,7 @@ export default {
     },
     select: function() {
       localStorage.setItem('factoryMsg', '{factory: "' + this.factorySel + '",warehouse: "' + this.warehouseSel + '", factorySelNum: "' + this.factorySelNum + '", warehouseSelNum: "' + this.warehouseSelNum + '"}')
+      // localStorage.setItem('factoryMsg', '{factory: "' + this.factorySel + '",warehouse: "' + this.warehouseSel + '", factorySelNum: "1012", warehouseSelNum: "' + this.warehouseSelNum + '"}')
       // 仓库名称与代号保持一致
       for (let i in this.warehouses) {
         if (this.warehouses[i].code === this.warehouseSelNum) {
@@ -64,6 +65,7 @@ export default {
         }
       }
       this.$router.push({ path: '/module?name=' + this.name + '&factoryNum=' + this.factorySelNum + '&warehouseNum=' + this.warehouseSelNum + '&warehouse=' + this.warehouseSel })
+      // this.$router.push({ path: '/module?name=' + this.name + '&factoryNum=1012&warehouseNum=' + this.warehouseSelNum + '&warehouse=' + this.warehouseSel })
     },
     setWarehouse: function() {
       let _this = this
@@ -82,15 +84,17 @@ export default {
         _this.loadingShow(false)
         if (data.status) {
           _this.warehouses = data.warehouse
-          if (_this.warehouseStatus) {
-            // 更改默认仓库
-            _this.warehouseSel = data.warehouse[0].name
-          } else {
-            let factoryMsg = localStorage.getItem('factoryMsg')
-            if (!factoryMsg) {
+          if (data.warehouse.length > 0) {
+            if (_this.warehouseStatus) {
+              // 更改默认仓库
               _this.warehouseSel = data.warehouse[0].name
             } else {
-              _this.warehouseStatus = true
+              let factoryMsg = localStorage.getItem('factoryMsg')
+              if (!factoryMsg) {
+                _this.warehouseSel = data.warehouse[0].name
+              } else {
+                _this.warehouseStatus = true
+              }
             }
           }
         }
@@ -161,9 +165,13 @@ export default {
 @import "./../assets/css/common.css";
 
 .select{
-  width: 70%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 7rem;
   padding-top: 70px;
-  margin: 0 auto;
+  box-sizing: border-box;
+  margin: 0 1.5rem;
   background: #fff;
   div.photoBox{
     text-align: center;

@@ -11,21 +11,21 @@
       </li>
       <li>
         <label for="scanPlan">打印方案</label>
-        <select id="scanPlan" v-model="printPlanVal" @change="setprintPlanVal()">
+        <select id="scanPlan" v-model="printPlanVal" @change="changePrintPlan">
           <option v-for="obj in printPlanList" :value="obj.ZBQMC">{{ obj.ZBQMC }}</option>
         </select>
         <span></span>
       </li>
       <li>
         <label for="print">打印机</label>
-        <select id="print" v-model="printVal">
-          <option v-for="name in printList" :value="name">{{ name }}</option>
+        <select id="print" v-model="printVal" @change="changePrint">
+          <option v-for="obj in printList" :value="obj.PRINT_NAME">{{ obj.PRINT_NAME }}</option>
         </select>
         <span></span>
       </li>
       <li>
         <label for="fwPrintIP">打印机IP</label>
-        <input id="fwPrintIP" type="text" value="192.168.1.32">
+        <input id="fwPrintIP" type="text" :value="fwPrintIPVal">
         <span class="close"></span>
       </li>
       <li>
@@ -51,15 +51,15 @@
       </li>
       <li>
         <label for="factory">工厂选择</label>
-        <select id="factory" v-model="factorySel">
-          <option v-for="name in factoryList" :value="name">{{ name }}</option>
+        <select id="factory" v-model="factorySelNum" @change="changeFactory(true)">
+          <option v-for="obj in factoryList" :value="obj.code">{{ obj.name }}</option>
         </select>
         <span></span>
       </li>
       <li>
         <label for="warehouse">仓库</label>
-        <select id="warehouse" v-model="warehouseSel">
-          <option v-for="name in warehouseList" :value="name">{{ name }}</option>
+        <select id="warehouse" v-model="warehouseSelNum" @change="changeFactory(false)">
+          <option v-for="obj in warehouseList" :value="obj.code">{{ obj.name }}</option>
         </select>
         <span></span>
       </li>
@@ -76,6 +76,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import HeadComponent from '../../components/header'
+import md5 from 'js-md5'
 import {path, V} from '../../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -88,18 +89,16 @@ export default {
       height: document.documentElement.clientHeight,
       printPlanList: [], // 打印方案
       printPlanVal: localStorage.getItem('printPlanVal'),
-      printList: ['理光PL-8800', '理光PL-8900'], // 标签打印机
-      printVal: '理光PL-8800',
-      fwPrintIPList: ['192.168.1.19', '192.168.32'], // 标签打印机ip
-      fwPrintIPVal: '192.168.1.19',
-      djPrintIPList: ['192.168.1.50', '192.168.52'], // 单据打印机ip
-      djPrintIPVal: '192.168.1.50',
+      printList: [], // 标签打印机
+      printVal: localStorage.getItem('printVal'),
+      fwPrintIPVal: '', // 标签打印机ip
+      djPrintIPVal: '192.168.1.50', // 单据打印机ip
       typeList: ['skinA', 'skinB', 'skinC'], // 风格选择
       typeVal: localStorage.getItem('skinCol'),
-      factoryList: ['工厂一', '工厂二', '工厂三'],
+      factoryList: [],
       factorySel: '',
       factorySelNum: '',
-      warehouseList: ['仓库一', '仓库二', '仓库三'],
+      warehouseList: [],
       warehouseSel: '',
       warehouseSelNum: ''
     }
@@ -120,20 +119,12 @@ export default {
       localStorage.setItem('skinCol', this.typeVal)
       this.setSkinCol(this.typeVal)
     },
-    setprintPlanVal() {
-      let temp = ''
-      let arr = this.printPlanList
-      for (let i in arr) {
-        if (this.printPlanVal === arr[i].ZBQMC) {
-          temp = arr[i].ZBQXH
-        }
-      }
-      localStorage.setItem('printPlanMsg', '{name: "' + this.printPlanVal + '", num: "' + temp + '"}')
-    },
     getFactorySel: function() {
       // 获取本地存储默认工厂
       let factoryMsg = localStorage.getItem('factoryMsg')
       let factoryObj = eval('(' + factoryMsg + ')')
+      console.log('sssssss')
+      console.log(factoryObj)
       if (factoryMsg) {
         this.factorySel = factoryObj.factory
         this.factorySelNum = factoryObj.factorySelNum
@@ -143,20 +134,101 @@ export default {
         // this.factorySel = this.factorys[0].name
       }
     },
+    getAccountMsg: function() {
+      let accountMsg = localStorage.getItem('accountMsg')
+      let obj = eval('(' + accountMsg + ')')
+      return obj
+    },
+    getFactory() {
+      let _this = this
+      let obj = this.getAccountMsg()
+      let url = path.oa + '/PDAFactory.jsp'
+      let params = {
+        // name: this.factorySel,
+        // password: md5(this.warehouseSel).toLocaleUpperCase()
+        account: obj.account,
+        password: md5(obj.password).toLocaleUpperCase()
+      }
+
+      _this.loadingShow(true)
+      V.post(url, params).then(function(data) {
+        _this.loadingShow(false)
+        if (data.status) {
+          _this.factoryList = data.factorys
+          _this.setWarehouse()
+        }
+      }).catch((res) => {
+        alert('您的网络有问题。')
+        _this.loadingShow(false)
+      })
+    },
+    setWarehouse: function() {
+      let _this = this
+      // let url = path.local + '/warehouse_sel.php'
+      let url = path.oa + '/PDAWareHouse.jsp'
+      let obj = this.getAccountMsg()
+      // 获取本地存储账号信息
+      let params = {
+        account: obj.account,
+        password: md5(obj.password).toLocaleUpperCase(),
+        factory: this.factorySelNum
+      }
+
+      _this.loadingShow(true)
+      V.post(url, params).then(function(data) {
+        _this.loadingShow(false)
+        if (data.status) {
+          _this.warehouseList = data.warehouse
+        }
+      }).catch((res) => {
+        alert('您的网络有问题。')
+        _this.loadingShow(false)
+      })
+    },
+    getPrint() {
+      let _this = this
+      let url = path.sap + 'getprint'
+      _this.putInShow = true
+      V.get(url).then(function(data) {
+        _this.putInShow = false
+        data = JSON.parse(data.responseText).MT_GetPrint_Resp.Item
+        _this.printList = data
+        console.log(data)
+        if (!_this.printVal && data.length > 0) {
+          _this.printVal = data[0].PRINT_NAME
+        }
+        _this.getFactory()
+      })
+    },
     getModule() {
       let _this = this
       let url = path.sap + 'securitycode/getmodule'
-      let params = {}
       _this.putInShow = true
-      V.get(url, params).then(function(data) {
+      V.get(url).then(function(data) {
         _this.putInShow = false
         data = JSON.parse(data.responseText).MT_SecurityCode_GetModule_Resp.Item
         _this.printPlanList = data
-        if (!_this.printPlanVal) {
-          localStorage.setItem('printPlanMsg', '{nam: "' + data[0].ZBQMC + '", num: "' + data[0].ZBQXH + '"}')
-          _this.printPlanVal = data[0].ZBQMC
-        }
+        // 获取打印机列表
+        _this.getPrint()
+      }).catch((res) => {
+        alert('请求超时！')
+        _this.loadingShow(false)
       })
+    },
+    // 将打印方案缓存到本地
+    changePrintPlan() {
+      localStorage.setItem('printPlanVal', this.printPlanVal)
+    },
+    // 将打印机名称缓存到本地
+    changePrint() {
+      localStorage.setItem('printVal', this.printVal)
+    },
+    // 将工厂信息缓存到本地
+    changeFactory(status) {
+      localStorage.setItem('factoryMsg', '{factory: "' + this.factorySel + '",warehouse: "' + this.warehouseSel + '", factorySelNum: "' + this.factorySelNum + '", warehouseSelNum: "' + this.warehouseSelNum + '"}')
+      if (status) {
+        this.setWarehouse()
+      }
     }
   },
   created() {
@@ -165,12 +237,6 @@ export default {
     this.setSkinCol(localStorage.getItem('skinCol'))
     // 获取防伪打印模板
     this.getModule()
-    let obj
-    let printPlanMsg = localStorage.getItem('printPlanMsg')
-    if (printPlanMsg) {
-      obj = eval('(' + printPlanMsg + ')')
-      this.printPlanVal = obj.name
-    }
   },
   mounted() {
 
