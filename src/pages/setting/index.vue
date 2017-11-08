@@ -123,8 +123,6 @@ export default {
       // 获取本地存储默认工厂
       let factoryMsg = localStorage.getItem('factoryMsg')
       let factoryObj = eval('(' + factoryMsg + ')')
-      console.log('sssssss')
-      console.log(factoryObj)
       if (factoryMsg) {
         this.factorySel = factoryObj.factory
         this.factorySelNum = factoryObj.factorySelNum
@@ -193,7 +191,6 @@ export default {
         _this.putInShow = false
         data = JSON.parse(data.responseText).MT_GetPrint_Resp.Item
         _this.printList = data
-        console.log(data)
         if (!_this.printVal && data.length > 0) {
           _this.printVal = data[0].PRINT_NAME
         }
@@ -208,6 +205,9 @@ export default {
         _this.putInShow = false
         data = JSON.parse(data.responseText).MT_SecurityCode_GetModule_Resp.Item
         _this.printPlanList = data
+        if (!_this.printPlanVal) {
+          _this.printPlanVal = data[0]
+        }
         // 获取打印机列表
         _this.getPrint()
       }).catch((res) => {

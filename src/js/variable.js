@@ -8,7 +8,7 @@ let path = new Path()
 
 var cloneObj = function(obj) {
     let str = obj.constructor === Array ? [] : {}
-    let newobj = obj.constructor === Array ? [] : {ß}
+    let newobj = obj.constructor === Array ? [] : {}
     if (typeof obj !== 'object') {
       return
     } else if (window.JSON) {

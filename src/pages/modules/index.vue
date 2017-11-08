@@ -352,7 +352,7 @@ export default {
           'ZRKYY: 11,' +
           'ZRKEQ: 11,' +
           'ZRKSJ: 11,' +
-          'ZIP: "192.168.1.1",' +
+          'ZIP: "TSC_TTP-244_PRO",' +
           temp +
         '}}'
       } else {
@@ -362,7 +362,7 @@ export default {
         for (let i in snArr) {
           arr[i] = 'Item: {' +
             'ZFWMA: "' + snArr[i] + '",' +
-            'ZIP: "192.168.1.1",' +
+            'ZIP: "TSC_TTP-244_PRO",' +
             'ZBQXH: "48"' +
           '}'
         }

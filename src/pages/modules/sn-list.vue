@@ -75,7 +75,6 @@ export default {
       status1: 0,
       status2: 0,
       status3: 0,
-      status4: 0,
       // 扫码错误弹框显示/隐藏
       errorShow: false,
       putInShow: false,
@@ -109,6 +108,9 @@ export default {
     }
   },
   computed: {
+    status4() {
+      return (this.status2 - this.status3)
+    },
     checkBoxShow() {
       return this.$store.state.checkBoxShow
     },
@@ -328,6 +330,8 @@ export default {
     },
     // 转化成组件table-tr-sn.vue的通用数组数据
     turnArr(arr) {
+      console.log('ssss')
+      console.log(arr)
       // 计算产品数量
       if (arr === undefined || arr.length === undefined) {
         this.status1 = 0
@@ -339,6 +343,7 @@ export default {
       let checkboxVal = []
       // 用于计算应扫数量
       let num = 0
+      let num3 = 0
       if (arr.length >= 0) {
         for (let i in arr) {
           num++
@@ -350,7 +355,7 @@ export default {
           // 是否分包
           // if (arr[i].Item === null || arr[i].Item === undefined) {
           if (!arr[0].Item) {
-            temp.status = false
+            // temp.status = false
             checkboxVal.push(false)
             temp.arr = []
             temp.arr[0] = arr[i].MATKL // 物料描述
@@ -361,6 +366,7 @@ export default {
               temp.arr[1] = arr[i].ZTIAOM // SN条码
               if (this.checkStatus(arr[i].ZJYZT, this.urlParams)) {
               temp.arr[5] = true
+              num3++
               } else {
                 temp.arr[5] = arr[i].status // 是否校验状态码
               }
@@ -371,16 +377,16 @@ export default {
             temp.arr[6] = arr[i].ITEM_NO // 行号
           } else {
             // 分包
-            if (arr[i].Item[0].ZFBFS === 1) {
-              temp.status = true
-            } else if (arr[i].Item[0].ZFBFS === 2) {
-              // 合包
-              if (this.checkStatus(arr[i].ZJYZT, this.urlParams)) {
-                temp.status = true
-              } else {
-                temp.status = false
-              }
-            }
+            // if (arr[i].Item[0].ZFBFS === 1) {
+            //   temp.status = true
+            // } else if (arr[i].Item[0].ZFBFS === 2) {
+            //   // 合包
+            //   if (this.checkStatus(arr[i].ZJYZT, this.urlParams)) {
+            //     temp.status = true
+            //   } else {
+            //     temp.status = false
+            //   }
+            // }
             checkboxVal.push(false)
             temp.arr = []
             temp.arr[0] = arr[i].MATKL
@@ -404,22 +410,22 @@ export default {
             temp.arr[6] = arr[i].ITEM_NO
             if (this.checkStatus(arr[i].ZJYZT, this.urlParams)) {
               temp.arr[5] = true
+              num3++
             } else {
               temp.arr[5] = arr[i].status // 是否校验状态码
               // temp.arr[5] = false // 是否校验状态码
             }
           }
+          this.status3 = num3
           trArr.push(temp)
         }
       }
       // 标示SN码是否扫描的状态数组
       this.setSN(trArr)
-      console.log('1231231')
-      console.log(trArr)
       this.status2 = num
-      if (this.addStatus) {
-        this.status4 = num
-      }
+      // if (this.addStatus) {
+      //   this.status4 = num
+      // }
       this.$store.commit('checkboxVal', checkboxVal)
     },
     // 校验sn码
@@ -489,8 +495,6 @@ export default {
             arr[index].ZJYZT = _this.verifyStatus()
             _this.setSNArr(arr)
             _this.turnArr(arr)
-            _this.status3++
-            _this.status4 = _this.status2 - _this.status3
             // _this.inputVal = ''
             _this.focusStatus = true
           } else if (fbtype === 1) {
@@ -498,8 +502,6 @@ export default {
             arr[index].Item[subindex].ZJYZT = _this.verifyStatus()
             _this.setSNArr(arr)
             _this.turnArr(arr)
-            _this.status3++
-            _this.status4 = _this.status2 - _this.status3
             // _this.inputVal = ''
             _this.focusStatus = true
           } else {
@@ -507,11 +509,8 @@ export default {
             arr[index].ZJYZT = _this.verifyStatus()
             // _this.setSNArr(arr)
             _this.turnArr(arr)
-            alert('success')
             // _this.inputVal = ''
             _this.focusStatus = true
-            console.log('00999')
-            console.log(arr)
           }
         } else {
           _this.errorShow = true
@@ -586,6 +585,7 @@ export default {
       let _this = this
       this.verifyAjax(this.verifyUrl2()).then(function(data) {
         data = data.MT_Salestockup_Verify_Resp.Item
+        console.log(data)
         if (data.ZXXLX === 'S') {
           let snArr = cloneObj(_this.snArr)
           let temp = cloneObj(snArr)
@@ -642,11 +642,11 @@ export default {
       for (let i in temp) {
         if (temp[i].ZDEZTMA === this.inputVal) {
           temp[i].status = true
-          this.status3++
-          this.status4--
         }
       }
       this.setSNArr(temp)
+      console.log('ppppppppp')
+      console.log(temp)
       this.turnArr(temp)
     },
     // verifyUrl1为采购入库校验参数
@@ -800,7 +800,7 @@ export default {
       } else if (this.urlParams === 'purchase') {
         params = "{ 'Item': {BUS_NO: " + this.BUS_NO + ", ZQRKZ: 1, ZDDLX: " + this.ZDDLX + ", ZGH: '11608050'} }"
         // params = {
-        //   body: '{"Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: ' + this.ZDDLX + ', ZGH: "11608050"}},{"Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: ' + this.ZDDLX + ', ZGH: "11608050"}}'
+        //   body: '{"Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: ' + this.ZDDLX + ', ZGH: "11608050"}}'
         // }
       } else if (this.urlParams === 'product') {
         let myDate = new Date()
@@ -859,7 +859,7 @@ export default {
         //   },
         //   function(ret, err) {
         //     if (ret) {
-        //       alert(JSON.stringify(ret))
+        //       tip(JSON.parse(ret))
         //       _this.putInShow = false
         //     } else {
         //       alert(JSON.stringify(err))
