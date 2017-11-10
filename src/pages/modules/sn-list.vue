@@ -95,7 +95,9 @@ export default {
       factory: this.$route.query.factory,
       factoryNum: this.$route.query.factoryNum,
       warehouseNum: this.$route.query.warehouseNum,
-      ZDDLX: this.$route.query.ZDDLX
+      ZDDLX: this.$route.query.ZDDLX,
+      clearsnArr: true, // 用于销售模块snArr初始化
+      salestockupNum: 0
     }
   },
   watch: {
@@ -260,6 +262,7 @@ export default {
       if (this.urlParams === 'salestockup') {
         if (data.MT_Salestockup_GetSN_Resp.Header) {
           arr = data.MT_Salestockup_GetSN_Resp.Header
+          this.salestockupNum = parseInt(arr[0].LFIMG)
         }
       } else if (this.urlParams === 'salesoutput') {
         if (data.MT_Salesoutput_GetSN_Resp.Header) {
@@ -288,11 +291,17 @@ export default {
       } else if (this.orderType === 2) {
         // 销售备货
         this.setSNArr(arr)
+        console.log('qqqqqqq')
+        console.log(arr)
         this.setFbData(arr[0])
       } else if (this.orderType === 3) {
         this.setSNArr(arr)
       }
-      this.turnArr(arr)
+      // if (this.orderType === 2) {
+      //   this.turnArr([])
+      // } else {
+        this.turnArr(arr)
+      // }
     },
     checkStatus(ZJYZT, urlParams) {
       let status = false
@@ -330,7 +339,7 @@ export default {
     },
     // 转化成组件table-tr-sn.vue的通用数组数据
     turnArr(arr) {
-      console.log('ssss')
+      console.log('aaaaaa')
       console.log(arr)
       // 计算产品数量
       if (arr === undefined || arr.length === undefined) {
@@ -352,7 +361,7 @@ export default {
             arr[i].status = false
           }
           let temp = {}
-          // 是否分包
+          // 标准包
           // if (arr[i].Item === null || arr[i].Item === undefined) {
           if (!arr[0].Item) {
             // temp.status = false
@@ -360,8 +369,15 @@ export default {
             temp.arr = []
             temp.arr[0] = arr[i].MATKL // 物料描述
             if (this.urlParams === 'product') {
-              temp.arr[1] = arr[i].ZDEZTMA // SN条码
+              if (arr[i].ZDEZTMA === '') {
+                temp.arr[1] = arr[i].ZTIAOM // SN条码
+              } else {
+                temp.arr[1] = arr[i].ZDEZTMA // SN条码
+              }
               temp.arr[5] = arr[i].status
+              if (arr[i].status) {
+                num3++
+              }
             } else {
               temp.arr[1] = arr[i].ZTIAOM // SN条码
               if (this.checkStatus(arr[i].ZJYZT, this.urlParams)) {
@@ -413,7 +429,6 @@ export default {
               num3++
             } else {
               temp.arr[5] = arr[i].status // 是否校验状态码
-              // temp.arr[5] = false // 是否校验状态码
             }
           }
           this.status3 = num3
@@ -583,65 +598,85 @@ export default {
     },
     verify2() {
       let _this = this
-      this.verifyAjax(this.verifyUrl2()).then(function(data) {
-        data = data.MT_Salestockup_Verify_Resp.Item
-        console.log(data)
-        if (data.ZXXLX === 'S') {
-          let snArr = cloneObj(_this.snArr)
-          let temp = cloneObj(snArr)
-          // let temp = cloneObj(_this.fbData)
-          let ifPush = true
-          let index = 0
-          // 分包
-          if (temp[0].Item !== undefined && temp[0].Item[0].ZFBFS === 1) {
-            // let number = parseInt(_this.inputVal.split('-')[2].split('/')[0])
-            let ZTIAOM = _this.inputVal.slice(0, 23)
-            for (let i in temp) {
-              // 该SN码存在
-              if (temp[i].ZTIAOM === ZTIAOM) {
-                index = i
-                ifPush = false
+      if (this.snArr.length < this.salestockupNum) {
+        this.verifyAjax(this.verifyUrl2()).then(function(data) {
+          data = data.MT_Salestockup_Verify_Resp.Item
+          console.log(data)
+          if (data.ZXXLX === 'S') {
+            let snArr = cloneObj(_this.snArr)
+            let temp = cloneObj(snArr)
+            // let temp = cloneObj(_this.fbData)
+            let ifPush = true
+            let index = 0
+            // 分包
+            if (temp[0].Item !== undefined && temp[0].Item[0].ZFBFS === 1) {
+              // let number = parseInt(_this.inputVal.split('-')[2].split('/')[0])
+              let ZTIAOM = _this.inputVal.slice(0, 23)
+              for (let i in temp) {
+                // 该SN码存在
+                if (temp[i].ZTIAOM === ZTIAOM) {
+                  index = i
+                  ifPush = false
+                }
               }
-            }
-            // 不添加新的元素
-            if (!ifPush) {
-              let obj = temp[index].Item[0]
-              obj.ZTIAOMA_FB = _this.inputVal
-              obj.status = true
-              snArr[index].Item.push(obj)
+              // 不添加新的元素
+              if (!ifPush) {
+                let obj = temp[index].Item[0]
+                obj.ZTIAOMA_FB = _this.inputVal
+                obj.status = true
+                snArr[index].Item.push(obj)
+              } else {
+                // 添加新的元素
+                let obj = cloneObj(temp[0])
+                let childObj = cloneObj(obj.Item[0])
+                obj.Item = []
+                obj.ZTIAOM = ZTIAOM
+                childObj.ZTIAOMA_FB = _this.inputVal
+                childObj.status = true
+                obj.Item.push(childObj)
+                // if (_this.clearsnArr) {
+                //   snArr = []
+                //   _this.clearsnArr = false
+                // }
+                snArr.push(obj)
+              }
             } else {
-              // 添加新的元素
+              let ZTIAOM = _this.inputVal
               let obj = cloneObj(temp[0])
-              let childObj = cloneObj(obj.Item[0])
-              obj.Item = []
+              // 合包/标准
               obj.ZTIAOM = ZTIAOM
-              childObj.ZTIAOMA_FB = _this.inputVal
-              childObj.status = true
-              obj.Item.push(childObj)
+              obj.status = true
+              if (_this.clearsnArr) {
+                snArr = []
+                _this.clearsnArr = false
+              }
               snArr.push(obj)
             }
+            _this.setSNArr(snArr)
+            _this.turnArr(snArr)
           } else {
-            let ZTIAOM = _this.inputVal
-            let obj = cloneObj(temp[0])
-            // 合包/标准
-            obj.ZTIAOM = ZTIAOM
-            obj.status = true
-            snArr.push(obj)
+            _this.errorShow = true
+            _this.$store.commit('errorMsg', data.ZTXXX)
+            _this.inputVal = ''
           }
-          _this.setSNArr(snArr)
-          _this.turnArr(snArr)
-        } else {
-          _this.errorShow = true
-          _this.$store.commit('errorMsg', data.ZTXXX)
-          _this.inputVal = ''
-        }
-      })
+        })
+      } else {
+        alert('条码已扫完！')
+      }
     },
     verify3() {
       let temp = this.snArr
       for (let i in temp) {
-        if (temp[i].ZDEZTMA === this.inputVal) {
-          temp[i].status = true
+        if (temp[i].ZDEZTMA === '') {
+          if (temp[i].ZTIAOM === this.inputVal) {
+            temp[i].status = true
+            this.inputVal = ''
+          }
+        } else {
+          if (temp[i].ZDEZTMA === this.inputVal) {
+            temp[i].status = true
+            this.inputVal = ''
+          }
         }
       }
       this.setSNArr(temp)
@@ -794,14 +829,20 @@ export default {
       let params = ''
       let url = ''
       if (this.urlParams === 'salestockup') {
-        params = "{ 'item': {VBELN: " + this.BUS_NO + ", ZGH: '11608050', ZQRKZ: 1 }}"
+        // params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "11608050", ZQRKZ: 1 } }'
+        params = {
+          body: '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "11608050", ZQRKZ: 1 } }'
+        }
       } else if (this.urlParams === 'salesoutput') {
-        params = "{ 'item': {VBELN: " + this.BUS_NO + ", ZGH: '11608050', ZQRKZ: 1 }}"
+        // params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "11608050", ZQRKZ: 1 } }'
+        params = {
+          body: '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "11608050", ZQRKZ: 1 } }'
+        }
       } else if (this.urlParams === 'purchase') {
-        params = "{ 'Item': {BUS_NO: " + this.BUS_NO + ", ZQRKZ: 1, ZDDLX: " + this.ZDDLX + ", ZGH: '11608050'} }"
-        // params = {
-        //   body: '{"Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: ' + this.ZDDLX + ', ZGH: "11608050"}}'
-        // }
+        // params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: " + this.ZDDLX + ", ZGH: "11608050"} }'
+        params = {
+          body: '{"Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: ' + this.ZDDLX + ', ZGH: "11608050"}}'
+        }
       } else if (this.urlParams === 'product') {
         let myDate = new Date()
         function turnDate(num) {
@@ -810,12 +851,21 @@ export default {
           }
           return num
         }
+        // params = {
+        //   ZRKDH: this.BUS_NO,
+        //   ZGZRY: '11608050',
+        //   ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
+        //   ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
+        //   LGORT: this.warehouseNum
+        // }
         params = {
-          ZRKDH: this.BUS_NO,
-          ZGZRY: '11608050',
-          ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
-          ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
-          LGORT: this.warehouseNum
+          body: {
+            ZRKDH: this.BUS_NO,
+            ZGZRY: '11608050',
+            ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
+            ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
+            LGORT: this.warehouseNum
+          }
         }
       }
       if (this.urlParams === 'product') {
@@ -847,33 +897,33 @@ export default {
         }
       } else {
         _this.putInShow = true
-        // window.apiready = function() {
-        //   api.ajax({
-        //     url: url,
-        //     method: 'post',
-        //     async: false,
-        //     timeout: 30,
-        //     dataType: 'text',
-        //     returnAll: false,
-        //     data: params
-        //   },
-        //   function(ret, err) {
-        //     if (ret) {
-        //       tip(JSON.parse(ret))
-        //       _this.putInShow = false
-        //     } else {
-        //       alert(JSON.stringify(err))
-        //     }
-        //   })
-        // }
-        // window.apiready()
-        V.post(url, params).then(function(data) {
-          _this.putInShow = false
-          tip(data)
-        }).catch((res) => {
-          alert('请求超时！')
-          _this.loadingShow(false)
-        })
+        window.apiready = function() {
+          api.ajax({
+            url: url,
+            method: 'post',
+            async: false,
+            timeout: 30,
+            dataType: 'text',
+            returnAll: false,
+            data: params
+          },
+          function(ret, err) {
+            if (ret) {
+              tip(JSON.parse(ret))
+              _this.putInShow = false
+            } else {
+              alert(JSON.stringify(err))
+            }
+          })
+        }
+        window.apiready()
+        // V.post(url, params).then(function(data) {
+        //   _this.putInShow = false
+        //   tip(data)
+        // }).catch((res) => {
+        //   alert('请求超时！')
+        //   _this.loadingShow(false)
+        // })
         function tip(data) {
           if (_this.urlParams === 'purchase') {
             if (data.MT_Purchase_Confirm_Resp.Item) {
@@ -932,6 +982,7 @@ export default {
     this.$store.commit('loadingShow', false)
     this.$store.commit('tableH', ['序号', '描述', '条码', '状态'])
     this.focusStatus = true
+    this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
   },
   mounted() {
     this.$store.commit('isOP', false)

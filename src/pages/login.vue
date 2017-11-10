@@ -205,7 +205,6 @@ export default {
   button{
     width: 100%;
     height: 100%;
-    background: $s1btnBgCol;
     color: #fff;
     font-size: $btnSize;
     border-radius: $f4;

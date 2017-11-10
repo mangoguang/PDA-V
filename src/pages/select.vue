@@ -152,6 +152,7 @@ export default {
   },
   created() {
     this.setFactorys()
+    this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
   },
   mounted() {
 

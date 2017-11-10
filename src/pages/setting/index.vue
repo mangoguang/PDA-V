@@ -11,8 +11,8 @@
       </li>
       <li>
         <label for="scanPlan">打印方案</label>
-        <select id="scanPlan" v-model="printPlanVal" @change="changePrintPlan">
-          <option v-for="obj in printPlanList" :value="obj.ZBQMC">{{ obj.ZBQMC }}</option>
+        <select id="scanPlan" v-model="printPlanSelNum" @change="changePrintPlan">
+          <option v-for="obj in printPlanList" :value="obj.ZBQXH">{{ obj.ZBQMC }}</option>
         </select>
         <span></span>
       </li>
@@ -88,7 +88,8 @@ export default {
     return {
       height: document.documentElement.clientHeight,
       printPlanList: [], // 打印方案
-      printPlanVal: localStorage.getItem('printPlanVal'),
+      printPlanSel: '',
+      printPlanSelNum: '',
       printList: [], // 标签打印机
       printVal: localStorage.getItem('printVal'),
       fwPrintIPVal: '', // 标签打印机ip
@@ -132,6 +133,15 @@ export default {
         // this.factorySel = this.factorys[0].name
       }
     },
+    getPrintPlanMsg() {
+      let printPlanMsg = localStorage.getItem('printPlanMsg')
+      console.log(printPlanMsg)
+      let printPlanObj = eval('(' + printPlanMsg + ')')
+      if (printPlanMsg) {
+        this.printPlanSel = printPlanObj.ZBQMC
+        this.printPlanSelNum = printPlanObj.ZBQXH
+      }
+    },
     getAccountMsg: function() {
       let accountMsg = localStorage.getItem('accountMsg')
       let obj = eval('(' + accountMsg + ')')
@@ -147,7 +157,6 @@ export default {
         account: obj.account,
         password: md5(obj.password).toLocaleUpperCase()
       }
-
       _this.loadingShow(true)
       V.post(url, params).then(function(data) {
         _this.loadingShow(false)
@@ -193,6 +202,7 @@ export default {
         _this.printList = data
         if (!_this.printVal && data.length > 0) {
           _this.printVal = data[0].PRINT_NAME
+          localStorage.setItem('printVal', data[0].PRINT_NAME)
         }
         _this.getFactory()
       })
@@ -205,8 +215,10 @@ export default {
         _this.putInShow = false
         data = JSON.parse(data.responseText).MT_SecurityCode_GetModule_Resp.Item
         _this.printPlanList = data
-        if (!_this.printPlanVal) {
-          _this.printPlanVal = data[0]
+        let temp = localStorage.getItem('printPlanMsg')
+        if (!temp) {
+          _this.printPlanSelNum = data[0].ZBQXH
+          localStorage.setItem('printPlanMsg', JSON.stringify(data[0]))
         }
         // 获取打印机列表
         _this.getPrint()
@@ -217,7 +229,13 @@ export default {
     },
     // 将打印方案缓存到本地
     changePrintPlan() {
-      localStorage.setItem('printPlanVal', this.printPlanVal)
+      let temp = this.printPlanList
+      for (let i in temp) {
+        if (this.printPlanSelNum === temp[i].ZBQXH) {
+          this.printPlanSel = temp[i].ZBQMC
+        }
+      }
+      localStorage.setItem('printPlanMsg', '{ZBQMC: "' + this.printPlanSel + '", ZBQXH: "' + this.printPlanSelNum + '"}')
     },
     // 将打印机名称缓存到本地
     changePrint() {
@@ -225,6 +243,7 @@ export default {
     },
     // 将工厂信息缓存到本地
     changeFactory(status) {
+      console.log('{factory: "' + this.factorySel + '",warehouse: "' + this.warehouseSel + '", factorySelNum: "' + this.factorySelNum + '", warehouseSelNum: "' + this.warehouseSelNum + '"}')
       localStorage.setItem('factoryMsg', '{factory: "' + this.factorySel + '",warehouse: "' + this.warehouseSel + '", factorySelNum: "' + this.factorySelNum + '", warehouseSelNum: "' + this.warehouseSelNum + '"}')
       if (status) {
         this.setWarehouse()
@@ -234,6 +253,7 @@ export default {
   created() {
     this.loadingShow(false)
     this.getFactorySel()
+    this.getPrintPlanMsg()
     this.setSkinCol(localStorage.getItem('skinCol'))
     // 获取防伪打印模板
     this.getModule()

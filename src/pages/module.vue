@@ -58,7 +58,7 @@ export default {
   },
   computed: {
     skinCol() {
-      return this.$store.state.skinCol
+      return localStorage.getItem('skinCol')
     }
   },
   methods: {
@@ -120,6 +120,7 @@ export default {
     let obj = this.getAccountMsg()
     this.account = obj.account
     this.password = obj.password
+    this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
   },
   mounted() {
     this.jurisdiction()
