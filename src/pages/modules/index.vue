@@ -401,7 +401,8 @@ export default {
           'ZRKYY: 11,' +
           'ZRKEQ: 11,' +
           'ZRKSJ: 11,' +
-          'ZIP: "' + this.printVal + '",' +
+          // 'ZIP: "' + this.printVal + '",' +
+          'ZIP: "TSC_TTP-244_PRO",' +
           temp +
         '}}'
         // params = {
@@ -411,7 +412,7 @@ export default {
         //     'ZRKYY: 11,' +
         //     'ZRKEQ: 11,' +
         //     'ZRKSJ: 11,' +
-        //     'ZIP: "' + this.printVal + '",' +
+        //     'ZIP: "TSC_TTP-244_PRO",' +
         //     temp +
         //   '}}'
         // }
