@@ -1,6 +1,7 @@
 <template>
   <ul class="clearfix table-tr-sn">
     <li v-for="(sn,index) in sns">
+      <!-- 表格为三列 -->
       <div v-if="isTr3">
         <ul>
           <li>{{index+1}}</li>
@@ -9,7 +10,9 @@
           <li>{{sn.arr[4]}}</li>
         </ul>
       </div>
+      <!-- 表格为四列 -->
       <div v-else="isTr3" :class="{on: sn.arr[5]}">
+        <!-- 不存在子条码 -->
         <ul v-if="!sn.status">
           <li v-bind:class="{paddingLfet20: checkBoxShow}">
             <label v-show="checkBoxShow" :for= "sn.arr[1]" :class="{on: checkboxVal[index]}">
@@ -21,7 +24,7 @@
           <li @click="snDetailUrl(sn.arr[1], sn.arr[3], sn.arr[6], false)"><input :value="sn.arr[1]" disabled="disabled"></li>
           <li>{{sn.arr[4]}}</li>
         </ul>
-        <!-- 分包部分 -->
+        <!-- 存在子条码 -->
         <ul v-else v-for="(i,index1) in sn.arr[1].length" :class="{on: sn.arr[2][index1]}">
           <li v-if="index1 == 0" v-bind:class="{paddingLfet20: checkBoxShow}">
             <label v-show="checkBoxShow" :for= "sn.arr[1][0]" :class="{on: checkboxVal[index]}">

@@ -387,7 +387,7 @@ export default {
       let temp = ''
       let url = ''
       let params = ''
-      let canSetIn = true
+      // let canSetIn = true
       if (this.bottomBtnName === 'scanbq') {
         console.log(this.snArr())
         for (let i in this.snArr()) {
@@ -433,13 +433,61 @@ export default {
         url = path.sap + 'securitycode/print'
       }
       // 检测扫标签码分包是否全部扫描
-      for (let i in this.productScanList) {
-        if (!this.productScanList[i][3]) {
-          canSetIn = false
-        }
-      }
+      // for (let i in this.productScanList) {
+      //   if (!this.productScanList[i][3]) {
+      //     canSetIn = false
+      //   }
+      // }
       _this.putInShow = true
-      if (canSetIn) {
+        // if (canSetIn) {
+          printCode(url, params)
+          // window.apiready = function() {
+          //   api.ajax({
+          //     url: url,
+          //     method: 'post',
+          //     async: false,
+          //     timeout: 30,
+          //     dataType: 'text',
+          //     returnAll: false,
+          //     data: params
+          //   },
+          //   function(ret, err) {
+          //     alert(JSON.stringify(ret) + ':::' + JSON.stringify(err))
+          //     if (ret) {
+          //       _this.putInShow = false
+          //       let data = JSON.parse(ret)
+          //       if (_this.bottomBtnName === 'scanbq') {
+          //         data = data.MT_Produt_GenerateOrder_Resp.Header
+          //       } else if (_this.bottomBtnName === 'scanfw') {
+          //         data = data.MT_SecurityCode_Print_Resp.Item
+          //       }
+          //       alert('返回参数：：：' + JSON.stringify(data))
+          //       if (data.ZXXLX === 'S') {
+          //         _this.setProductScanList([])
+          //         _this.searchNum = ''
+          //         if (data.ZTXXX) {
+          //           alert(data.ZTXXX)
+          //         } else if (data.ZXXTX) {
+          //           alert(data.ZXXTX)
+          //         }
+          //       } else {
+          //         if (data.ZTXXX) {
+          //           alert(data.ZTXXX)
+          //         } else if (data.ZXXTX) {
+          //           alert(data.ZXXTX)
+          //         }
+          //         _this.searchNum = ''
+          //       }
+          //     } else {
+          //       alert(JSON.stringify(err))
+          //     }
+          //   })
+          // }
+          // window.apiready()
+        // } else {
+        //   alert('分包子条码未扫完。')
+        // }
+      function printCode(url, params) {
         V.post(url, params).then(function(data) {
           _this.putInShow = false
           if (_this.bottomBtnName === 'scanbq') {
@@ -450,6 +498,8 @@ export default {
           if (data.ZXXLX === 'S') {
             _this.setProductScanList([])
             _this.searchNum = ''
+            alert(JSON.stringify(data))
+            alert(data.ZXXTX)
             if (data.ZTXXX) {
               alert(data.ZTXXX)
             } else if (data.ZXXTX) {
@@ -464,49 +514,7 @@ export default {
             _this.searchNum = ''
           }
         })
-      } else {
-        alert('分包子条码未扫完。')
       }
-
-      // window.apiready = function() {
-      //   api.ajax({
-      //     url: url,
-      //     method: 'post',
-      //     async: false,
-      //     timeout: 30,
-      //     dataType: 'text',
-      //     returnAll: false,
-      //     data: params
-      //   },
-      //   function(ret, err) {
-      //     alert(JSON.stringify(ret) + ':::' + JSON.stringify(err))
-      //     if (ret) {
-      //       _this.putInShow = false
-      //       let data = JSON.parse(ret)
-      //       if (_this.bottomBtnName === 'scanbq') {
-      //         data = data.MT_Produt_GenerateOrder_Resp.Header
-      //       } else if (_this.bottomBtnName === 'scanfw') {
-      //         data = data.MT_SecurityCode_Print_Resp.Item
-      //       }
-      //       alert('返回参数：：：' + JSON.stringify(data))
-      //       if (data.ZXXLX === 'S') {
-      //         _this.setProductScanList([])
-      //         _this.searchNum = ''
-      //         alert(data.ZTXXX)
-      //       } else {
-      //         if (data.ZTXXX === undefined) {
-      //           alert('数据提交错误')
-      //         } else {
-      //           alert(data.ZTXXX)
-      //         }
-      //         _this.searchNum = ''
-      //       }
-      //     } else {
-      //       alert(JSON.stringify(err))
-      //     }
-      //   })
-      // }
-      // window.apiready()
     }
   },
   directives: {
