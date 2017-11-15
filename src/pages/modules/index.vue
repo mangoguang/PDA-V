@@ -499,8 +499,6 @@ export default {
           if (data.ZXXLX === 'S') {
             _this.setProductScanList([])
             _this.searchNum = ''
-            alert(JSON.stringify(data))
-            alert(data.ZXXTX)
             if (data.ZTXXX) {
               alert(data.ZTXXX)
             } else if (data.ZXXTX) {

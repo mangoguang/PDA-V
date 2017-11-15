@@ -86,7 +86,7 @@ Vue.use(Vuex)
         let _this = this
         let params = {}
         // 销售备货模块
-        if (this.urlParams === 'salestockup' || this.urlParams === 'salesoutput') {
+        if (this.urlParams === 'salestockup' || this.urlParams === 'salesoutput' || this.urlParams === 'salesreturn') {
           params = {
             VBELN: BUS_NO,
             POSNR: 10,
@@ -115,6 +115,9 @@ Vue.use(Vuex)
             } else if (_this.urlParams === 'salesoutput') {
               // 销售出库模块
               arr = data.MT_Salesoutput_GetInformation_Resp.Header
+            } else if (_this.urlParams === 'salesreturn') {
+              // 销售出库模块
+              arr = data.MT_SalesReturn_GetInformation_Resp.Header
             }
             if (arr.Item) {
               _this.$store.commit('snDetailFB', arr.Item[0])
