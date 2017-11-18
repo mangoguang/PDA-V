@@ -89,7 +89,7 @@ export default {
       if (this.$route.params.module === 'productScan') {
         this.$store.commit('tableH', ['序号', '品名', '条码', '状态'])
       } else {
-        this.$store.commit('tableH', ['序号', '入库单号', '归属仓库', '客户地址'])
+        this.$store.commit('tableH', ['序号', '单号', '归属仓库', '客户地址'])
       }
     },
     setProductScanList(arr) {
@@ -108,7 +108,12 @@ export default {
     // url
     orderListParams() {
       let temp = this.moduleName
-      let url = path.sap + temp + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
+      let url = ''
+      if (this.moduleName === 'allotinbound' || this.moduleName === 'allot') {
+        url = path.sap + temp + '/getsite?WERKS=' + this.factoryNum
+      } else {
+        url = path.sap + temp + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
+      }
       // if (this.moduleName === 'stock') {
       //   url = path.sap + this.bottomBtnName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
       // } else if (this.moduleName === 'purchase') {
@@ -295,8 +300,6 @@ export default {
     },
     // 转化数组
     setTrArr(data) {
-      console.log('ssssssss')
-      console.log(data)
       // 转化成table-tr组件使用的数组
       let trArr = []
       // 采购入库模块
@@ -323,21 +326,25 @@ export default {
           this.$store.commit('moduleName', '销售出库')
           data = data.MT_Salesoutput_GetInCity_Resp.Document
         }
-        for (let i in data) {
-          let temp = []
-          temp[0] = data[i].BUS_NO
-          temp[1] = this.warehouse
-          temp[2] = data[i].LGOBE
-          trArr.push(temp)
-        }
+        setData(data, trArr, this)
       } else if (this.moduleName === 'productScan') {
 
       } else if (this.moduleName === 'salesreturn') {
         data = data.MT_SalesReturn_GetInCity_Resp.Document
+        setData(data, trArr, this)
+      } else if (this.moduleName === 'allotinbound' || this.moduleName === 'allot') {
+        if (this.moduleName === 'allotinbound') {
+          data = data.MT_AllotInbound_GetSite_Resp.Item
+        } else {
+          data = data.MT_Allot_GetSite_Resp.Item
+        }
+        setData(data, trArr, this)
+      }
+      function setData(data, trArr, _this) {
         for (let i in data) {
           let temp = []
           temp[0] = data[i].BUS_NO
-          temp[1] = this.warehouse
+          temp[1] = _this.warehouse
           temp[2] = data[i].LGOBE
           trArr.push(temp)
         }
@@ -441,7 +448,6 @@ export default {
       // }
       _this.putInShow = true
         // if (canSetIn) {
-          printCode(url, params)
           // window.apiready = function() {
           //   api.ajax({
           //     url: url,
@@ -488,6 +494,11 @@ export default {
         // } else {
         //   alert('分包子条码未扫完。')
         // }
+      if (this.snArr().length === 0) {
+        alert('请先扫码！')
+      } else {
+        printCode(url, params)
+      }
       function printCode(url, params) {
         V.post(url, params).then(function(data) {
           _this.putInShow = false

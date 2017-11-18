@@ -67,6 +67,7 @@ export default {
   data () {
     return {
       height: document.documentElement.clientHeight,
+      account: '',
       BUS_NO: this.$route.params.num,
       // BUS_NO: '4500000266',
       focusStatus: true,
@@ -133,6 +134,17 @@ export default {
     }
   },
   methods: {
+    getaccount() {
+      // 获取本地存储账号信息
+      let accountMsg = localStorage.getItem('accountMsg')
+      console.log(accountMsg)
+      if (accountMsg) {
+        let obj = eval('(' + accountMsg + ')')
+        this.account = obj.account
+      } else {
+        console.log('没有本地存储')
+      }
+    },
     // 点击头部切换按钮
     btn1() {
       this.$store.commit('tableH', ['序号', '物料描述', '数量'])
@@ -214,9 +226,8 @@ export default {
       this.$store.commit('SN', arr)
     },
     snListUrl() {
-      let params = {}
-      let temp = this.urlParams
-      if (temp === 'salestockup' || temp === 'salesoutput') {
+      let [params, temp] = [{}, this.urlParams]
+      if (temp === 'salestockup' || temp === 'salesoutput' || temp === 'salesreturn') {
         params = {
           VBELN: this.opNum,
           WERKS: this.factoryNum,
@@ -233,9 +244,9 @@ export default {
         params = {
           ZRKDH: this.opNum
         }
-      } else if (temp === 'salesreturn') {
+      } else if (temp === 'allotinbound' || temp === 'allot') {
         params = {
-          VBELN: this.opNum,
+          EBELN: this.opNum,
           WERKS: this.factoryNum,
           LGORT: this.warehouseNum
         }
@@ -281,6 +292,14 @@ export default {
       } else if (this.urlParams === 'salesreturn') {
         if (data.MT_SalesReturn_GetSN_Resp.Header) {
           arr = data.MT_SalesReturn_GetSN_Resp.Header
+        }
+      } else if (this.urlParams === 'allotinbound') {
+        if (data.MT_AllotInbound_GetSN_Resp.Header) {
+          arr = data.MT_AllotInbound_GetSN_Resp.Header
+        }
+      } else if (this.urlParams === 'allot') {
+        if (data.MT_Allot_GetSN_Resp.Header) {
+          arr = data.MT_Allot_GetSN_Resp.Header
         }
       }
       // 讲sn码列表数组保存到store
@@ -344,20 +363,14 @@ export default {
     },
     // 转化成组件table-tr-sn.vue的通用数组数据
     turnArr(arr) {
-      console.log('aaaaaa')
-      console.log(arr)
       // 计算产品数量
       if (arr === undefined || arr.length === undefined) {
         this.status1 = 0
       } else {
         this.status1 = arr.length
       }
-      // 临时数组
-      let trArr = []
-      let checkboxVal = []
-      // 用于计算应扫数量
-      let num = 0
-      let num3 = 0
+      // trArr为临时数组   num用于计算应扫数量
+      let [trArr, checkboxVal, num, num3] = [[], [], 0, 0]
       if (arr.length >= 0) {
         for (let i in arr) {
           // 页面初次加载时执行
@@ -445,8 +458,6 @@ export default {
         }
       }
       // 标示SN码是否扫描的状态数组
-      console.log('ssss')
-      console.log(trArr)
       this.setSN(trArr)
       this.status2 = num
       // if (this.addStatus) {
@@ -468,16 +479,7 @@ export default {
       }
     },
     verify1() {
-      let num = this.inputVal
-      let arr = this.snArr
-      console.log('popopo')
-      console.log(arr)
-      let _this = this
-      let fbtype = 0
-      let index = 0
-      let subindex = 0
-      console.log('suCC')
-      console.log(arr)
+      let [num, arr, _this, fbtype, index, subindex] = [this.inputVal, this.snArr, this, 0, 0, 0]
       // 过滤误操作
       for (let i in arr) {
         // 标准包装
@@ -506,12 +508,12 @@ export default {
         }
       }
 
-      console.log(fbtype)
-
       this.verifyAjax(this.verifyUrl1(arr, index)).then(function(data) {
         if (_this.urlParams === 'purchase') {
           data = data.MT_Purchase_Verify_Resp.Item
         } else if (_this.urlParams === 'salesoutput') {
+          data = data.MT_Salesoutput_Verify_Resp.Item
+        } else if (_this.urlParams === 'allotinbound') {
           data = data.MT_Salesoutput_Verify_Resp.Item
         }
         // 校验成功
@@ -564,6 +566,12 @@ export default {
             } else {
               alert('条码有误！')
             }
+          } else if (_this.urlParams === 'allot') {
+            if (data.MT_Allot_Verify_Resp.Item) {
+              data = data.MT_Allot_Verify_Resp.Item
+            } else {
+              alert('条码有误！')
+            }
           }
           if (data.ZXXLX === 'S') {
             _this.inputVal = ''
@@ -606,7 +614,7 @@ export default {
           ITEM_NO: arr[i].ITEM_NO,
           ZDDLX: this.ZDDLX,
           ZTIAOM: this.inputVal,
-          WERKS: arr[i].WERKS,
+          WERKS: this.factoryNum,
           LGORT: arr[i].LGORT,
           ZQRKZ: 0,
           ZDEL: 0
@@ -622,23 +630,46 @@ export default {
           LGORT: temp.LGORT,
           ITEM_NO: temp.ITEM_NO
         }
+      } else if (this.urlParams === 'allotinbound') {
+        let temp = this.snArr[0]
+        console.log(temp)
+        params.data = {
+          EBELN: temp.BUS_NO,
+          ZTIAOM: this.inputVal,
+          ZQRKZ: 0,
+          ZDEL: 0,
+          WERKS: this.factoryNum,
+          LGORT: this.warehouseNum,
+          EBELP: temp.ITEM_NO
+        }
       }
       return params
     },
     // 销售备货校验参数
     verifyUrl2 () {
-      let params = {}
-      let temp = this.fbData
-      console.log(temp)
-      params.url = path.sap + this.urlParams + '/verify'
-      params.data = {
-        VBELN: temp.BUS_NO,
-        ZTIAOM: this.inputVal,
-        ZQRKZ: 0,
-        ZDEL: 0,
-        WERKS: temp.WERKS,
-        LGORT: temp.LGORT,
-        ITEM_NO: temp.ITEM_NO
+      let [params, temp] = [{}, this.fbData]
+      if (this.urlParams === 'salestockup' || this.urlParams === 'salesreturn') {
+        params.url = path.sap + this.urlParams + '/verify'
+        params.data = {
+          VBELN: temp.BUS_NO,
+          ZTIAOM: this.inputVal,
+          ZQRKZ: 0,
+          ZDEL: 0,
+          WERKS: temp.WERKS,
+          LGORT: temp.LGORT,
+          ITEM_NO: temp.ITEM_NO
+        }
+      } else if (this.urlParams === 'allot') {
+        params.url = path.sap + this.urlParams + '/verify'
+        params.data = {
+          EBELN: this.BUS_NO,
+          ZTIAOM: this.inputVal,
+          ZQRKZ: 0,
+          ZDEL: 0,
+          WERKS: this.factoryNum,
+          LGORT: this.warehouseNum,
+          EBELP: temp.ITEM_NO
+        }
       }
       return params
     },
@@ -738,18 +769,16 @@ export default {
     },
     // 确认入库
     setSureIn() {
-      let _this = this
-      let params = ''
-      let url = ''
+      let [_this, params, url] = [this, '', '']
       if (this.urlParams === 'salestockup' || this.urlParams === 'salesoutput' || this.urlParams === 'salesreturn') {
-        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "11608050", ZQRKZ: 1 } }'
+        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1 } }'
         // params = {
-        //   body: '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "11608050", ZQRKZ: 1 } }'
+        //   body: '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1 } }'
         // }
       } else if (this.urlParams === 'purchase') {
-        params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "11608050"} }'
+        params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '"} }'
         // params = {
-        //   body: '{"Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: ' + this.ZDDLX + ', ZGH: "11608050"}}'
+        //   body: '{"Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: ' + this.ZDDLX + ', ZGH: "' + this.account + '"}}'
         // }
       } else if (this.urlParams === 'product') {
         let myDate = new Date()
@@ -761,7 +790,7 @@ export default {
         }
         params = {
           ZRKDH: this.BUS_NO,
-          ZGZRY: '11608050',
+          ZGZRY: '' + this.account + '',
           ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
           ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
           LGORT: this.warehouseNum
@@ -769,7 +798,7 @@ export default {
         // params = {
         //   body: {
         //     ZRKDH: this.BUS_NO,
-        //     ZGZRY: '11608050',
+        //     ZGZRY: '' + this.account + '',
         //     ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
         //     ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
         //     LGORT: this.warehouseNum
@@ -789,7 +818,7 @@ export default {
             if (data.MT_Product_OrderPost_Resp.Item) {
               data = data.MT_Product_OrderPost_Resp.Item
               if (data.ZXXLX === 'S') {
-                alert('入库成功')
+                alert('入库成功!入库凭证为' + data.ZTXXX)
               } else {
                 alert(data.ZTXXX)
               }
@@ -851,7 +880,7 @@ export default {
             }
           }
           if (data.ZXXLX === 'S') {
-            alert('入库成功')
+            alert('入库成功!入库凭证为' + data.ZTXXX)
           } else {
             alert(data.ZTXXX)
           }
@@ -859,9 +888,7 @@ export default {
       }
     },
     delSN() {
-      let _this = this
-      let url = path.sap + 'delete/sn'
-      let paramsArr = []
+      let [_this, url, paramsArr] = [this, path.sap + 'delete/sn', []]
       for (let i in this.checkboxVal) {
         if (this.checkboxVal[i]) {
           paramsArr.push({
@@ -883,6 +910,7 @@ export default {
         }
         if (data.ZXXLX === 'S') {
           alert('删除成功！')
+          _this.snListUrl()
         } else {
           alert(data.ZTXXX)
         }
@@ -904,9 +932,9 @@ export default {
     }
   },
   created: function () {
-    if (this.urlParams === 'purchase' || this.urlParams === 'salesoutput') {
+    if (this.urlParams === 'purchase' || this.urlParams === 'salesoutput' || this.urlParams === 'allotinbound') {
       this.orderType = 1
-    } else if (this.urlParams === 'salestockup' || this.urlParams === 'salesreturn') {
+    } else if (this.urlParams === 'salestockup' || this.urlParams === 'salesreturn' || this.urlParams === 'allot') {
       this.orderType = 2
     } else if (this.urlParams === 'product') {
       this.orderType = 3
