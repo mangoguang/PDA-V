@@ -11,7 +11,7 @@
         </ul>
       </div>
       <!-- 表格为四列 -->
-      <div v-else="isTr3" :class="{on: sn.arr[5]}">
+      <div v-else="isTr3">
         <!-- 不存在子条码 -->
         <ul v-if="!sn.status">
           <li v-bind:class="{paddingLfet20: checkBoxShow}">
@@ -59,6 +59,8 @@ Vue.use(Vuex)
     },
     computed: {
       sns() {
+        console.log('ppppoooo')
+        console.log(this.$store.state.SN)
         return this.$store.state.SN
       },
       checkBoxShow() {
@@ -237,10 +239,10 @@ Vue.use(Vuex)
       padding-left: $f20;
     }
   }
-  div.on{
-    input,li,ul,p{
-      color: #38ce54;
-    }
-  }
+  // div.on{
+  //   input,li,ul,p{
+  //     color: #38ce54;
+  //   }
+  // }
 }
 </style>

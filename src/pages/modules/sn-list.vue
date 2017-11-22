@@ -137,7 +137,6 @@ export default {
     getaccount() {
       // 获取本地存储账号信息
       let accountMsg = localStorage.getItem('accountMsg')
-      console.log(accountMsg)
       if (accountMsg) {
         let obj = eval('(' + accountMsg + ')')
         this.account = obj.account
@@ -320,6 +319,7 @@ export default {
       // }
     },
     checkStatus(ZJYZT, urlParams) {
+      console.log(ZJYZT + '::' + urlParams)
       let status = false
       if (urlParams === 'purchase') {
         if (ZJYZT === 1 || ZJYZT === 9 || ZJYZT === 'Z') {
@@ -340,6 +340,18 @@ export default {
           status = false
         }
       } else if (urlParams === 'salesreturn') {
+        if (ZJYZT === 1) {
+          status = true
+        } else {
+          status = false
+        }
+      } else if (urlParams === 'allot') {
+        if (ZJYZT === 8) {
+          status = true
+        } else {
+          status = false
+        }
+      } else if (urlParams === 'allotinbound') {
         if (ZJYZT === 1) {
           status = true
         } else {
@@ -380,7 +392,7 @@ export default {
           let temp = {}
           // 标准包
           // if (arr[i].Item === null || arr[i].Item === undefined) {
-          if (!arr[0].Item) {
+          if (!arr[i].Item) {
             // temp.status = false
             checkboxVal.push(false)
             temp.arr = []
@@ -426,10 +438,8 @@ export default {
             temp.arr[0] = arr[i].MATKL
             let arr1 = []
             let arr2 = []
-            console.log('pspspsspsp')
-            console.log(arr)
+            console.log('iiiii')
             console.log(arr[i].Item)
-            console.log(num)
             for (let j in arr[i].Item) {
               num++
               // 页面初次加载时执行
@@ -445,13 +455,14 @@ export default {
             temp.arr[2] = arr2
             temp.arr[3] = arr[i].BUS_NO
             temp.arr[4] = parseInt(arr[i].LFIMG)
+            temp.arr[5] = arr[i].status // 是否校验状态码
             temp.arr[6] = arr[i].ITEM_NO
-            if (this.checkStatus(arr[i].ZJYZT, this.urlParams)) {
-              temp.arr[5] = true
-              num3++
-            } else {
-              temp.arr[5] = arr[i].status // 是否校验状态码
-            }
+            // if (this.checkStatus(arr[i].ZJYZT, this.urlParams)) {
+            //   temp.arr[5] = true
+            //   num3++
+            // } else {
+              // temp.arr[5] = arr[i].status // 是否校验状态码
+            // }
           }
           this.status3 = num3
           trArr.push(temp)
@@ -632,7 +643,6 @@ export default {
         }
       } else if (this.urlParams === 'allotinbound') {
         let temp = this.snArr[0]
-        console.log(temp)
         params.data = {
           EBELN: temp.BUS_NO,
           ZTIAOM: this.inputVal,
@@ -656,8 +666,8 @@ export default {
           ZQRKZ: 0,
           ZDEL: 0,
           WERKS: temp.WERKS,
-          LGORT: temp.LGORT,
-          ITEM_NO: temp.ITEM_NO
+          LGORT: temp.LGORT
+          // ITEM_NO: temp.ITEM_NO
         }
       } else if (this.urlParams === 'allot') {
         params.url = path.sap + this.urlParams + '/verify'
@@ -667,8 +677,8 @@ export default {
           ZQRKZ: 0,
           ZDEL: 0,
           WERKS: this.factoryNum,
-          LGORT: this.warehouseNum,
-          EBELP: temp.ITEM_NO
+          LGORT: this.warehouseNum
+          // EBELP: temp.ITEM_NO
         }
       }
       return params
@@ -804,6 +814,16 @@ export default {
         //     LGORT: this.warehouseNum
         //   }
         // }
+      } else if (this.urlParams === 'allot') {
+        params = '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
+        // params = {
+        //   body: '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
+        // }
+      } else if (this.urlParams === 'allotinbound') {
+        params = '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
+        // params = {
+        //   body: '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
+        // }
       }
       if (this.urlParams === 'product') {
         url = path.sap + this.urlParams + '/orderpost'
@@ -877,6 +897,14 @@ export default {
           } else if (_this.urlParams === 'salesreturn') {
             if (data.MT_SalesReturn_Confirm_Resp.Item) {
               data = data.MT_SalesReturn_Confirm_Resp.Item
+            }
+          } else if (_this.urlParams === 'allot') {
+            if (data.MT_Allot_Confirm_Resp.Item) {
+              data = data.MT_Allot_Confirm_Resp.Item
+            }
+          } else if (_this.urlParams === 'allotinbound') {
+            if (data.MT_AllotInbound_Confirm_Resp.Item) {
+              data = data.MT_AllotInbound_Confirm_Resp.Item
             }
           }
           if (data.ZXXLX === 'S') {
