@@ -13,7 +13,7 @@
       <!-- 表格为四列 -->
       <div v-else="isTr3">
         <!-- 不存在子条码 -->
-        <ul v-if="!sn.status">
+        <ul v-if="!sn.status" :class="{on: sn.arr[5]}">
           <li v-bind:class="{paddingLfet20: checkBoxShow}">
             <label v-show="checkBoxShow" :for= "sn.arr[1]" :class="{on: checkboxVal[index]}">
             </label>
@@ -239,10 +239,10 @@ Vue.use(Vuex)
       padding-left: $f20;
     }
   }
-  // div.on{
-  //   input,li,ul,p{
-  //     color: #38ce54;
-  //   }
-  // }
+  div.on{
+    input,li,ul,p{
+      color: #38ce54;
+    }
+  }
 }
 </style>
