@@ -59,8 +59,6 @@ Vue.use(Vuex)
     },
     computed: {
       sns() {
-        console.log('ppppoooo')
-        console.log(this.$store.state.SN)
         return this.$store.state.SN
       },
       checkBoxShow() {

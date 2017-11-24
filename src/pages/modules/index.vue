@@ -35,7 +35,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {path, V, cloneObj} from '../../js/variable.js'
+import {path, V, cloneObj, getFactorySel} from '../../js/variable.js'
 import HeadComponent from '../../components/header'
 import TableH from '../../components/table-h'
 import TableTr from '../../components/table-tr-op'
@@ -55,9 +55,9 @@ export default {
       focusStatus: true,
       titName: this.$route.query.moduleName,
       moduleName: this.$route.params.module,
-      factoryNum: this.$route.query.factoryNum,
-      warehouse: this.$route.query.warehouse,
-      warehouseNum: this.$route.query.warehouseNum,
+      factoryNum: '',
+      warehouse: '',
+      warehouseNum: '',
       bottomBtn: true,
       btnName: '',
       printVal: localStorage.getItem('printVal')
@@ -230,7 +230,7 @@ export default {
       let temp = ''
       if (this.moduleName === 'product') {
         temp = '生产入库'
-        this.$router.push({ path: '/snList/' + str + '?name=' + this.moduleName + '&moduleName=' + temp + '&warehouse=' + this.$route.query.warehouse + '&warehouseNum=' + this.$route.query.warehouseNum + '&factoryNum=' + this.$route.query.factoryNum })
+        this.$router.push({ path: '/snList/' + str + '?name=' + this.moduleName + '&moduleName=' + temp })
       } else {
         if (str === '') {
           arr = this.orders
@@ -537,6 +537,9 @@ export default {
     }
   },
   created: function() {
+    // 设置注销的回退步数
+    localStorage.setItem('routeIndex', '4')
+    getFactorySel(this)
     let _this = this
     if (this.moduleName !== 'product') {
       if (this.moduleName === 'stock') {

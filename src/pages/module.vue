@@ -1,11 +1,11 @@
 <!-- <keep-alive> -->
 <template>
-  <div class="module" v-bind:style="{height: height+'px'}">
+  <div class="module">
     <div class="h25"></div>
     <HeadComponent>
       <h1>{{warehouse}}</h1>
     </HeadComponent>
-    <ul class="clearfix">
+    <ul class="clearfix moduleBox" :style="{height: (height - 73)+'px'}">
       <li 
       v-for="(module,index) in modules" 
       v-if="module.jurisdiction === 'true'"
@@ -35,7 +35,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {path, V} from '../js/variable'
+import {path, V, getFactorySel} from '../js/variable'
 import HeadComponent from '../components/header'
 import md5 from 'js-md5'
 Vue.use(VueRouter)
@@ -51,9 +51,9 @@ export default {
       account: null,
       password: null,
       modules: null,
-      warehouse: this.$route.query.warehouse,
-      factoryNum: this.$route.query.factoryNum,
-      warehouseNum: this.$route.query.warehouseNum
+      warehouse: '',
+      factoryNum: '',
+      warehouseNum: ''
     }
   },
   computed: {
@@ -104,7 +104,7 @@ export default {
         if (module === 'setting') {
           this.$router.push({ path: '/setting' })
         } else {
-          this.$router.push({ path: '/modules/' + module + '?warehouse=' + this.warehouse + '&warehouseNum=' + this.warehouseNum + '&moduleName=' + moduleName + '&factoryNum=' + this.factoryNum })
+          this.$router.push({ path: '/modules/' + module + '?moduleName=' + moduleName })
         }
       } else {
         alert('您没有读取该模块内容的权限。')
@@ -117,6 +117,9 @@ export default {
     }
   },
   created: function() {
+    // 设置注销的回退步数
+    localStorage.setItem('routeIndex', '3')
+    getFactorySel(this)
     let obj = this.getAccountMsg()
     this.account = obj.account
     this.password = obj.password
@@ -136,6 +139,7 @@ export default {
   ul{
     width: 100%;
     padding-left: $f20;
+    overflow-x: hidden;
     box-sizing: border-box;
   }
   li{

@@ -2,7 +2,7 @@ function Path() {
 	this.oa = 'http://10.12.0.53:8900/derucci/workflow/jsp'
 	this.local = 'http://localhost/PDA-V/static/json'
 	// this.local = 'http://mangoguang.cn/PDA/static/json'
-	this.sap = 'http://10.12.0.153:50100/RESTAdapter/'
+	this.sap = 'http://10.12.0.154:50100/RESTAdapter/'
 }
 let path = new Path()
 
@@ -111,4 +111,18 @@ function VueAjax() {
 }
 let V = new VueAjax()
 
-export { path, V, cloneObj }
+function getFactorySel(_this) {
+  // 获取本地存储默认工厂
+  let factoryMsg = localStorage.getItem('factoryMsg')
+  let factoryObj = eval('(' + factoryMsg + ')')
+  if (factoryMsg) {
+    _this.factory = factoryObj.factory
+    _this.factoryNum = factoryObj.factoryNum
+    _this.warehouse = factoryObj.warehouse
+    _this.warehouseNum = factoryObj.warehouseNum
+  } else {
+    // this.factorySel = this.factorys[0].name
+  }
+}
+
+export { path, V, cloneObj, getFactorySel }

@@ -1,11 +1,11 @@
 <!-- <keep-alive> -->
 <template>
-  <div class="setting" v-bind:style="{height: height+'px'}">
+  <div class="setting">
     <div class="h25"></div>
     <HeadComponent>
       <h1>系统设置</h1>
     </HeadComponent>
-    <ul class="setting">
+    <ul class="setting" :style="{height: (height - 73)+'px'}">
       <li>
         <h2 :style="{'background': 'url(./static/images/skinImg/' + skinCol + '/print.png) no-repeat', 'background-size': 'auto $f14', 'background-position': '0 0.1rem' }">标签打印设置</h2>
       </li>
@@ -51,20 +51,20 @@
       </li>
       <li>
         <label for="factory">工厂选择</label>
-        <select id="factory" v-model="factorySelNum" @change="changeFactory(true)">
+        <select id="factory" v-model="factoryNum" @change="changeFactory(true)">
           <option v-for="obj in factoryList" :value="obj.code">{{ obj.name }}</option>
         </select>
         <span></span>
       </li>
       <li>
         <label for="warehouse">仓库</label>
-        <select id="warehouse" v-model="warehouseSelNum" @change="changeFactory(false)">
+        <select id="warehouse" v-model="warehouseNum" @change="changeFactory(false)">
           <option v-for="obj in warehouseList" :value="obj.code">{{ obj.name }}</option>
         </select>
         <span></span>
       </li>
       <li>
-        <button type="button">退出账号</button>
+        <button type="button" @click="logout">退出账号</button>
       </li>
     </ul>
   </div>
@@ -77,7 +77,7 @@ import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import HeadComponent from '../../components/header'
 import md5 from 'js-md5'
-import {path, V} from '../../js/variable.js'
+import {path, V, getFactorySel} from '../../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -97,11 +97,11 @@ export default {
       typeList: ['skinA', 'skinB', 'skinC'], // 风格选择
       typeVal: localStorage.getItem('skinCol'),
       factoryList: [],
-      factorySel: '',
-      factorySelNum: '',
+      factory: '',
+      factoryNum: '',
       warehouseList: [],
-      warehouseSel: '',
-      warehouseSelNum: ''
+      warehouse: '',
+      warehouseNum: ''
     }
   },
   computed: {
@@ -119,19 +119,6 @@ export default {
     changeType() {
       localStorage.setItem('skinCol', this.typeVal)
       this.setSkinCol(this.typeVal)
-    },
-    getFactorySel: function() {
-      // 获取本地存储默认工厂
-      let factoryMsg = localStorage.getItem('factoryMsg')
-      let factoryObj = eval('(' + factoryMsg + ')')
-      if (factoryMsg) {
-        this.factorySel = factoryObj.factory
-        this.factorySelNum = factoryObj.factorySelNum
-        this.warehouseSel = factoryObj.warehouse
-        this.warehouseSelNum = factoryObj.warehouseSelNum
-      } else {
-        // this.factorySel = this.factorys[0].name
-      }
     },
     getPrintPlanMsg() {
       let printPlanMsg = localStorage.getItem('printPlanMsg')
@@ -153,12 +140,14 @@ export default {
       let url = path.oa + '/PDAFactory.jsp'
       let params = {
         // name: this.factorySel,
-        // password: md5(this.warehouseSel).toLocaleUpperCase()
+        // password: md5(this.warehouse).toLocaleUpperCase()
         account: obj.account,
         password: md5(obj.password).toLocaleUpperCase()
       }
       _this.loadingShow(true)
       V.post(url, params).then(function(data) {
+        console.log(1231)
+        console.log(data)
         _this.loadingShow(false)
         if (data.status) {
           _this.factoryList = data.factorys
@@ -178,12 +167,17 @@ export default {
       let params = {
         account: obj.account,
         password: md5(obj.password).toLocaleUpperCase(),
-        factory: this.factorySelNum
+        factory: this.factoryNum
       }
 
       _this.loadingShow(true)
       V.post(url, params).then(function(data) {
+        console.log('9999')
+        console.log(data)
         _this.loadingShow(false)
+        _this.warehouse = data.warehouse[0].name
+        localStorage.setItem('factoryMsg', '{factory: "' + _this.factory + '",warehouse: "' + _this.warehouse + '", factoryNum: "' + _this.factoryNum + '", warehouseNum: "' + _this.warehouseNum + '"}')
+        console.log(localStorage.getItem('factoryMsg'))
         if (data.status) {
           _this.warehouseList = data.warehouse
         }
@@ -243,16 +237,40 @@ export default {
     },
     // 将工厂信息缓存到本地
     changeFactory(status) {
-      console.log('{factory: "' + this.factorySel + '",warehouse: "' + this.warehouseSel + '", factorySelNum: "' + this.factorySelNum + '", warehouseSelNum: "' + this.warehouseSelNum + '"}')
-      localStorage.setItem('factoryMsg', '{factory: "' + this.factorySel + '",warehouse: "' + this.warehouseSel + '", factorySelNum: "' + this.factorySelNum + '", warehouseSelNum: "' + this.warehouseSelNum + '"}')
+      localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
+        console.log(localStorage.getItem('factoryMsg'))
       if (status) {
         this.setWarehouse()
       }
+    },
+    logout() {
+      let _this = this
+      let url = path.oa + '/PDALoginOut.jsp'
+      let obj = this.getAccountMsg()
+      let params = {
+        account: obj.account,
+        password: md5(obj.password).toLocaleUpperCase()
+      }
+      _this.putInShow = true
+      V.get(url, params).then(function(data) {
+        data = JSON.parse(data.responseText)
+        _this.putInShow = false
+        if (data.status === 'true') {
+          localStorage.setItem('accountMsg', "{account: '" + obj.account + "'," +
+              "password: '1'}")
+          _this.$router.go(0 - parseInt(localStorage.getItem('routeIndex')))
+        }
+        console.log('注销登录')
+        console.log(data)
+      }).catch((res) => {
+        alert('请求超时！')
+        _this.loadingShow(false)
+      })
     }
   },
   created() {
     this.loadingShow(false)
-    this.getFactorySel()
+    getFactorySel(this)
     this.getPrintPlanMsg()
     this.setSkinCol(localStorage.getItem('skinCol'))
     // 获取防伪打印模板
@@ -269,7 +287,9 @@ export default {
 @import "../../assets/sass/variable.scss";
 .setting{
   ul{
+    overflow-x: hidden;
     padding: .5rem $f15;
+    box-sizing: border-box;
   }
   li{
     position: relative;

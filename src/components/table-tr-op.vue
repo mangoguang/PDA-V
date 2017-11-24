@@ -53,7 +53,7 @@ Vue.use(Vuex)
         if (temp === 'stock') {
           temp = this.bottomBtnName
         }
-        this.$router.push({ path: '/snList/' + num + '?name=' + temp + '&moduleName=' + this.moduleName + '&warehouse=' + this.$route.query.warehouse + '&warehouseNum=' + this.$route.query.warehouseNum + '&factoryNum=' + this.$route.query.factoryNum + '&ZDDLX=' + ZDDLX })
+        this.$router.push({ path: '/snList/' + num + '?name=' + temp + '&moduleName=' + this.moduleName + '&ZDDLX=' + ZDDLX })
       }
     },
     created: function() {
@@ -66,6 +66,8 @@ Vue.use(Vuex)
         }
       } else if (this.$route.params.module === 'purchase') {
         this.$store.commit('moduleName', '采购入库')
+      } else if (this.$route.params.module === 'salesreturn') {
+        this.$store.commit('moduleName', '退货入库')
       }
     }
   }

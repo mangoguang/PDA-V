@@ -1,6 +1,6 @@
 <!-- <keep-alive> -->
 <template>
-  <div class="select" v-bind:style="{height: height+'px'}">
+  <div class="select" :style="{height: height+'px'}">
     <div class="photoBox">
       <img src="../assets/img/login/s1/3_pic.png" alt="">
       <h3>{{name}}</h3>
@@ -8,10 +8,10 @@
     </div>
     
     <form>
-      <select id="factorys" v-model="factorySelNum" @change="setWarehouse">
+      <select id="factorys" v-model="factoryNum" @change="setWarehouse">
         <option v-for="factory in factorys" :value="factory.code">{{ factory.name }}</option>
       </select>
-      <select id="warehouse" v-model="warehouseSelNum">
+      <select id="warehouse" v-model="warehouseNum">
         <option v-for="warehouse in warehouses" :value="warehouse.code">{{ warehouse.name }}</option>
       </select>
       <div @click="select"><Btn>确定</Btn></div>
@@ -25,7 +25,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {path, V} from '../js/variable'
+import {path, V, getFactorySel} from '../js/variable'
 import Btn from '../components/btn'
 import md5 from 'js-md5'
 Vue.use(VueRouter)
@@ -40,10 +40,10 @@ export default {
       height: document.documentElement.clientHeight,
       factorys: [],
       warehouses: [],
-      factorySel: '',
-      warehouseSel: '',
-      factorySelNum: '',
-      warehouseSelNum: '',
+      factory: '',
+      warehouse: '',
+      factoryNum: '',
+      warehouseNum: '',
       warehouseStatus: false,
       name: this.$route.query.name
     }
@@ -56,16 +56,16 @@ export default {
       this.$store.commit('loadingShow', x)
     },
     select: function() {
-      localStorage.setItem('factoryMsg', '{factory: "' + this.factorySel + '",warehouse: "' + this.warehouseSel + '", factorySelNum: "' + this.factorySelNum + '", warehouseSelNum: "' + this.warehouseSelNum + '"}')
-      // localStorage.setItem('factoryMsg', '{factory: "' + this.factorySel + '",warehouse: "' + this.warehouseSel + '", factorySelNum: "1012", warehouseSelNum: "' + this.warehouseSelNum + '"}')
+      localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
+      // localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "1012", warehouseNum: "' + this.warehouseNum + '"}')
       // 仓库名称与代号保持一致
       for (let i in this.warehouses) {
-        if (this.warehouses[i].code === this.warehouseSelNum) {
-          this.warehouseSel = this.warehouses[i].name
+        if (this.warehouses[i].code === this.warehouseNum) {
+          this.warehouse = this.warehouses[i].name
         }
       }
-      this.$router.push({ path: '/module?name=' + this.name + '&factoryNum=' + this.factorySelNum + '&warehouseNum=' + this.warehouseSelNum + '&warehouse=' + this.warehouseSel })
-      // this.$router.push({ path: '/module?name=' + this.name + '&factoryNum=1012&warehouseNum=' + this.warehouseSelNum + '&warehouse=' + this.warehouseSel })
+      this.$router.push({ path: '/module?name=' + this.name })
+      // this.$router.push({ path: '/module?name=' + this.name + '&factoryNum=1012&warehouseNum=' + this.warehouseNum + '&warehouse=' + this.warehouse })
     },
     setWarehouse: function() {
       let _this = this
@@ -76,7 +76,7 @@ export default {
       let params = {
         account: obj.account,
         password: md5(obj.password).toLocaleUpperCase(),
-        factory: this.factorySelNum
+        factory: this.factoryNum
       }
 
       _this.loadingShow(true)
@@ -87,11 +87,11 @@ export default {
           if (data.warehouse.length > 0) {
             if (_this.warehouseStatus) {
               // 更改默认仓库
-              _this.warehouseSel = data.warehouse[0].name
+              _this.warehouse = data.warehouse[0].name
             } else {
               let factoryMsg = localStorage.getItem('factoryMsg')
               if (!factoryMsg) {
-                _this.warehouseSel = data.warehouse[0].name
+                _this.warehouse = data.warehouse[0].name
               } else {
                 _this.warehouseStatus = true
               }
@@ -108,19 +108,19 @@ export default {
       let obj = eval('(' + accountMsg + ')')
       return obj
     },
-    getFactorySel: function() {
-      // 获取本地存储默认工厂
-      let factoryMsg = localStorage.getItem('factoryMsg')
-      let factoryObj = eval('(' + factoryMsg + ')')
-      if (factoryMsg) {
-        this.factorySel = factoryObj.factory
-        this.factorySelNum = factoryObj.factorySelNum
-        this.warehouseSel = factoryObj.warehouse
-        this.warehouseSelNum = factoryObj.warehouseSelNum
-      } else {
-        // this.factorySel = this.factorys[0].name
-      }
-    },
+    // getFactory: function() {
+    //   // 获取本地存储默认工厂
+    //   let factoryMsg = localStorage.getItem('factoryMsg')
+    //   let factoryObj = eval('(' + factoryMsg + ')')
+    //   if (factoryMsg) {
+    //     this.factory = factoryObj.factory
+    //     this.factoryNum = factoryObj.factoryNum
+    //     this.warehouse = factoryObj.warehouse
+    //     this.warehouseNum = factoryObj.warehouseNum
+    //   } else {
+    //     // this.factory = this.factorys[0].name
+    //   }
+    // },
     // 设置工厂列表
     setFactorys: function() {
       let _this = this
@@ -129,8 +129,8 @@ export default {
       // let url = path.local + '/factory_sel.php'
       let url = path.oa + '/PDAFactory.jsp'
       let params = {
-        // name: this.factorySel,
-        // password: md5(this.warehouseSel).toLocaleUpperCase()
+        // name: this.factory,
+        // password: md5(this.warehouse).toLocaleUpperCase()
         account: obj.account,
         password: md5(obj.password).toLocaleUpperCase()
       }
@@ -140,14 +140,14 @@ export default {
         _this.loadingShow(false)
         if (data.status) {
           _this.factorys = data.factorys
-          _this.factorySel = data.factorys[0].name
+          _this.factory = data.factorys[0].name
           _this.setWarehouse()
         }
       }).catch((res) => {
         alert('您的网络有问题。')
         _this.loadingShow(false)
       })
-      this.getFactorySel()
+      getFactorySel(this)
     }
   },
   created() {

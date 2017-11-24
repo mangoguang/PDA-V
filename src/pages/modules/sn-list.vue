@@ -56,7 +56,7 @@ import ScanError from '../../components/purchase/scan-error'
 import PutIn from '../../components/purchase/put-in'
 import SNDetail from '../../components/purchase/sn-detail'
 import Btn from '../../components/btn'
-import { path, V } from '../../js/variable.js'
+import { path, V, getFactorySel } from '../../js/variable.js'
 // import apiFn from '../../js/lib/api.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -93,9 +93,9 @@ export default {
       orderType: null,
       // 用于判断是否第一次push数组
       firstPush: true,
-      factory: this.$route.query.factory,
-      factoryNum: this.$route.query.factoryNum,
-      warehouseNum: this.$route.query.warehouseNum,
+      factory: '',
+      factoryNum: '',
+      warehouseNum: '',
       ZDDLX: this.$route.query.ZDDLX,
       clearsnArr: true, // 用于销售模块snArr初始化
       salestockupNum: 0
@@ -960,6 +960,9 @@ export default {
     }
   },
   created: function () {
+    // 设置注销的回退步数
+    localStorage.setItem('routeIndex', '5')
+    getFactorySel(this)
     if (this.urlParams === 'purchase' || this.urlParams === 'salesoutput' || this.urlParams === 'allotinbound') {
       this.orderType = 1
     } else if (this.urlParams === 'salestockup' || this.urlParams === 'salesreturn' || this.urlParams === 'allot') {
