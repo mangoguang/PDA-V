@@ -37,7 +37,8 @@ const store = new Vuex.Store({
     moduleName: '',
     bottomBtnName: 'salestockup',
     fbData: {},
-    productScanList: []
+    productScanList: [],
+    alertMsg: ''
   },
   mutations: {
     // 皮肤选择
@@ -81,7 +82,9 @@ const store = new Vuex.Store({
     // 销售备货扫描参数
     fbData: (state, obj) => state.fbData = obj,
     // 生产扫描列表
-    productScanList: (state, arr) => state.productScanList = arr
+    productScanList: (state, arr) => state.productScanList = arr,
+    // 入库，删除是弹框显示信息
+    alertMsg: (state, x) => state.alertMsg = x
   },
   actions: {
     incrementAsync({

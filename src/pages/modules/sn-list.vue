@@ -6,7 +6,9 @@
       <ScanError></ScanError>
     </div>
     <div @click="putIn" v-show="putInShow">
-      <PutIn></PutIn>
+      <PutIn>
+        <p>{{alertMsg}}</p>
+      </PutIn>
     </div>
     <div class="snDetail">
       <SNDetail></SNDetail>
@@ -26,10 +28,10 @@
         </li>
       </ul>
       <ul class="statusBox clearfix">
-        <li @click="btn1" :class="{on: btnStatus[0]}">产品：{{status1}}</li>
-        <li @click="btn2" :class="{on: btnStatus[1]}">应扫：{{status2}}</li>
-        <li @click="btn3" :class="{on: btnStatus[2]}">已扫：{{status3}}</li>
-        <li @click="btn4" :class="{on: btnStatus[3]}">未扫：{{status4}}</li>
+        <li @click="btn1" :class="{on: btnStatus[0]}">产品：{{orderCount}}</li>
+        <li @click="btn2" :class="{on: btnStatus[1]}">应扫：{{scanCount}}</li>
+        <li @click="btn3" :class="{on: btnStatus[2]}">已扫：{{hadscanCount}}</li>
+        <li @click="btn4" :class="{on: btnStatus[3]}">未扫：{{scanCount - hadscanCount}}</li>
       </ul>
     </div>
     <div class="table">
@@ -73,9 +75,9 @@ export default {
       focusStatus: true,
       opNum: this.$route.params.num,
       // 按钮对应的数据
-      status1: 0,
-      status2: 0,
-      status3: 0,
+      orderCount: 0,
+      scanCount: 0,
+      hadscanCount: 0,
       // 扫码错误弹框显示/隐藏
       errorShow: false,
       putInShow: false,
@@ -111,8 +113,8 @@ export default {
     }
   },
   computed: {
-    status4() {
-      return (this.status2 - this.status3)
+    alertMsg() {
+      return this.$store.state.alertMsg
     },
     checkBoxShow() {
       return this.$store.state.checkBoxShow
@@ -134,6 +136,9 @@ export default {
     }
   },
   methods: {
+    setalertMsg(x) {
+      this.$store.commit('alertMsg', x)
+    },
     getaccount() {
       // 获取本地存储账号信息
       let accountMsg = localStorage.getItem('accountMsg')
@@ -362,7 +367,7 @@ export default {
     },
     verifyStatus() {
       let temp = 0
-      if (this.urlParams === 'purchase') {
+      if (this.urlParams === 'purchase' || this.urlParams === 'allotinbound') {
         temp = 1
       } else if (this.urlParams === 'salestockup') {
         temp = 2
@@ -377,9 +382,9 @@ export default {
     turnArr(arr) {
       // 计算产品数量
       if (arr === undefined || arr.length === undefined) {
-        this.status1 = 0
+        this.orderCount = 0
       } else {
-        this.status1 = arr.length
+        this.orderCount = arr.length
       }
       // trArr为临时数组   num用于计算应扫数量
       let [trArr, checkboxVal, num, num3] = [[], [], 0, 0]
@@ -393,6 +398,7 @@ export default {
           // 标准包
           // if (arr[i].Item === null || arr[i].Item === undefined) {
           if (!arr[i].Item) {
+            num++
             // temp.status = false
             checkboxVal.push(false)
             temp.arr = []
@@ -404,17 +410,17 @@ export default {
                 temp.arr[1] = arr[i].ZDEZTMA // SN条码
               }
               temp.arr[5] = arr[i].status
-              if (arr[i].status) {
-                num3++
-              }
             } else {
               temp.arr[1] = arr[i].ZTIAOM // SN条码
               if (this.checkStatus(arr[i].ZJYZT, this.urlParams)) {
               temp.arr[5] = true
-              num3++
               } else {
                 temp.arr[5] = arr[i].status // 是否校验状态码
               }
+            }
+            // 计算已扫描数量
+            if (temp.arr[5]) {
+              num3++
             }
             temp.arr[2] = arr[i].LGOBE // 库存地点描述
             temp.arr[3] = arr[i].BUS_NO // 采购订单号/内向交货单
@@ -438,8 +444,6 @@ export default {
             temp.arr[0] = arr[i].MATKL
             let arr1 = []
             let arr2 = []
-            console.log('iiiii')
-            console.log(arr[i].Item)
             for (let j in arr[i].Item) {
               num++
               // 页面初次加载时执行
@@ -449,6 +453,7 @@ export default {
               arr1.push(arr[i].Item[j].ZTIAOMA_FB)
               if (this.checkStatus(arr[i].Item[j].ZJYZT, this.urlParams)) {
                 arr2[j] = true
+                num3++
               }
             }
             temp.arr[1] = arr1
@@ -464,13 +469,13 @@ export default {
               // temp.arr[5] = arr[i].status // 是否校验状态码
             // }
           }
-          this.status3 = num3
+          this.hadscanCount = num3
           trArr.push(temp)
         }
       }
       // 标示SN码是否扫描的状态数组
       this.setSN(trArr)
-      this.status2 = num
+      this.scanCount = num
       // if (this.addStatus) {
       //   this.status4 = num
       // }
@@ -525,7 +530,7 @@ export default {
         } else if (_this.urlParams === 'salesoutput') {
           data = data.MT_Salesoutput_Verify_Resp.Item
         } else if (_this.urlParams === 'allotinbound') {
-          data = data.MT_Salesoutput_Verify_Resp.Item
+          data = data.MT_AllotInbound_Verify_Resp.Item
         }
         // 校验成功
         if (data.ZXXLX === 'S') {
@@ -537,6 +542,7 @@ export default {
             _this.turnArr(arr)
             // _this.inputVal = ''
             _this.focusStatus = true
+            _this.hadscanCount++
           } else if (fbtype === 1) {
             // 分包
             arr[index].Item[subindex].ZJYZT = _this.verifyStatus()
@@ -544,9 +550,16 @@ export default {
             _this.turnArr(arr)
             // _this.inputVal = ''
             _this.focusStatus = true
+            _this.hadscanCount++
           } else {
             // 合包
             arr[index].ZJYZT = _this.verifyStatus()
+            // 合包主条码通过，则子条码全部通过
+            let subarr = arr[index].Item
+            for (let i in subarr) {
+              subarr[i].ZJYZT = _this.verifyStatus()
+              _this.hadscanCount++
+            }
             // _this.setSNArr(arr)
             _this.turnArr(arr)
             // _this.inputVal = ''
@@ -558,12 +571,13 @@ export default {
           // _this.inputVal = ''
           // alert(data.ZTXXX)
         }
+        console.log(arr)
       })
     },
     verify2() {
       let _this = this
       // if (this.snArr.length < this.salestockupNum) {
-        // if (this.snArr.length < this.status2) {
+        // if (this.snArr.length < this.scanCount) {
         this.verifyAjax(this.verifyUrl2()).then(function(data) {
           if (_this.urlParams === 'salestockup') {
             if (data.MT_Salestockup_Verify_Resp.Item) {
@@ -702,6 +716,7 @@ export default {
     // ifScan参数为true则筛选已扫，为false则筛选未扫
     filtrateArr(ifScan) {
       let Arr = this.sns.concat()
+      console.log(Arr)
       function delArr(arr) {
         let gettype = Object.prototype.toString
         for (let i in arr) {
@@ -719,7 +734,7 @@ export default {
               }
             }
           } else {
-            for (let j in arr[i].arr[2]) {
+            for (let j in arr[i].arr[1]) {
               if (ifScan) {
                 if (!arr[i].arr[2][j]) {
                   arr[i].arr[1].splice(j, 1)
@@ -853,6 +868,7 @@ export default {
         //   _this.putInShow = false
         // }
       } else {
+        _this.setalertMsg('正在入库...')
         _this.putInShow = true
         // window.apiready = function() {
         //   api.ajax({
@@ -930,6 +946,7 @@ export default {
       let params = JSON.stringify({
         Item: paramsArr
       })
+      this.setalertMsg('正在删除...')
       _this.putInShow = true
       V.post(url, params).then(function(data) {
         _this.putInShow = false

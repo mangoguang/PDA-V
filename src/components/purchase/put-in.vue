@@ -1,7 +1,7 @@
 <template>
     <div class="putIn">
       <div>
-        <p>正在入库...</p>
+        <slot></slot>
       </div>
     </div>
 </template>

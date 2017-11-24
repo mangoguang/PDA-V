@@ -100,6 +100,11 @@ Vue.use(Vuex)
             ZDDLX: 1,
             ZTIAOM: SN
           }
+        } else if (this.urlParams === 'allot' || this.urlParams === 'allotinbound') {
+          // 调拨出入库
+          params = {
+            ZTIAOM: SN
+          }
         }
         let url = path.sap + this.urlParams + '/getinformation'
         this.$store.commit('ifFB', status)
@@ -108,22 +113,42 @@ Vue.use(Vuex)
             let arr = []
             // 采购入库模块
             if (_this.urlParams === 'purchase') {
-              arr = data.MT_Purchase_GetInformation_Resp.Header
+              if (data.MT_Purchase_GetInformation_Resp.Header) {
+                arr = data.MT_Purchase_GetInformation_Resp.Header
+              }
             } else if (_this.urlParams === 'salestockup') {
               // 销售备货模块
-              arr = data.MT_Salestockup_GetInformation_Resp.Header
+              if (data.MT_Salestockup_GetInformation_Resp.Header) {
+                arr = data.MT_Salestockup_GetInformation_Resp.Header
+              }
             } else if (_this.urlParams === 'salesoutput') {
               // 销售出库模块
-              arr = data.MT_Salesoutput_GetInformation_Resp.Header
+              if (data.MT_Salesoutput_GetInformation_Resp.Header) {
+                arr = data.MT_Salesoutput_GetInformation_Resp.Header
+              }
             } else if (_this.urlParams === 'salesreturn') {
               // 销售出库模块
-              arr = data.MT_SalesReturn_GetInformation_Resp.Header
+              if (data.MT_SalesReturn_GetInformation_Resp.Header) {
+                arr = data.MT_SalesReturn_GetInformation_Resp.Header
+              }
+            } else if (_this.urlParams === 'allot') {
+              // 销售出库模块
+              if (data.MT_Allot_GetInformationResp.Header) {
+                arr = data.MT_Allot_GetInformationResp.Header
+              }
+            } else if (_this.urlParams === 'allotinbound') {
+              // 销售出库模块
+              if (data.MT_AllotInbound_GetInformation_Resp.Header) {
+                arr = data.MT_AllotInbound_GetInformation_Resp.Header
+              }
             }
             if (arr.Item) {
               _this.$store.commit('snDetailFB', arr.Item[0])
+              _this.$store.commit('snDetail', arr)
+              _this.detailBoxShow(true)
+            } else {
+              alert('数据查询失败！')
             }
-            _this.$store.commit('snDetail', arr)
-            _this.detailBoxShow(true)
           })
         }
       },
