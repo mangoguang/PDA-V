@@ -796,15 +796,15 @@ export default {
     setSureIn() {
       let [_this, params, url] = [this, '', '']
       if (this.urlParams === 'salestockup' || this.urlParams === 'salesoutput' || this.urlParams === 'salesreturn') {
-        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1 } }'
-        // params = {
-        //   body: '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1 } }'
-        // }
+        // params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1 } }'
+        params = {
+          body: '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1 } }'
+        }
       } else if (this.urlParams === 'purchase') {
-        params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '"} }'
-        // params = {
-        //   body: '{"Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: ' + this.ZDDLX + ', ZGH: "' + this.account + '"}}'
-        // }
+        // params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '"} }'
+        params = {
+          body: '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '"} }'
+        }
       } else if (this.urlParams === 'product') {
         let myDate = new Date()
         function turnDate(num) {
@@ -813,32 +813,32 @@ export default {
           }
           return num
         }
+        // params = {
+        //   ZRKDH: this.BUS_NO,
+        //   ZGZRY: '' + this.account + '',
+        //   ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
+        //   ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
+        //   LGORT: this.warehouseNum
+        // }
         params = {
-          ZRKDH: this.BUS_NO,
-          ZGZRY: '' + this.account + '',
-          ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
-          ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
-          LGORT: this.warehouseNum
+          body: {
+            ZRKDH: this.BUS_NO,
+            ZGZRY: '' + this.account + '',
+            ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
+            ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
+            LGORT: this.warehouseNum
+          }
         }
-        // params = {
-        //   body: {
-        //     ZRKDH: this.BUS_NO,
-        //     ZGZRY: '' + this.account + '',
-        //     ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
-        //     ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
-        //     LGORT: this.warehouseNum
-        //   }
-        // }
       } else if (this.urlParams === 'allot') {
-        params = '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
-        // params = {
-        //   body: '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
-        // }
+        // params = '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
+        params = {
+          body: '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
+        }
       } else if (this.urlParams === 'allotinbound') {
-        params = '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
-        // params = {
-        //   body: '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
-        // }
+        // params = '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
+        params = {
+          body: '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
+        }
       }
       if (this.urlParams === 'product') {
         url = path.sap + this.urlParams + '/orderpost'
@@ -870,33 +870,34 @@ export default {
       } else {
         _this.setalertMsg('正在入库...')
         _this.putInShow = true
-        // window.apiready = function() {
-        //   api.ajax({
-        //     url: url,
-        //     method: 'post',
-        //     async: false,
-        //     timeout: 30,
-        //     dataType: 'text',
-        //     returnAll: false,
-        //     data: params
-        //   },
-        //   function(ret, err) {
-        //     if (ret) {
-        //       tip(JSON.parse(ret))
-        //       _this.putInShow = false
-        //     } else {
-        //       alert(JSON.stringify(err))
-        //     }
-        //   })
-        // }
-        // window.apiready()
-        V.post(url, params).then(function(data) {
-          _this.putInShow = false
-          tip(data)
-        }).catch((res) => {
-          alert('请求超时！')
-          _this.loadingShow(false)
-        })
+        window.apiready = function() {
+          api.ajax({
+            url: url,
+            method: 'post',
+            async: false,
+            timeout: 30,
+            dataType: 'text',
+            returnAll: false,
+            data: params
+          },
+          function(ret, err) {
+            if (ret) {
+              tip(JSON.parse(ret))
+              _this.putInShow = false
+            } else {
+              alert('请求超时！')
+              _this.loadingShow(false)
+            }
+          })
+        }
+        window.apiready()
+        // V.post(url, params).then(function(data) {
+        //   _this.putInShow = false
+        //   tip(data)
+        // }).catch((res) => {
+        //   alert('请求超时！')
+        //   _this.loadingShow(false)
+        // })
         function tip(data) {
           if (_this.urlParams === 'purchase') {
             if (data.MT_Purchase_Confirm_Resp.Item) {
@@ -943,26 +944,61 @@ export default {
           })
         }
       }
-      let params = JSON.stringify({
-        Item: paramsArr
-      })
+      // let params = JSON.stringify({
+      //   Item: paramsArr
+      // })
+      let params = {
+        body: JSON.stringify({
+          Item: paramsArr
+        })
+      }
       this.setalertMsg('正在删除...')
       _this.putInShow = true
-      V.post(url, params).then(function(data) {
-        _this.putInShow = false
-        if (data.MT_DeleteSN_Resp.Item) {
-          data = data.MT_DeleteSN_Resp.Item
+      // V.post(url, params).then(function(data) {
+      //   _this.putInShow = false
+      //   if (data.MT_DeleteSN_Resp.Item) {
+      //     data = data.MT_DeleteSN_Resp.Item
+      //   }
+      //   if (data.ZXXLX === 'S') {
+      //     alert('删除成功！')
+      //     _this.snListUrl()
+      //   } else {
+      //     alert(data.ZTXXX)
+      //   }
+      // }).catch((res) => {
+      //   alert('请求超时！')
+      //   _this.loadingShow(false)
+      // })
+      window.apiready = function() {
+          api.ajax({
+            url: url,
+            method: 'post',
+            async: false,
+            timeout: 30,
+            dataType: 'text',
+            returnAll: false,
+            data: params
+          },
+          function(ret, err) {
+            if (ret) {
+              let data = JSON.parse(ret)
+              _this.putInShow = false
+              if (data.MT_DeleteSN_Resp.Item) {
+                data = data.MT_DeleteSN_Resp.Item
+              }
+              if (data.ZXXLX === 'S') {
+                alert('删除成功！')
+                _this.snListUrl()
+              } else {
+                alert(data.ZTXXX)
+              }
+            } else {
+              alert('请求超时！')
+              _this.loadingShow(false)
+            }
+          })
         }
-        if (data.ZXXLX === 'S') {
-          alert('删除成功！')
-          _this.snListUrl()
-        } else {
-          alert(data.ZTXXX)
-        }
-      }).catch((res) => {
-        alert('请求超时！')
-        _this.loadingShow(false)
-      })
+        window.apiready()
       this.$store.commit('checkBoxShow', false)
       this.showCheckbox = false
     }

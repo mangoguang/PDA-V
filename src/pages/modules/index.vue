@@ -150,55 +150,55 @@ export default {
         // 扫标签码
         if (this.bottomBtnName === 'scanbq') {
           url = path.sap + 'product/getorder'
-          params = "{ 'Item': {SN: '" + num + "'} }"
-          // params = {
-          //   body: '{ "Item": {SN: "' + num + '"} }'
-          // }
+          // params = "{ 'Item': {SN: '" + num + "'} }"
+          params = {
+            body: '{ "Item": {SN: "' + num + '"} }'
+          }
           _this.putInShow = true
-          V.post(url, params).then(function(data) {
-            _this.putInShow = false
-            if (data.MT_Product_GetOrder_Resp.Item) {
-              data = data.MT_Product_GetOrder_Resp.Item
-              if (data[0].ZXXLX === 'S' || data[0].ZXXLX === '') {
-                _this.setScanArr(data)
-                _this.searchNum = ''
-              } else {
-                alert(data[0].ZTXXX)
-                _this.searchNum = ''
-              }
-            }
-          })
-          // window.apiready = function() {
-          //   api.ajax({
-          //     url: url,
-          //     method: 'post',
-          //     async: false,
-          //     timeout: 30,
-          //     dataType: 'text',
-          //     returnAll: false,
-          //     data: params
-          //   },
-          //   function(ret, err) {
-          //     if (ret) {
-          //       let data = JSON.parse(ret)
-          //       if (data.MT_Product_GetOrder_Resp.Item) {
-          //         data = data.MT_Product_GetOrder_Resp.Item
-          //         if (data[0].ZXXLX === 'S' || data[0].ZXXLX === '') {
-          //           _this.setScanArr(data)
-          //           _this.searchNum = ''
-          //         } else {
-          //           alert(data[0].ZTXXX)
-          //           _this.searchNum = ''
-          //         }
-          //       }
-          //       _this.putInShow = false
+          // V.post(url, params).then(function(data) {
+          //   _this.putInShow = false
+          //   if (data.MT_Product_GetOrder_Resp.Item) {
+          //     data = data.MT_Product_GetOrder_Resp.Item
+          //     if (data[0].ZXXLX === 'S' || data[0].ZXXLX === '') {
+          //       _this.setScanArr(data)
+          //       _this.searchNum = ''
           //     } else {
-          //       _this.putInShow = false
-          //       alert(JSON.stringify(err))
+          //       alert(data[0].ZTXXX)
+          //       _this.searchNum = ''
           //     }
-          //   })
-          // }
-          // window.apiready()
+          //   }
+          // })
+          window.apiready = function() {
+            api.ajax({
+              url: url,
+              method: 'post',
+              async: false,
+              timeout: 30,
+              dataType: 'text',
+              returnAll: false,
+              data: params
+            },
+            function(ret, err) {
+              if (ret) {
+                let data = JSON.parse(ret)
+                _this.putInShow = false
+                if (data.MT_Product_GetOrder_Resp.Item) {
+                  data = data.MT_Product_GetOrder_Resp.Item
+                  if (data[0].ZXXLX === 'S' || data[0].ZXXLX === '') {
+                    _this.setScanArr(data)
+                    _this.searchNum = ''
+                  } else {
+                    alert(data[0].ZTXXX)
+                    _this.searchNum = ''
+                  }
+                }
+              } else {
+                _this.putInShow = false
+                alert(JSON.stringify(err))
+              }
+            })
+          }
+          window.apiready()
         } else if (this.bottomBtnName === 'scanfw') {
           // 扫防伪码
           url = path.sap + 'securitycode/verify'
@@ -402,27 +402,28 @@ export default {
         }
         temp = temp.substr(0, temp.length - 1)
         url = path.sap + 'product/generateorder'
-        params = '{Header:{' +
-          'ZBMDH: 11,' +
-          'ZBMMC: 11,' +
-          'ZRKYY: 11,' +
-          'ZRKEQ: 11,' +
-          'ZRKSJ: 11,' +
-          // 'ZIP: "' + this.printVal + '",' +
-          'ZIP: "TSC_TTP-244_PRO",' +
-          temp +
-        '}}'
-        // params = {
-        //   body: '{Header:{' +
-        //     'ZBMDH: 11,' +
-        //     'ZBMMC: 11,' +
-        //     'ZRKYY: 11,' +
-        //     'ZRKEQ: 11,' +
-        //     'ZRKSJ: 11,' +
-        //     'ZIP: "TSC_TTP-244_PRO",' +
-        //     temp +
-        //   '}}'
-        // }
+        // params = '{Header:{' +
+        //   'ZBMDH: 11,' +
+        //   'ZBMMC: 11,' +
+        //   'ZRKYY: 11,' +
+        //   'ZRKEQ: 11,' +
+        //   'ZRKSJ: 11,' +
+        //   // 'ZIP: "' + this.printVal + '",' +
+        //   'ZIP: "TSC_TTP-244_PRO",' +
+        //   temp +
+        // '}}'
+        params = {
+          body: '{Header:{' +
+            'ZBMDH: 11,' +
+            'ZBMMC: 11,' +
+            'ZRKYY: 11,' +
+            'ZRKEQ: 11,' +
+            'ZRKSJ: 11,' +
+            // 'ZIP: "' + this.printVal + '",' +
+            'ZIP: "TSC_TTP-244_PRO",' +
+            temp +
+          '}}'
+        }
       } else {
         console.log(this.snArr())
         let arr = []
@@ -434,96 +435,85 @@ export default {
             'ZBQXH: "48"' +
           '}'
         }
-        params = '{' + arr.join(',') + '}'
-        // params = {
-        //   body: '{' + arr.join(',') + '}'
-        // }
+        // params = '{' + arr.join(',') + '}'
+        params = {
+          body: '{' + arr.join(',') + '}'
+        }
         url = path.sap + 'securitycode/print'
       }
-      // 检测扫标签码分包是否全部扫描
-      // for (let i in this.productScanList) {
-      //   if (!this.productScanList[i][3]) {
-      //     canSetIn = false
-      //   }
-      // }
       _this.putInShow = true
-        // if (canSetIn) {
-          // window.apiready = function() {
-          //   api.ajax({
-          //     url: url,
-          //     method: 'post',
-          //     async: false,
-          //     timeout: 30,
-          //     dataType: 'text',
-          //     returnAll: false,
-          //     data: params
-          //   },
-          //   function(ret, err) {
-          //     alert(JSON.stringify(ret) + ':::' + JSON.stringify(err))
-          //     if (ret) {
-          //       _this.putInShow = false
-          //       let data = JSON.parse(ret)
-          //       if (_this.bottomBtnName === 'scanbq') {
-          //         data = data.MT_Produt_GenerateOrder_Resp.Header
-          //       } else if (_this.bottomBtnName === 'scanfw') {
-          //         data = data.MT_SecurityCode_Print_Resp.Item
-          //       }
-          //       alert('返回参数：：：' + JSON.stringify(data))
-          //       if (data.ZXXLX === 'S') {
-          //         _this.setProductScanList([])
-          //         _this.searchNum = ''
-          //         if (data.ZTXXX) {
-          //           alert(data.ZTXXX)
-          //         } else if (data.ZXXTX) {
-          //           alert(data.ZXXTX)
-          //         }
-          //       } else {
-          //         if (data.ZTXXX) {
-          //           alert(data.ZTXXX)
-          //         } else if (data.ZXXTX) {
-          //           alert(data.ZXXTX)
-          //         }
-          //         _this.searchNum = ''
-          //       }
-          //     } else {
-          //       alert(JSON.stringify(err))
-          //     }
-          //   })
-          // }
-          // window.apiready()
-        // } else {
-        //   alert('分包子条码未扫完。')
-        // }
       if (this.snArr().length === 0) {
         alert('请先扫码！')
       } else {
         printCode(url, params)
       }
       function printCode(url, params) {
-        V.post(url, params).then(function(data) {
-          _this.putInShow = false
-          if (_this.bottomBtnName === 'scanbq') {
-            data = data.MT_Produt_GenerateOrder_Resp.Header
-          } else if (_this.bottomBtnName === 'scanfw') {
-            data = data.MT_SecurityCode_Print_Resp.Item
-          }
-          if (data.ZXXLX === 'S') {
-            _this.setProductScanList([])
-            _this.searchNum = ''
-            if (data.ZTXXX) {
-              alert(data.ZTXXX)
-            } else if (data.ZXXTX) {
-              alert(data.ZXXTX)
+        // V.post(url, params).then(function(data) {
+        //   _this.putInShow = false
+        //   if (_this.bottomBtnName === 'scanbq') {
+        //     data = data.MT_Produt_GenerateOrder_Resp.Header
+        //   } else if (_this.bottomBtnName === 'scanfw') {
+        //     data = data.MT_SecurityCode_Print_Resp.Item
+        //   }
+        //   if (data.ZXXLX === 'S') {
+        //     _this.setProductScanList([])
+        //     _this.searchNum = ''
+        //     if (data.ZTXXX) {
+        //       alert(data.ZTXXX)
+        //     } else if (data.ZXXTX) {
+        //       alert(data.ZXXTX)
+        //     }
+        //   } else {
+        //     if (data.ZTXXX) {
+        //       alert(data.ZTXXX)
+        //     } else if (data.ZXXTX) {
+        //       alert(data.ZXXTX)
+        //     }
+        //     _this.searchNum = ''
+        //   }
+        // })
+
+        window.apiready = function() {
+          api.ajax({
+            url: url,
+            method: 'post',
+            async: false,
+            timeout: 30,
+            dataType: 'text',
+            returnAll: false,
+            data: params
+          },
+          function(ret, err) {
+            if (ret) {
+              let data = JSON.parse(ret)
+              _this.putInShow = false
+              if (_this.bottomBtnName === 'scanbq') {
+                data = data.MT_Produt_GenerateOrder_Resp.Header
+              } else if (_this.bottomBtnName === 'scanfw') {
+                data = data.MT_SecurityCode_Print_Resp.Item
+              }
+              if (data.ZXXLX === 'S') {
+                _this.setProductScanList([])
+                _this.searchNum = ''
+                if (data.ZTXXX) {
+                  alert(data.ZTXXX)
+                } else if (data.ZXXTX) {
+                  alert(data.ZXXTX)
+                }
+              } else {
+                if (data.ZTXXX) {
+                  alert(data.ZTXXX)
+                } else if (data.ZXXTX) {
+                  alert(data.ZXXTX)
+                }
+                _this.searchNum = ''
+              }
+            } else {
+              alert(JSON.stringify(err))
             }
-          } else {
-            if (data.ZTXXX) {
-              alert(data.ZTXXX)
-            } else if (data.ZXXTX) {
-              alert(data.ZXXTX)
-            }
-            _this.searchNum = ''
-          }
-        })
+          })
+        }
+        window.apiready()
       }
     }
   },
