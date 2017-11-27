@@ -201,7 +201,7 @@ export default {
     // SN列表checkbox复选框显示/隐藏
     checkBoxShowFn(x) {
       if (this.canDel) {
-        this.showCheckbox = !this.showCheckbox
+        this.showCheckbox = !x
         this.$store.commit('checkBoxShow', this.showCheckbox)
       }
     },
@@ -645,26 +645,26 @@ export default {
           ZDEL: 0
         }
       } else if (this.urlParams === 'salesoutput') {
-        let temp = this.snArr[0]
+        // let temp = this.snArr[0]
         params.data = {
-          VBELN: temp.BUS_NO,
+          VBELN: arr[i].BUS_NO,
           ZTIAOM: this.inputVal,
           ZQRKZ: 0,
           ZDEL: 0,
-          WERKS: temp.WERKS,
-          LGORT: temp.LGORT,
-          ITEM_NO: temp.ITEM_NO
+          WERKS: arr[i].WERKS,
+          LGORT: arr[i].LGORT,
+          ITEM_NO: arr[i].ITEM_NO
         }
       } else if (this.urlParams === 'allotinbound') {
-        let temp = this.snArr[0]
+        // let temp = this.snArr[0]
         params.data = {
-          EBELN: temp.BUS_NO,
+          EBELN: arr[i].BUS_NO,
           ZTIAOM: this.inputVal,
           ZQRKZ: 0,
           ZDEL: 0,
           WERKS: this.factoryNum,
           LGORT: this.warehouseNum,
-          EBELP: temp.ITEM_NO
+          EBELP: arr[i].ITEM_NO
         }
       }
       return params
@@ -870,27 +870,15 @@ export default {
       } else {
         _this.setalertMsg('正在入库...')
         _this.putInShow = true
-        window.apiready = function() {
-          api.ajax({
-            url: url,
-            method: 'post',
-            async: false,
-            timeout: 30,
-            dataType: 'text',
-            returnAll: false,
-            data: params
-          },
-          function(ret, err) {
-            if (ret) {
-              tip(JSON.parse(ret))
-              _this.putInShow = false
-            } else {
-              alert('请求超时！')
-              _this.loadingShow(false)
-            }
-          })
-        }
-        window.apiready()
+        window.apiready(url, params).then(function(data) {
+          if (data) {
+            tip(data)
+            _this.putInShow = false
+          } else {
+            alert('请求超时！')
+            _this.putInShow = false
+          }
+        })
         // V.post(url, params).then(function(data) {
         //   _this.putInShow = false
         //   tip(data)
@@ -969,36 +957,23 @@ export default {
       //   alert('请求超时！')
       //   _this.loadingShow(false)
       // })
-      window.apiready = function() {
-          api.ajax({
-            url: url,
-            method: 'post',
-            async: false,
-            timeout: 30,
-            dataType: 'text',
-            returnAll: false,
-            data: params
-          },
-          function(ret, err) {
-            if (ret) {
-              let data = JSON.parse(ret)
-              _this.putInShow = false
-              if (data.MT_DeleteSN_Resp.Item) {
-                data = data.MT_DeleteSN_Resp.Item
-              }
-              if (data.ZXXLX === 'S') {
-                alert('删除成功！')
-                _this.snListUrl()
-              } else {
-                alert(data.ZTXXX)
-              }
-            } else {
-              alert('请求超时！')
-              _this.loadingShow(false)
-            }
-          })
+      window.apiready(url, params).then(function(data) {
+        if (data) {
+          _this.putInShow = false
+          if (data.MT_DeleteSN_Resp.Item) {
+            data = data.MT_DeleteSN_Resp.Item
+          }
+          if (data.ZXXLX === 'S') {
+            alert('删除成功！')
+            _this.snListUrl()
+          } else {
+            alert(data.ZTXXX)
+          }
+        } else {
+          alert('请求超时！')
+          _this.putInShow = false
         }
-        window.apiready()
+      })
       this.$store.commit('checkBoxShow', false)
       this.showCheckbox = false
     }
@@ -1029,6 +1004,7 @@ export default {
     this.$store.commit('tableH', ['序号', '描述', '条码', '状态'])
     this.focusStatus = true
     this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
+    this.checkBoxShowFn(true) // 再次进入页面是，将sn码选取复选框隐藏
   },
   mounted() {
     this.$store.commit('isOP', false)

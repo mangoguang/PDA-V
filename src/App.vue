@@ -24,12 +24,42 @@ export default{
   components: {Login, Loading},
   data () {
     return {
-      height: document.documentElement.clientHeight
+      height: document.documentElement.clientHeight,
+      apiAjaxStatus: false
     }
   },
   computed: {
     skinCol() {
       return this.$store.state.skinCol
+    }
+  },
+  created() {
+    let _this = this
+    window.apiready = function(url, params) {
+      let ajax = new Promise(function(resolve, reject) {
+        api.ajax({
+          url: url,
+          method: 'post',
+          async: false,
+          timeout: 30,
+          dataType: 'text',
+          returnAll: false,
+          data: params
+        },
+        function(ret, err) {
+          if (ret) {
+            let data = JSON.parse(ret)
+            resolve(data)
+          } else {
+            if (_this.apiAjaxStatus) {
+              _this.apiAjaxStatus = true
+              alert('请求超时！')
+            }
+            resolve(false)
+          }
+        })
+      })
+      return ajax
     }
   }
 }

@@ -168,37 +168,24 @@ export default {
           //     }
           //   }
           // })
-          window.apiready = function() {
-            api.ajax({
-              url: url,
-              method: 'post',
-              async: false,
-              timeout: 30,
-              dataType: 'text',
-              returnAll: false,
-              data: params
-            },
-            function(ret, err) {
-              if (ret) {
-                let data = JSON.parse(ret)
-                _this.putInShow = false
-                if (data.MT_Product_GetOrder_Resp.Item) {
-                  data = data.MT_Product_GetOrder_Resp.Item
-                  if (data[0].ZXXLX === 'S' || data[0].ZXXLX === '') {
-                    _this.setScanArr(data)
-                    _this.searchNum = ''
-                  } else {
-                    alert(data[0].ZTXXX)
-                    _this.searchNum = ''
-                  }
+          window.apiready(url, params).then(function(data) {
+            if (data) {
+              _this.putInShow = false
+              if (data.MT_Product_GetOrder_Resp.Item) {
+                data = data.MT_Product_GetOrder_Resp.Item
+                if (data[0].ZXXLX === 'S' || data[0].ZXXLX === '') {
+                  _this.setScanArr(data)
+                  _this.searchNum = ''
+                } else {
+                  alert(data[0].ZTXXX)
+                  _this.searchNum = ''
                 }
-              } else {
-                _this.putInShow = false
-                alert(JSON.stringify(err))
               }
-            })
-          }
-          window.apiready()
+            } else {
+              alert('请求超时！')
+              _this.putInShow = false
+            }
+          })
         } else if (this.bottomBtnName === 'scanfw') {
           // 扫防伪码
           url = path.sap + 'securitycode/verify'
@@ -335,8 +322,12 @@ export default {
       } else if (this.moduleName === 'allotinbound' || this.moduleName === 'allot') {
         if (this.moduleName === 'allotinbound') {
           data = data.MT_AllotInbound_GetSite_Resp.Item
+          this.titName = '调拨入库'
+          this.$store.commit('moduleName', '调拨入库')
         } else {
           data = data.MT_Allot_GetSite_Resp.Item
+          this.titName = '调拨出库'
+          this.$store.commit('moduleName', '调拨出库')
         }
         setData(data, trArr, this)
       }
@@ -472,48 +463,35 @@ export default {
         //     _this.searchNum = ''
         //   }
         // })
-
-        window.apiready = function() {
-          api.ajax({
-            url: url,
-            method: 'post',
-            async: false,
-            timeout: 30,
-            dataType: 'text',
-            returnAll: false,
-            data: params
-          },
-          function(ret, err) {
-            if (ret) {
-              let data = JSON.parse(ret)
-              _this.putInShow = false
-              if (_this.bottomBtnName === 'scanbq') {
-                data = data.MT_Produt_GenerateOrder_Resp.Header
-              } else if (_this.bottomBtnName === 'scanfw') {
-                data = data.MT_SecurityCode_Print_Resp.Item
-              }
-              if (data.ZXXLX === 'S') {
-                _this.setProductScanList([])
-                _this.searchNum = ''
-                if (data.ZTXXX) {
-                  alert(data.ZTXXX)
-                } else if (data.ZXXTX) {
-                  alert(data.ZXXTX)
-                }
-              } else {
-                if (data.ZTXXX) {
-                  alert(data.ZTXXX)
-                } else if (data.ZXXTX) {
-                  alert(data.ZXXTX)
-                }
-                _this.searchNum = ''
+        window.apiready(url, params).then(function(data) {
+          if (data) {
+            _this.putInShow = false
+            if (_this.bottomBtnName === 'scanbq') {
+              data = data.MT_Produt_GenerateOrder_Resp.Header
+            } else if (_this.bottomBtnName === 'scanfw') {
+              data = data.MT_SecurityCode_Print_Resp.Item
+            }
+            if (data.ZXXLX === 'S') {
+              _this.setProductScanList([])
+              _this.searchNum = ''
+              if (data.ZTXXX) {
+                alert(data.ZTXXX)
+              } else if (data.ZXXTX) {
+                alert(data.ZXXTX)
               }
             } else {
-              alert(JSON.stringify(err))
+              if (data.ZTXXX) {
+                alert(data.ZTXXX)
+              } else if (data.ZXXTX) {
+                alert(data.ZXXTX)
+              }
+              _this.searchNum = ''
             }
-          })
-        }
-        window.apiready()
+          } else {
+            alert('请求超时！')
+            _this.putInShow = false
+          }
+        })
       }
     }
   },
@@ -569,7 +547,7 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  padding-top: 4.2188rem;
+  padding-top: 4.4rem;
   padding-bottom: 1.5rem;
   box-sizing: border-box;
   overflow-x: hidden;

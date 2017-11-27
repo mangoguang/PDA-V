@@ -172,8 +172,6 @@ export default {
 
       _this.loadingShow(true)
       V.post(url, params).then(function(data) {
-        console.log('9999')
-        console.log(data)
         _this.loadingShow(false)
         _this.warehouse = data.warehouse[0].name
         localStorage.setItem('factoryMsg', '{factory: "' + _this.factory + '",warehouse: "' + _this.warehouse + '", factoryNum: "' + _this.factoryNum + '", warehouseNum: "' + _this.warehouseNum + '"}')
