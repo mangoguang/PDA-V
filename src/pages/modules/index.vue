@@ -60,7 +60,8 @@ export default {
       warehouseNum: '',
       bottomBtn: true,
       btnName: '',
-      printVal: localStorage.getItem('printVal')
+      printVal: localStorage.getItem('printVal'),
+      account: ''
     }
   },
   computed: {
@@ -104,6 +105,16 @@ export default {
     },
     clearInput() {
       this.searchNum = ''
+    },
+    getaccount() {
+      // 获取本地存储账号信息
+      let accountMsg = localStorage.getItem('accountMsg')
+      if (accountMsg) {
+        let obj = eval('(' + accountMsg + ')')
+        this.account = obj.account
+      } else {
+        console.log('没有本地存储')
+      }
     },
     // url
     orderListParams() {
@@ -150,42 +161,42 @@ export default {
         // 扫标签码
         if (this.bottomBtnName === 'scanbq') {
           url = path.sap + 'product/getorder'
-          // params = "{ 'Item': {SN: '" + num + "'} }"
-          params = {
-            body: '{ "Item": {SN: "' + num + '"} }'
-          }
+          params = "{ 'Item': {SN: '" + num + "'} }"
+          // params = {
+          //   body: '{ "Item": {SN: "' + num + '"} }'
+          // }
           _this.putInShow = true
-          // V.post(url, params).then(function(data) {
-          //   _this.putInShow = false
-          //   if (data.MT_Product_GetOrder_Resp.Item) {
-          //     data = data.MT_Product_GetOrder_Resp.Item
-          //     if (data[0].ZXXLX === 'S' || data[0].ZXXLX === '') {
-          //       _this.setScanArr(data)
-          //       _this.searchNum = ''
-          //     } else {
-          //       alert(data[0].ZTXXX)
-          //       _this.searchNum = ''
-          //     }
-          //   }
-          // })
-          window.apiready(url, params).then(function(data) {
-            if (data) {
-              _this.putInShow = false
-              if (data.MT_Product_GetOrder_Resp.Item) {
-                data = data.MT_Product_GetOrder_Resp.Item
-                if (data[0].ZXXLX === 'S' || data[0].ZXXLX === '') {
-                  _this.setScanArr(data)
-                  _this.searchNum = ''
-                } else {
-                  alert(data[0].ZTXXX)
-                  _this.searchNum = ''
-                }
+          V.post(url, params).then(function(data) {
+            _this.putInShow = false
+            if (data.MT_Product_GetOrder_Resp.Item) {
+              data = data.MT_Product_GetOrder_Resp.Item
+              if (data[0].ZXXLX === 'S' || data[0].ZXXLX === '') {
+                _this.setScanArr(data)
+                _this.searchNum = ''
+              } else {
+                alert(data[0].ZTXXX)
+                _this.searchNum = ''
               }
-            } else {
-              alert('请求超时！')
-              _this.putInShow = false
             }
           })
+          // window.apiready(url, params).then(function(data) {
+          //   if (data) {
+          //     _this.putInShow = false
+          //     if (data.MT_Product_GetOrder_Resp.Item) {
+          //       data = data.MT_Product_GetOrder_Resp.Item
+          //       if (data[0].ZXXLX === 'S' || data[0].ZXXLX === '') {
+          //         _this.setScanArr(data)
+          //         _this.searchNum = ''
+          //       } else {
+          //         alert(data[0].ZTXXX)
+          //         _this.searchNum = ''
+          //       }
+          //     }
+          //   } else {
+          //     alert('请求超时！')
+          //     _this.putInShow = false
+          //   }
+          // })
         } else if (this.bottomBtnName === 'scanfw') {
           // 扫防伪码
           url = path.sap + 'securitycode/verify'
@@ -296,7 +307,7 @@ export default {
           let temp = []
           temp[0] = data[i].BUS_NO
           temp[1] = this.warehouse
-          temp[2] = data[i].ZDDLX
+          temp[2] = data[i].LGOBE
           trArr.push(temp)
         }
       } else if (this.moduleName === 'salestockup' || this.moduleName === 'salesoutput') {
@@ -393,28 +404,28 @@ export default {
         }
         temp = temp.substr(0, temp.length - 1)
         url = path.sap + 'product/generateorder'
-        // params = '{Header:{' +
-        //   'ZBMDH: 11,' +
-        //   'ZBMMC: 11,' +
-        //   'ZRKYY: 11,' +
-        //   'ZRKEQ: 11,' +
-        //   'ZRKSJ: 11,' +
-        //   // 'ZIP: "' + this.printVal + '",' +
-        //   'ZIP: "TSC_TTP-244_PRO",' +
-        //   temp +
-        // '}}'
-        params = {
-          body: '{Header:{' +
-            'ZBMDH: 11,' +
-            'ZBMMC: 11,' +
-            'ZRKYY: 11,' +
-            'ZRKEQ: 11,' +
-            'ZRKSJ: 11,' +
-            // 'ZIP: "' + this.printVal + '",' +
-            'ZIP: "TSC_TTP-244_PRO",' +
-            temp +
-          '}}'
-        }
+        params = '{Header:{' +
+          'ZBMDH: 11,' +
+          'ZBMMC: 11,' +
+          'ZRKYY: 11,' +
+          'ZRKEQ: 11,' +
+          'ZRKSJ: 11,' +
+          // 'ZIP: "' + this.printVal + '",' +
+          'ZIP: "TSC_TTP-244_PRO",' +
+          temp +
+        '}}'
+        // params = {
+        //   body: '{Header:{' +
+        //     'ZBMDH: 11,' +
+        //     'ZBMMC: 11,' +
+        //     'ZRKYY: 11,' +
+        //     'ZRKEQ: 11,' +
+        //     'ZRKSJ: 11,' +
+        //     // 'ZIP: "' + this.printVal + '",' +
+        //     'ZIP: "TSC_TTP-244_PRO",' +
+        //     temp +
+        //   '}}'
+        // }
       } else {
         console.log(this.snArr())
         let arr = []
@@ -423,13 +434,14 @@ export default {
           arr[i] = 'Item: {' +
             'ZFWMA: "' + snArr[i] + '",' +
             'ZIP: "' + this.printVal + '",' +
-            'ZBQXH: "48"' +
+            'ZBQXH: "35",' +
+            'ZGH: "' + this.account + '"' +
           '}'
         }
-        // params = '{' + arr.join(',') + '}'
-        params = {
-          body: '{' + arr.join(',') + '}'
-        }
+        params = '{' + arr.join(',') + '}'
+        // params = {
+        //   body: '{' + arr.join(',') + '}'
+        // }
         url = path.sap + 'securitycode/print'
       }
       _this.putInShow = true
@@ -439,59 +451,59 @@ export default {
         printCode(url, params)
       }
       function printCode(url, params) {
-        // V.post(url, params).then(function(data) {
-        //   _this.putInShow = false
-        //   if (_this.bottomBtnName === 'scanbq') {
-        //     data = data.MT_Produt_GenerateOrder_Resp.Header
-        //   } else if (_this.bottomBtnName === 'scanfw') {
-        //     data = data.MT_SecurityCode_Print_Resp.Item
-        //   }
-        //   if (data.ZXXLX === 'S') {
-        //     _this.setProductScanList([])
-        //     _this.searchNum = ''
-        //     if (data.ZTXXX) {
-        //       alert(data.ZTXXX)
-        //     } else if (data.ZXXTX) {
-        //       alert(data.ZXXTX)
-        //     }
-        //   } else {
-        //     if (data.ZTXXX) {
-        //       alert(data.ZTXXX)
-        //     } else if (data.ZXXTX) {
-        //       alert(data.ZXXTX)
-        //     }
-        //     _this.searchNum = ''
-        //   }
-        // })
-        window.apiready(url, params).then(function(data) {
-          if (data) {
-            _this.putInShow = false
-            if (_this.bottomBtnName === 'scanbq') {
-              data = data.MT_Produt_GenerateOrder_Resp.Header
-            } else if (_this.bottomBtnName === 'scanfw') {
-              data = data.MT_SecurityCode_Print_Resp.Item
-            }
-            if (data.ZXXLX === 'S') {
-              _this.setProductScanList([])
-              _this.searchNum = ''
-              if (data.ZTXXX) {
-                alert(data.ZTXXX)
-              } else if (data.ZXXTX) {
-                alert(data.ZXXTX)
-              }
-            } else {
-              if (data.ZTXXX) {
-                alert(data.ZTXXX)
-              } else if (data.ZXXTX) {
-                alert(data.ZXXTX)
-              }
-              _this.searchNum = ''
+        V.post(url, params).then(function(data) {
+          _this.putInShow = false
+          if (_this.bottomBtnName === 'scanbq') {
+            data = data.MT_Produt_GenerateOrder_Resp.Header
+          } else if (_this.bottomBtnName === 'scanfw') {
+            data = data.MT_SecurityCode_Print_Resp.Item
+          }
+          if (data.ZXXLX === 'S') {
+            _this.setProductScanList([])
+            _this.searchNum = ''
+            if (data.ZTXXX) {
+              alert(data.ZTXXX)
+            } else if (data.ZXXTX) {
+              alert(data.ZXXTX)
             }
           } else {
-            alert('请求超时！')
-            _this.putInShow = false
+            if (data.ZTXXX) {
+              alert(data.ZTXXX)
+            } else if (data.ZXXTX) {
+              alert(data.ZXXTX)
+            }
+            _this.searchNum = ''
           }
         })
+        // window.apiready(url, params).then(function(data) {
+        //   if (data) {
+        //     _this.putInShow = false
+        //     if (_this.bottomBtnName === 'scanbq') {
+        //       data = data.MT_Produt_GenerateOrder_Resp.Header
+        //     } else if (_this.bottomBtnName === 'scanfw') {
+        //       data = data.MT_SecurityCode_Print_Resp.Item
+        //     }
+        //     if (data.ZXXLX === 'S') {
+        //       _this.setProductScanList([])
+        //       _this.searchNum = ''
+        //       if (data.ZTXXX) {
+        //         alert(data.ZTXXX)
+        //       } else if (data.ZXXTX) {
+        //         alert(data.ZXXTX)
+        //       }
+        //     } else {
+        //       if (data.ZTXXX) {
+        //         alert(data.ZTXXX)
+        //       } else if (data.ZXXTX) {
+        //         alert(data.ZXXTX)
+        //       }
+        //       _this.searchNum = ''
+        //     }
+        //   } else {
+        //     alert('请求超时！')
+        //     _this.putInShow = false
+        //   }
+        // })
       }
     }
   },
@@ -511,16 +523,28 @@ export default {
     let _this = this
     if (this.moduleName !== 'product') {
       if (this.moduleName === 'stock') {
-        this.moduleName = 'salestockup'
-        // 设置底部模块分类
-        this.setbottomBtnName('salestockup')
+        if (this.bottomBtnName === '' || this.bottomBtnName === 'scanfw' || this.bottomBtnName === 'scanbq') {
+          this.moduleName = 'salestockup'
+          // 设置底部模块分类
+          this.setbottomBtnName('salestockup')
+        } else {
+          this.moduleName = this.bottomBtnName
+        }
       } else if (this.moduleName === 'productScan') {
-        this.moduleName = 'scanfw'
-        // 设置底部模块分类
-        this.setbottomBtnName('scanfw')
-        this.bottomBtn = true
+        if (this.bottomBtnName === '' || this.bottomBtnName === 'salestockup' || this.bottomBtnName === 'salesoutput') {
+          this.moduleName = 'scanfw'
+          // 设置底部模块分类
+          this.setbottomBtnName('scanfw')
+        } else {
+          this.moduleName = this.bottomBtnName
+        }
         this.btnName = '打印出货标签'
       }
+      if (this.bottomBtnName === 'salestockup' || this.bottomBtnName === 'scanfw') {
+          this.bottomBtn = true
+        } else {
+          this.bottomBtn = false
+        }
       if (this.$route.params.module !== 'productScan') {
         this.getOrderList(this.orderListParams()).then(function(data) {
           _this.setTrArr(data)
@@ -532,6 +556,7 @@ export default {
     this.$store.commit('loadingShow', true)
     this.$store.commit('isOP', true)
     this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
+    this.getaccount()
   },
   mounted() {
     this.loadingShow(false)

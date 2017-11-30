@@ -37,7 +37,7 @@
     <div class="table">
       <TableH></TableH>
       <TableTr class="contain" v-bind:style="{height: height+'px'}"></TableTr>
-      <div @click="sureIn" v-if="!checkBoxShow && !btnStatus[0]"><Btn class="btn100 sure">确认入库</Btn></div>
+      <div @click="sureIn" v-if="!checkBoxShow && !btnStatus[0]"><Btn class="btn100 sure">{{setinBtnName}}</Btn></div>
       <ul class="delCancel clearfix">
         <li @click="delSN" v-if="checkBoxShow && !btnStatus[0]"><Btn class="btn100 del">删除</Btn></li>
         <li @click="cancel" v-if="checkBoxShow && !btnStatus[0]"><Btn class="btn100 gray cancel">取消</Btn></li>
@@ -69,6 +69,7 @@ export default {
   data () {
     return {
       height: document.documentElement.clientHeight,
+      setinBtnName: '确认入库',
       account: '',
       BUS_NO: this.$route.params.num,
       // BUS_NO: '4500000266',
@@ -278,10 +279,12 @@ export default {
           arr = data.MT_Salestockup_GetSN_Resp.Header
           this.salestockupNum = parseInt(arr[0].LFIMG)
         }
+        this.setinBtnName = '确认备货'
       } else if (this.urlParams === 'salesoutput') {
         if (data.MT_Salesoutput_GetSN_Resp.Header) {
           arr = data.MT_Salesoutput_GetSN_Resp.Header
         }
+        this.setinBtnName = '确认出库'
       } else if (this.urlParams === 'purchase') {
         if (data.MT_Purchase_GetSN_Resp.Header) {
           arr = data.MT_Purchase_GetSN_Resp.Header
@@ -305,6 +308,7 @@ export default {
         if (data.MT_Allot_GetSN_Resp.Header) {
           arr = data.MT_Allot_GetSN_Resp.Header
         }
+        this.setinBtnName = '确认出库'
       }
       // 讲sn码列表数组保存到store
       // 采购入库模块
@@ -542,7 +546,7 @@ export default {
             _this.turnArr(arr)
             // _this.inputVal = ''
             _this.focusStatus = true
-            _this.hadscanCount++
+            // _this.hadscanCount++
           } else if (fbtype === 1) {
             // 分包
             arr[index].Item[subindex].ZJYZT = _this.verifyStatus()
@@ -550,7 +554,7 @@ export default {
             _this.turnArr(arr)
             // _this.inputVal = ''
             _this.focusStatus = true
-            _this.hadscanCount++
+            // _this.hadscanCount++
           } else {
             // 合包
             arr[index].ZJYZT = _this.verifyStatus()
@@ -558,7 +562,7 @@ export default {
             let subarr = arr[index].Item
             for (let i in subarr) {
               subarr[i].ZJYZT = _this.verifyStatus()
-              _this.hadscanCount++
+              // _this.hadscanCount++
             }
             // _this.setSNArr(arr)
             _this.turnArr(arr)
@@ -571,7 +575,6 @@ export default {
           // _this.inputVal = ''
           // alert(data.ZTXXX)
         }
-        console.log(arr)
       })
     },
     verify2() {
@@ -796,15 +799,15 @@ export default {
     setSureIn() {
       let [_this, params, url] = [this, '', '']
       if (this.urlParams === 'salestockup' || this.urlParams === 'salesoutput' || this.urlParams === 'salesreturn') {
-        // params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1 } }'
-        params = {
-          body: '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1 } }'
-        }
+        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1 } }'
+        // params = {
+        //   body: '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1 } }'
+        // }
       } else if (this.urlParams === 'purchase') {
-        // params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '"} }'
-        params = {
-          body: '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '"} }'
-        }
+        params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '"} }'
+        // params = {
+        //   body: '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '"} }'
+        // }
       } else if (this.urlParams === 'product') {
         let myDate = new Date()
         function turnDate(num) {
@@ -813,32 +816,32 @@ export default {
           }
           return num
         }
+        params = {
+          ZRKDH: this.BUS_NO,
+          ZGZRY: '' + this.account + '',
+          ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
+          ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
+          LGORT: this.warehouseNum
+        }
         // params = {
-        //   ZRKDH: this.BUS_NO,
-        //   ZGZRY: '' + this.account + '',
-        //   ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
-        //   ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
-        //   LGORT: this.warehouseNum
+        //   body: {
+        //     ZRKDH: this.BUS_NO,
+        //     ZGZRY: '' + this.account + '',
+        //     ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
+        //     ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
+        //     LGORT: this.warehouseNum
+        //   }
         // }
-        params = {
-          body: {
-            ZRKDH: this.BUS_NO,
-            ZGZRY: '' + this.account + '',
-            ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
-            ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
-            LGORT: this.warehouseNum
-          }
-        }
       } else if (this.urlParams === 'allot') {
-        // params = '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
-        params = {
-          body: '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
-        }
+        params = '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
+        // params = {
+        //   body: '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
+        // }
       } else if (this.urlParams === 'allotinbound') {
-        // params = '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
-        params = {
-          body: '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
-        }
+        params = '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
+        // params = {
+        //   body: '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
+        // }
       }
       if (this.urlParams === 'product') {
         url = path.sap + this.urlParams + '/orderpost'
@@ -870,22 +873,22 @@ export default {
       } else {
         _this.setalertMsg('正在入库...')
         _this.putInShow = true
-        window.apiready(url, params).then(function(data) {
-          if (data) {
-            tip(data)
-            _this.putInShow = false
-          } else {
-            alert('请求超时！')
-            _this.putInShow = false
-          }
-        })
-        // V.post(url, params).then(function(data) {
-        //   _this.putInShow = false
-        //   tip(data)
-        // }).catch((res) => {
-        //   alert('请求超时！')
-        //   _this.loadingShow(false)
+        // window.apiready(url, params).then(function(data) {
+        //   if (data) {
+        //     tip(data)
+        //     _this.putInShow = false
+        //   } else {
+        //     alert('请求超时！')
+        //     _this.putInShow = false
+        //   }
         // })
+        V.post(url, params).then(function(data) {
+          _this.putInShow = false
+          tip(data)
+        }).catch((res) => {
+          alert('请求超时！')
+          _this.loadingShow(false)
+        })
         function tip(data) {
           if (_this.urlParams === 'purchase') {
             if (data.MT_Purchase_Confirm_Resp.Item) {
@@ -932,48 +935,48 @@ export default {
           })
         }
       }
-      // let params = JSON.stringify({
-      //   Item: paramsArr
-      // })
-      let params = {
-        body: JSON.stringify({
-          Item: paramsArr
-        })
-      }
+      let params = JSON.stringify({
+        Item: paramsArr
+      })
+      // let params = {
+      //   body: JSON.stringify({
+      //     Item: paramsArr
+      //   })
+      // }
       this.setalertMsg('正在删除...')
       _this.putInShow = true
-      // V.post(url, params).then(function(data) {
-      //   _this.putInShow = false
-      //   if (data.MT_DeleteSN_Resp.Item) {
-      //     data = data.MT_DeleteSN_Resp.Item
-      //   }
-      //   if (data.ZXXLX === 'S') {
-      //     alert('删除成功！')
-      //     _this.snListUrl()
-      //   } else {
-      //     alert(data.ZTXXX)
-      //   }
-      // }).catch((res) => {
-      //   alert('请求超时！')
-      //   _this.loadingShow(false)
-      // })
-      window.apiready(url, params).then(function(data) {
-        if (data) {
-          _this.putInShow = false
-          if (data.MT_DeleteSN_Resp.Item) {
-            data = data.MT_DeleteSN_Resp.Item
-          }
-          if (data.ZXXLX === 'S') {
-            alert('删除成功！')
-            _this.snListUrl()
-          } else {
-            alert(data.ZTXXX)
-          }
-        } else {
-          alert('请求超时！')
-          _this.putInShow = false
+      V.post(url, params).then(function(data) {
+        _this.putInShow = false
+        if (data.MT_DeleteSN_Resp.Item) {
+          data = data.MT_DeleteSN_Resp.Item
         }
+        if (data.ZXXLX === 'S') {
+          alert('删除成功！')
+          _this.snListUrl()
+        } else {
+          alert(data.ZTXXX)
+        }
+      }).catch((res) => {
+        alert('请求超时！')
+        _this.loadingShow(false)
       })
+      // window.apiready(url, params).then(function(data) {
+      //   if (data) {
+      //     _this.putInShow = false
+      //     if (data.MT_DeleteSN_Resp.Item) {
+      //       data = data.MT_DeleteSN_Resp.Item
+      //     }
+      //     if (data.ZXXLX === 'S') {
+      //       alert('删除成功！')
+      //       _this.snListUrl()
+      //     } else {
+      //       alert(data.ZTXXX)
+      //     }
+      //   } else {
+      //     alert('请求超时！')
+      //     _this.putInShow = false
+      //   }
+      // })
       this.$store.commit('checkBoxShow', false)
       this.showCheckbox = false
     }

@@ -35,7 +35,7 @@ const store = new Vuex.Store({
     ifFB: false,
     snDetailFB: [],
     moduleName: '',
-    bottomBtnName: 'salestockup',
+    bottomBtnName: '',
     fbData: {},
     productScanList: [],
     alertMsg: ''

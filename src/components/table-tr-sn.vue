@@ -22,7 +22,7 @@
           </li>
           <li><input :value="sn.arr[0]" disabled="disabled"></li>
           <li @click="snDetailUrl(sn.arr[1], sn.arr[3], sn.arr[6], false)"><input :value="sn.arr[1]" disabled="disabled"></li>
-          <li>{{sn.arr[4]}}</li>
+          <li><p v-if="sn.arr[5]">匹配</p></li>
         </ul>
         <!-- 存在子条码 -->
         <ul v-else v-for="(i,index1) in sn.arr[1].length" :class="{on: sn.arr[2][index1]}">
@@ -38,7 +38,7 @@
           <li v-else></li>
 
           <li @click="snDetailUrl(sn.arr[1][index1], sn.arr[3], sn.arr[6], true)"><input :value="sn.arr[1][i-1]" disabled="disabled"></li>
-          <li>{{sn.arr[4]}}</li>
+          <li><p v-if="sn.arr[2][index1]">匹配</p></li>
         </ul>
       </div>
     </li>

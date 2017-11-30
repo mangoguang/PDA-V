@@ -88,10 +88,12 @@ export default {
             if (_this.warehouseStatus) {
               // 更改默认仓库
               _this.warehouse = data.warehouse[0].name
+              _this.warehouseNum = data.warehouse[0].code
             } else {
               let factoryMsg = localStorage.getItem('factoryMsg')
               if (!factoryMsg) {
                 _this.warehouse = data.warehouse[0].name
+                _this.warehouseNum = data.warehouse[0].code
               } else {
                 _this.warehouseStatus = true
               }
@@ -138,9 +140,13 @@ export default {
       _this.loadingShow(true)
       V.post(url, params).then(function(data) {
         _this.loadingShow(false)
+        let factoryMsg = localStorage.getItem('factoryMsg')
         if (data.status) {
+          if (!factoryMsg) {
+            _this.factory = data.factorys[0].name
+            _this.factoryNum = data.factorys[0].code
+          }
           _this.factorys = data.factorys
-          _this.factory = data.factorys[0].name
           _this.setWarehouse()
         }
       }).catch((res) => {
