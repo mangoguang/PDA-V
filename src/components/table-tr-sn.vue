@@ -1,56 +1,63 @@
 <template>
-  <ul class="clearfix table-tr-sn">
-    <li v-for="(sn,index) in sns">
-      <!-- 表格为三列 -->
-      <div v-if="isTr3">
-        <ul>
-          <li>{{index+1}}</li>
-          <li class="tr2in1"><input :value="sn.arr[0]" disabled="disabled"></li>
-<!--           <li><input :value="sn.arr[1]" disabled="disabled"></li> -->
-          <li>{{sn.arr[4]}}</li>
-        </ul>
-      </div>
-      <!-- 表格为四列 -->
-      <div v-else="isTr3">
-        <!-- 不存在子条码 -->
-        <ul v-if="!sn.status" :class="{on: sn.arr[5]}">
-          <li v-bind:class="{paddingLfet20: checkBoxShow}">
-            <label v-show="checkBoxShow" :for= "sn.arr[1]" :class="{on: checkboxVal[index]}">
-            </label>
-            <input type="checkbox" :id="sn.arr[1]" v-model="checkboxVal[index]">
-            {{index+1}}
-          </li>
-          <li><input :value="sn.arr[0]" disabled="disabled"></li>
-          <li @click="snDetailUrl(sn.arr[1], sn.arr[3], sn.arr[6], false)"><input :value="sn.arr[1]" disabled="disabled"></li>
-          <li><p v-if="sn.arr[5]">匹配</p></li>
-        </ul>
-        <!-- 存在子条码 -->
-        <ul v-else v-for="(i,index1) in sn.arr[1].length" :class="{on: sn.arr[2][index1]}">
-          <li v-if="index1 == 0" v-bind:class="{paddingLfet20: checkBoxShow}">
-            <label v-show="checkBoxShow" :for= "sn.arr[1][0]" :class="{on: checkboxVal[index]}">
-            </label>
-            <input type="checkbox" :id="sn.arr[1][0]" v-model="checkboxVal[index]">
-            {{index+1}}
-          </li>
-          <li v-else="index1 == 0"></li>
+  <div>
+    <TableH :tr1=tr1 :tr2="0" :isOp=false v-if="isTr3"></TableH>
+    <TableH :tr1=tr1 :tr2=tr2 v-else></TableH>
+    <ul class="clearfix table-tr-sn">
+      <li v-for="(sn,index) in sns">
+        <!-- 表格为三列 -->
+        <div v-if="isTr3" :style="{width: (100+tr1)+'px'}">
+          <ul>
+            <li class="li1">{{index+1}}</li>
+            <li :style="{width: tr1+'px'}" class="li2 tr2in1"><p>{{sn.arr[0]}}</p></li>
+  <!--           <li><input :value="sn.arr[1]" disabled="disabled"></li> -->
+            <li class="li3">{{sn.arr[7]}}</li>
+          </ul>
+        </div>
+        <!-- 表格为四列 -->
+        <div v-else :style="{width: (140+tr1+tr2)+'px'}">
+          <!-- 不存在子条码 -->
+          <ul v-if="!sn.status" :class="{on: sn.arr[5]}">
+            <li class="li1" v-bind:class="{paddingLfet20: checkBoxShow}">
+              <label v-show="checkBoxShow" :for= "sn.arr[1]" :class="{on: checkboxVal[index]}">
+              </label>
+              <input type="checkbox" :id="sn.arr[1]" v-model="checkboxVal[index]">
+              {{index+1}}
+            </li>
+            <li :style="{width: tr1+'px'}" class="li2"><p>{{sn.arr[0]}}</p></li>
+            <li :style="{width: tr2+'px'}" class="li3" @click="snDetailUrl(sn.arr[1], sn.arr[3], sn.arr[6], false)"><p>{{sn.arr[1]}}</p>></li>
+            <li class="li4"><p v-if="sn.arr[5]">匹配</p></li>
+          </ul>
+          <!-- 存在子条码 -->
+          <ul v-else v-for="(i,index1) in sn.arr[1].length" :key="i" :class="{on: sn.arr[2][index1]}">
+            <li class="li1" v-if="index1 == 0" v-bind:class="{paddingLfet20: checkBoxShow}">
+              <label v-show="checkBoxShow" :for= "sn.arr[1][0]" :class="{on: checkboxVal[index]}">
+              </label>
+              <input type="checkbox" :id="sn.arr[1][0]" v-model="checkboxVal[index]">
+              {{index+1}}
+            </li>
+            <li class="li2" v-else></li>
 
-          <li v-if="index1 == 0"><input :value="sn.arr[0]" disabled="disabled"></li>
-          <li v-else></li>
+            <li :style="{width: tr1+'px'}" class="li3" v-if="index1 == 0"><p>{{sn.arr[0]}}</p></li>
+            <li :style="{width: tr1+'px'}" v-else></li>
 
-          <li @click="snDetailUrl(sn.arr[1][index1], sn.arr[3], sn.arr[6], true)"><input :value="sn.arr[1][i-1]" disabled="disabled"></li>
-          <li><p v-if="sn.arr[2][index1]">匹配</p></li>
-        </ul>
-      </div>
-    </li>
-  </ul>
+            <li :style="{width: tr2+'px'}" class="li4" @click="snDetailUrl(sn.arr[1][index1], sn.arr[3], sn.arr[6], true)"><p>{{sn.arr[1][i-1]}}</p>></li>
+            <li class="li5"><p v-if="sn.arr[2][index1]">匹配</p></li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </div>
 </template>
 <script>
 import Vue from 'vue'
 import Vuex from 'vuex'
+import TableH from '../components/table-h'
 import { path, V } from '../js/variable.js'
 Vue.use(Vuex)
   export default {
     name: 'table-tr',
+    components: {TableH},
+    props: ['tr1', 'tr2'],
     data() {
       return {
         canDel: false,
@@ -178,6 +185,10 @@ Vue.use(Vuex)
       if (this.urlParams === 'stock') {
         this.urlParams = this.bottomBtnName
       }
+    },
+    mounted() {
+      console.log('参数传递')
+      console.log(this.tr1, this.tr2)
     }
   }
 </script>
@@ -186,7 +197,6 @@ Vue.use(Vuex)
 @import "./../assets/css/common.css";
 
 .table-tr-sn{
-  width: 100%;
   label{
     position: absolute;
     display: block;
@@ -224,7 +234,7 @@ Vue.use(Vuex)
       border-bottom: none;
     }
     li{
-      width: 2.8125rem;
+      // width: 2.8125rem;
       height: $f30;
       line-height: $f30;
       font-size: $textSize;
@@ -256,6 +266,9 @@ Vue.use(Vuex)
       width: 0;
     }
     li:first-child{
+      width: $f50;
+    }
+    li:last-child{
       width: $f50;
     }
     li.paddingLfet20{

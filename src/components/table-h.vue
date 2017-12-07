@@ -1,11 +1,34 @@
 <template>
-  <ul :class="{tableH1: isTr3 && !isOP}" class="clearfix table-h">
-    <li v-for="name in names">{{name}}</li>
-  </ul>
+  <div class="tableHBox">
+    <ul v-if="isOp === true && (moduleName === 'allot' || moduleName === 'allotinbound')" :style="{width: 182 + tr1+tr2 + 'px', 'min-width': '10rem'}" class="clearfix table-h">
+      <li>{{names[0]}}</li>
+      <li>{{names[1]}}</li>
+      <li v-if="moduleName === 'productScan'" :style="{width: stateTr1 + 20 + 'px'}">{{names[2]}}</li>
+      <li v-else :style="{width: tr1 + 20 + 'px'}">{{names[2]}}</li>
+      <li v-if="moduleName === 'productScan'" :style="{width: stateTr2 + 20 + 'px'}">{{names[3]}}</li>
+      <li v-else :style="{width: tr2 + 20 + 'px'}">{{names[3]}}</li>
+    </ul>
+    <ul v-if="isOp === true && (moduleName !== 'allot' && moduleName !== 'allotinbound')" :style="{width: 182 + tr1+tr2 + 'px', 'min-width': '10rem'}" class="clearfix table-h">
+      <li>{{names[0]}}</li>
+      <li>{{names[1]}}</li>
+      <li v-if="moduleName === 'productScan'" :style="{width: stateTr2 + 20 + 'px'}">{{names[3]}}</li>
+      <li v-else :style="{width: tr2 + 20 + 'px'}">{{names[3]}}</li>
+      <li v-if="moduleName === 'productScan'" :style="{width: stateTr1 + 20 + 'px'}">{{names[2]}}</li>
+      <li v-else :style="{width: tr1 + 20 + 'px'}">{{names[2]}}</li>
+    </ul>
+    <ul v-if="!isOp" :style="{width: 140 + tr1+tr2 + 'px'}" class="clearfix table-h">
+      <li>{{names[0]}}</li>
+      <li :style="{width: tr1 + 'px'}">{{names[1]}}</li>
+      <li v-if="!isTr3" :style="{width: tr2 + 'px'}">{{names[2]}}</li>
+      <li v-if="isTr3">{{names[2]}}</li>
+      <li v-else>{{names[3]}}</li>
+    </ul>
+  </div>
 </template>
 <script>
   export default {
     name: 'table-h',
+    props: ['tr1', 'tr2', 'isOp', 'moduleName'],
     data() {
       return {
         isTbleH: false
@@ -18,8 +41,11 @@
       isTr3() {
         return this.$store.state.isTr3
       },
-      isOP() {
-        return this.$store.state.isOP
+      stateTr1() {
+        return this.$store.state.tr1
+      },
+      stateTr2() {
+        return this.$store.state.tr2
       }
     }
   }
@@ -28,10 +54,17 @@
 @import "./../assets/sass/variable.scss";
 @import "./../assets/css/common.css";
 
+.tableHBox{
+  width: 10rem;
+  top: 0;
+}
 .table-h{
-  width: 100%;
+  // width: 100%;
   padding-left: 0;
+  min-width: 10rem;
   box-shadow: 0 2px $f4 rgba(0,0,0,0.16);
+  background: #f0f0f0;
+  // box-shadow: 0 2px $f4 rgba(0,0,0,0.16);
   li{
     float: left;
     text-align: center;
@@ -40,6 +73,7 @@
     line-height: $f30;
     font-size: $textSize;
     color: $textSubCol;
+    overflow: scroll;
     background: #f0f0f0;
   }
   li:first-child{
@@ -48,6 +82,11 @@
 }
 .tableH1{
   li:nth-child(2){
+    width: 5.625rem;
+  }
+}
+.tableH2{
+  li:nth-child(3){
     width: 5.625rem;
   }
 }

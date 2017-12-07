@@ -35,13 +35,18 @@
       </ul>
     </div>
     <div class="table">
-      <TableH></TableH>
-      <TableTr class="contain" v-bind:style="{height: height+'px'}"></TableTr>
+      <TableTr class="contain" v-bind:style="{height: height+'px'}" :tr1=tr1 :tr2=tr2></TableTr>
       <div @click="sureIn" v-if="!checkBoxShow && !btnStatus[0]"><Btn class="btn100 sure">{{setinBtnName}}</Btn></div>
       <ul class="delCancel clearfix">
         <li @click="delSN" v-if="checkBoxShow && !btnStatus[0]"><Btn class="btn100 del">删除</Btn></li>
         <li @click="cancel" v-if="checkBoxShow && !btnStatus[0]"><Btn class="btn100 gray cancel">取消</Btn></li>
       </ul>
+
+      <SureBox v-show="sureBoxShow">
+        <button @click="no" class="left">取消</button>
+        <button @click="ok" class="right">确认</button>
+      </SureBox>
+      
     </div>
   </div>
 </template>
@@ -52,12 +57,12 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import HeadComponent from '../../components/header'
-import TableH from '../../components/table-h'
 import TableTr from '../../components/table-tr-sn'
 import ScanError from '../../components/purchase/scan-error'
 import PutIn from '../../components/purchase/put-in'
 import SNDetail from '../../components/purchase/sn-detail'
 import Btn from '../../components/btn'
+import SureBox from '../../components/sureBox'
 import { path, V, getFactorySel } from '../../js/variable.js'
 // import apiFn from '../../js/lib/api.js'
 Vue.use(VueRouter)
@@ -65,7 +70,7 @@ Vue.use(Vuex)
 
 export default {
   name: 'snList',
-  components: {HeadComponent, TableH, TableTr, ScanError, PutIn, SNDetail, Btn},
+  components: {HeadComponent, TableTr, ScanError, PutIn, SNDetail, Btn, SureBox},
   data () {
     return {
       height: document.documentElement.clientHeight,
@@ -101,7 +106,10 @@ export default {
       warehouseNum: '',
       ZDDLX: this.$route.query.ZDDLX,
       clearsnArr: true, // 用于销售模块snArr初始化
-      salestockupNum: 0
+      salestockupNum: 0,
+      tr1: 0,
+      tr2: 0,
+      descript: ''
     }
   },
   watch: {
@@ -114,6 +122,9 @@ export default {
     }
   },
   computed: {
+    sureBoxShow() {
+      return this.$store.state.sureBoxShow
+    },
     alertMsg() {
       return this.$store.state.alertMsg
     },
@@ -140,6 +151,9 @@ export default {
     setalertMsg(x) {
       this.$store.commit('alertMsg', x)
     },
+    setsureBoxShow(x) {
+      this.$store.commit('sureBoxShow', x)
+    },
     getaccount() {
       // 获取本地存储账号信息
       let accountMsg = localStorage.getItem('accountMsg')
@@ -155,7 +169,7 @@ export default {
       this.$store.commit('tableH', ['序号', '物料描述', '数量'])
       this.setIsTr3(true)
       this.btnStatus = [true, false, false, false]
-      this.turnArr(this.snArr)
+      this.turnArr(this.uniq(this.snArr))
       this.ifVerify = false
       this.canDel = false
     },
@@ -219,13 +233,28 @@ export default {
       this.inputVal = ''
     },
     sureIn() {
-      this.setSureIn()
-      this.$store.commit('checkBoxShow', false)
-      this.showCheckbox = false
+      if (this.hadscanCount < this.scanCount) {
+        this.setsureBoxShow(true)
+      } else {
+        this.setSureIn()
+        this.$store.commit('checkBoxShow', false)
+        this.showCheckbox = false
+      }
     },
     cancel() {
       this.$store.commit('checkBoxShow', false)
       this.showCheckbox = false
+    },
+    ok() {
+      this.setsureBoxShow(false)
+      this.setSureIn()
+      this.$store.commit('checkBoxShow', false)
+      this.showCheckbox = false
+    },
+    no() {
+      this.$store.commit('checkBoxShow', false)
+      this.showCheckbox = false
+      this.setsureBoxShow(false)
     },
     setSN(arr) {
       this.$store.commit('SN', arr)
@@ -324,6 +353,8 @@ export default {
       // if (this.orderType === 2) {
       //   this.turnArr([])
       // } else {
+        // 用于计算产品数量
+        this.uniq(arr)
         this.turnArr(arr)
       // }
     },
@@ -369,6 +400,30 @@ export default {
       }
       return status
     },
+    // 根据对象数组的某个属性进行数组去重
+    uniq(arr) {
+      let temp = []
+      let tempIndex = []
+      let itemNo = []
+      let snArr = []
+      // 提取属性数组
+      for (let i in arr) {
+        itemNo.push(arr[i].ITEM_NO)
+      }
+      // 对属性数组去重
+      for (let i in itemNo) {
+        if (temp.indexOf(itemNo[i]) === -1) {
+          temp.push(itemNo[i])
+          tempIndex.push(i)
+        }
+      }
+      // 根据去重的属性数组对对象数组去重
+      for (let i in tempIndex) {
+        snArr.push(arr[tempIndex[i]])
+      }
+      this.orderCount = temp.length
+      return snArr
+    },
     verifyStatus() {
       let temp = 0
       if (this.urlParams === 'purchase' || this.urlParams === 'allotinbound') {
@@ -384,14 +439,10 @@ export default {
     },
     // 转化成组件table-tr-sn.vue的通用数组数据
     turnArr(arr) {
-      // 计算产品数量
-      if (arr === undefined || arr.length === undefined) {
-        this.orderCount = 0
-      } else {
-        this.orderCount = arr.length
-      }
       // trArr为临时数组   num用于计算应扫数量
       let [trArr, checkboxVal, num, num3] = [[], [], 0, 0]
+      console.log('090909')
+      console.log(arr)
       if (arr.length >= 0) {
         for (let i in arr) {
           // 页面初次加载时执行
@@ -402,7 +453,14 @@ export default {
           // 标准包
           // if (arr[i].Item === null || arr[i].Item === undefined) {
           if (!arr[i].Item) {
-            num++
+            // 模块调拨出库跟销售备货的应扫数量接口直接返回
+            if (this.urlParams === 'allot') {
+              num = parseInt(arr[0].ZYS)
+            } else if (this.urlParams === 'salestockup') {
+              num = parseInt(arr[0].ZYC)
+            } else {
+              num++
+            }
             // temp.status = false
             checkboxVal.push(false)
             temp.arr = []
@@ -430,18 +488,49 @@ export default {
             temp.arr[3] = arr[i].BUS_NO // 采购订单号/内向交货单
             temp.arr[4] = parseInt(arr[i].LFIMG) // 计划交货数
             temp.arr[6] = arr[i].ITEM_NO // 行号
+            if (this.urlParams === 'allot') {
+              temp.arr[7] = parseInt(arr[i].ZWCSL) // 产品数量
+            } else if (this.urlParams === 'salestockup') {
+              temp.arr[7] = parseInt(arr[i].LFIMG)
+            } else {
+              temp.arr[7] = this.snArr.length
+            }
+            // 根据描述的字数计算表格列的宽度
+            if (temp.arr[0]) {
+              if (temp.arr[0].length > this.tr1) {
+                this.tr1 = temp.arr[0].length
+                this.descript = temp.arr[0]
+              }
+            }
+            if ((parseInt(i) + 1) === arr.length) {
+              let fontNum = 0
+              let descript = this.descript
+              for (let i in descript) {
+                let reg = new RegExp('[\\u4E00-\\u9FFF]+', 'g')
+                if (reg.test(descript[i])) {
+                  fontNum += 14
+                } else {
+                  fontNum += 8.5
+                }
+              }
+              this.tr1 = fontNum
+            }
+            let tr2 = 0
+            if (temp.arr[1]) {
+              if (temp.arr[1].length > tr2) {
+                tr2 = (temp.arr[1].length) * 8.5
+              }
+            }
+            if (tr2 < 50) {
+              tr2 = 50
+            }
+            this.tr2 = tr2
           } else {
+            let fbtype = false
             // 分包
-            // if (arr[i].Item[0].ZFBFS === 1) {
-            //   temp.status = true
-            // } else if (arr[i].Item[0].ZFBFS === 2) {
-            //   // 合包
-            //   if (this.checkStatus(arr[i].ZJYZT, this.urlParams)) {
-            //     temp.status = true
-            //   } else {
-            //     temp.status = false
-            //   }
-            // }
+            if (arr[i].Item[0].ZFBFS === 1) {
+              fbtype = true
+            }
             checkboxVal.push(false)
             temp.status = true // 标记是否含子条码
             temp.arr = []
@@ -449,16 +538,39 @@ export default {
             let arr1 = []
             let arr2 = []
             for (let j in arr[i].Item) {
-              num++
+              // 模块调拨出库跟销售备货的应扫数量接口直接返回
+              if (this.urlParams === 'allot') {
+                num = parseInt(arr[0].ZYS)
+              } else if (this.urlParams === 'salestockup') {
+                num = parseInt(arr[0].ZYC)
+              } else {
+                num++
+              }
               // 页面初次加载时执行
               if (this.addStatus) {
                 arr2.push(false)
               }
+              // 根据描述的字数计算表格列的宽度
+              let tr2 = 0
+              if (arr[i].Item[j].ZTIAOMA_FB) {
+                if (arr[i].Item[j].ZTIAOMA_FB.length > tr2) {
+                  tr2 = (arr[i].Item[j].ZTIAOMA_FB.length) * 8.5
+                }
+              }
+              if (tr2 < 50) {
+                tr2 = 50
+              }
+              this.tr2 = tr2
               arr1.push(arr[i].Item[j].ZTIAOMA_FB)
               if (this.checkStatus(arr[i].Item[j].ZJYZT, this.urlParams)) {
                 arr2[j] = true
-                num3++
+                if (fbtype) {
+                  num3++
+                }
               }
+            }
+            if (fbtype === false && this.checkStatus(arr[i].ZJYZT, this.urlParams)) {
+              num3++
             }
             temp.arr[1] = arr1
             temp.arr[2] = arr2
@@ -466,6 +578,34 @@ export default {
             temp.arr[4] = parseInt(arr[i].LFIMG)
             temp.arr[5] = arr[i].status // 是否校验状态码
             temp.arr[6] = arr[i].ITEM_NO
+            if (this.urlParams === 'allot') {
+              temp.arr[7] = parseInt(arr[i].ZWCSL) // 产品数量
+            } else if (this.urlParams === 'salestockup') {
+              temp.arr[7] = parseInt(arr[i].LFIMG)
+            } else {
+              temp.arr[7] = this.snArr.length
+            }
+            // 根据描述的字数计算表格列的宽度
+            if (temp.arr[0].length > this.tr1) {
+              this.tr1 = temp.arr[0].length
+              this.descript = temp.arr[0]
+            }
+            if ((parseInt(i) + 1) === arr.length) {
+              let fontNum = 0
+              let descript = this.descript
+              for (let i in descript) {
+                let reg = new RegExp('[\\u4E00-\\u9FFF]+', 'g')
+                if (reg.test(descript[i])) {
+                  fontNum += 14
+                } else {
+                  fontNum += 8.5
+                }
+              }
+              if (fontNum < 50) {
+                fontNum = 50
+              }
+              this.tr1 = fontNum
+            }
             // if (this.checkStatus(arr[i].ZJYZT, this.urlParams)) {
             //   temp.arr[5] = true
             //   num3++
@@ -570,6 +710,7 @@ export default {
             _this.focusStatus = true
           }
         } else {
+          _this.inputVal = ''
           _this.errorShow = true
           _this.$store.commit('errorMsg', data.ZTXXX)
           // _this.inputVal = ''
@@ -719,24 +860,24 @@ export default {
     // ifScan参数为true则筛选已扫，为false则筛选未扫
     filtrateArr(ifScan) {
       let Arr = this.sns.concat()
-      console.log(Arr)
       function delArr(arr) {
         let gettype = Object.prototype.toString
         for (let i in arr) {
-          // 如果不是分包
-          if (gettype.call(arr[i].arr[1]) === '[object String]') {
+          // 标准包
+          if (gettype.call(arr[i].arr[1]) === '[object String]' || arr[i].arr[1] === undefined) {
             if (ifScan) {
-              if (!Arr[i].arr[5]) {
+              if (Arr[i].arr[5] === false || arr[i].arr[1] === undefined) {
                 arr.splice(i, 1)
                 delArr(arr)
               }
             } else {
-              if (Arr[i].arr[5]) {
+              if (Arr[i].arr[5] === true || arr[i].arr[1] === undefined) {
                 arr.splice(i, 1)
                 delArr(arr)
               }
             }
           } else {
+            // 分包
             for (let j in arr[i].arr[1]) {
               if (ifScan) {
                 if (!arr[i].arr[2][j]) {
@@ -758,8 +899,10 @@ export default {
       }
       // 将分包的空数组去除
       function reDelArr(arr) {
+        console.log('11111')
+        console.log(arr)
         for (let i in arr) {
-          if (arr[i].arr[1].length === 0) {
+          if (arr[i].arr[1] !== undefined && arr[i].arr[1].length === 0) {
             arr.splice(i, 1)
             reDelArr(arr)
           }
@@ -917,6 +1060,7 @@ export default {
           }
           if (data.ZXXLX === 'S') {
             alert('入库成功!入库凭证为' + data.ZTXXX)
+            _this.$router.back()
           } else {
             alert(data.ZTXXX)
           }
@@ -1001,6 +1145,7 @@ export default {
     } else if (this.urlParams === 'product') {
       this.orderType = 3
     }
+    this.getaccount()
     this.snListUrl()
     this.setTableH()
     this.$store.commit('loadingShow', false)
@@ -1120,12 +1265,13 @@ export default {
     }
   }
   .contain{
+    width: 100%;
     position: absolute;
     top: 0;
     left: 0;
-    padding-top: 5.6875rem;
+    padding-top: 4.68rem;
     box-sizing: border-box;
-    overflow-x: hidden;
+    overflow: scroll;
     z-index: -1;
     padding-bottom: 2.1875rem;
   }

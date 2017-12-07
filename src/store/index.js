@@ -38,7 +38,10 @@ const store = new Vuex.Store({
     bottomBtnName: '',
     fbData: {},
     productScanList: [],
-    alertMsg: ''
+    alertMsg: '',
+    sureBoxShow: false,
+    tr1: 0,
+    tr2: 0
   },
   mutations: {
     // 皮肤选择
@@ -47,6 +50,8 @@ const store = new Vuex.Store({
     loadingShow: (state, x) => state.loadingShow = x,
     // 插入订单号数据
     setOrders: (state, arr) => state.orders = arr,
+    // 显示入库确认框
+    sureBoxShow: (state, x) => state.sureBoxShow = x,
     // 插入SN号数据
     SN: (state, arr) => state.SN = arr,
     snCopy: (state, arr) => state.snCopy = arr,
@@ -84,7 +89,9 @@ const store = new Vuex.Store({
     // 生产扫描列表
     productScanList: (state, arr) => state.productScanList = arr,
     // 入库，删除是弹框显示信息
-    alertMsg: (state, x) => state.alertMsg = x
+    alertMsg: (state, x) => state.alertMsg = x,
+    tr1: (state, x) => state.tr1 = x,
+    tr2: (state, x) => state.tr2 = x
   },
   actions: {
     incrementAsync({

@@ -1,29 +1,52 @@
 <template>
-  <ul class="clearfix table-tr-op">
-    <li v-if="name !== 'productScan'" v-for="(order,index) in orders" @click="toOrderDetail(order[0], order[2])">
-      <ul>
-        <li>{{index+1}}</li>
-        <li>{{order[0]}}</li>
-        <li><input :value="order[1]" disabled="disabled"></li>
-        <li>{{order[2]}}</li>
-      </ul>
-    </li>
-    <li v-if="name === 'productScan'" v-for="(arr, index) in productScanList" :class="{on: arr[3]}">
-      <ul>
-        <li>{{index+1}}</li>
-        <li><input :value="arr[0]" disabled="disabled"></li>
-        <li><input :value="arr[1]" disabled="disabled"></li>
-        <li>{{arr[2]}}</li>
-      </ul>
-    </li>
-  </ul>
+  <div>
+    <TableH :tr1=tr1 :tr2=tr2 :isOp=true :moduleName=name></TableH>
+    <ul v-if="name === 'productScan'" class="clearfix table-tr-op" :style="{width: 182 + stateTr1 + stateTr2 + 'px'}">
+      <li v-for="(arr, index) in productScanList" :key="arr[0]" :class="{on: arr[3]}">
+        <ul>
+          <li class="li1">{{index+1}}</li>
+          <li class="li2"><p>{{arr[0]}}</p></li>
+          <li class="li4" :style="{width: stateTr2 + 20 + 'px'}">{{arr[2]}}</li>
+          <li class="li3" :style="{width: stateTr1 + 20 + 'px'}"><p>{{arr[1]}}</p></li>
+        </ul>
+      </li>
+    </ul>
+    <ul v-else class="clearfix table-tr-op" :style="{width: 182 + tr1 + tr2 + 'px'}">
+      <li v-if="name === 'purchase'" v-for="(order,index) in orders" :key="index" @click="toOrderDetail(order[0], order[3])">
+        <ul>
+          <li class="li1">{{index+1}}</li>
+          <li class="li2">{{order[0]}}</li>
+          <li class="li3" :style="{width: tr1 + 20 + 'px'}"><p>{{order[1]}}</p></li>
+        </ul>
+      </li>
+      <li v-if="name==='salesreturn' || name==='stock' || name==='product'" v-for="(order,index) in orders" :key="order[0]" @click="toOrderDetail(order[0], order[3])">
+        <ul>
+          <li class="li1">{{index+1}}</li>
+          <li class="li2">{{order[0]}}</li>
+          <li class="li4" :style="{width: tr2 + 20 + 'px'}">{{order[2]}}</li>
+          <li class="li3" :style="{width: tr1 + 20 + 'px'}"><p>{{order[1]}}</p></li>
+        </ul>
+      </li>
+      <li v-if="name==='allot' || name==='allotinbound'" v-for="(order,index) in orders" :key="order[0]" @click="toOrderDetail(order[0], order[3])">
+        <ul>
+          <li class="li1">{{index+1}}</li>
+          <li class="li2">{{order[0]}}</li>
+          <li class="li3" :style="{width: tr1 + 20 + 'px'}"><p>{{order[1]}}</p></li>
+          <li class="li4" :style="{width: tr2 + 20 + 'px'}">{{order[2]}}</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
 </template>
 <script>
 import Vue from 'vue'
 import Vuex from 'vuex'
+import TableH from '../components/table-h'
 Vue.use(Vuex)
   export default {
     name: 'table-tr',
+    components: { TableH },
+    props: ['tr1', 'tr2'],
     data() {
       return {
         name: this.$route.params.module
@@ -41,6 +64,12 @@ Vue.use(Vuex)
       },
       productScanList() {
         return this.$store.state.productScanList
+      },
+      stateTr1() {
+        return this.$store.state.tr1
+      },
+      stateTr2() {
+        return this.$store.state.tr2
       }
     },
     methods: {
@@ -57,6 +86,9 @@ Vue.use(Vuex)
       }
     },
     created: function() {
+      console.log('dddd')
+      console.log(this.name, typeof (this.name))
+      console.log(this.productScanList)
       if (this.$route.params.module === 'stock') {
         // 销售备货
         if (this.bottomBtnName === 'salestockup') {
@@ -77,12 +109,12 @@ Vue.use(Vuex)
 @import "./../assets/css/common.css";
 
 .table-tr-op{
-  width: 100%;
+  // width: 500px;
   li{
     float: left;
   }   
   &>li{
-    width: 100%;
+    // width: 100%;
     border-bottom: 1px solid $borderIn;
     li{
       width: 2.8125rem;
@@ -94,7 +126,7 @@ Vue.use(Vuex)
       position: relative;
       padding: 0 $f4;
       box-sizing: border-box;
-      overflow-y: hidden;
+      // overflow-y: hidden;
     }
     li:nth-child(2),li:nth-child(4){
       overflow-y: hidden;
