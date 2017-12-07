@@ -36,6 +36,26 @@
     </div>
     <div class="table">
       <TableH></TableH>
+      <!-- <table border="1">
+        <tr>
+          <th>Month</th>
+          <th></th>
+          <th>Savings</th>
+          <th>Savings</th>
+        </tr>
+        <tr>
+          <td>January</td>
+          <td></td>
+          <td>January</td>
+          <td>$100JanuaryJanuaryJanuaryJanuaryJanuaryJanuary</td>
+        </tr>
+        <tr>
+          <td>JanuaryJanuaryJanuary</td>
+          <td></td>
+          <td>January</td>
+          <td>$100</td>
+        </tr>
+      </table> -->
       <TableTr class="contain" v-bind:style="{height: height+'px'}"></TableTr>
       <div @click="sureIn" v-if="!checkBoxShow && !btnStatus[0]"><Btn class="btn100 sure">{{setinBtnName}}</Btn></div>
       <ul class="delCancel clearfix">
@@ -1019,6 +1039,25 @@ export default {
 <style scoped lang="scss">
 @import "../../assets/sass/variable.scss";
 .snList{
+  div.table{
+    width: 10rem;
+    overflow: scroll;
+    table{
+      border-collapse: collapse;
+      border: none;
+      outline: none;
+      background: none;
+    }
+    tr{
+      border-bottom: 1px solid #ccc;
+    }
+    th,td{
+      border: none;
+      border-right: 1px solid #ccc;
+      border-bottom: 1px solid #ccc;
+      background: none;
+    }
+  }
   .delBtn{
     position: absolute;
     top: 0.46875rem;

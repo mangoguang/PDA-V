@@ -308,6 +308,7 @@ export default {
           temp[0] = data[i].BUS_NO
           temp[1] = this.warehouse
           temp[2] = data[i].LGOBE
+          temp[3] = data[i].ZDDLX
           trArr.push(temp)
         }
       } else if (this.moduleName === 'salestockup' || this.moduleName === 'salesoutput') {
@@ -348,6 +349,7 @@ export default {
           temp[0] = data[i].BUS_NO
           temp[1] = _this.warehouse
           temp[2] = data[i].LGOBE
+          temp[3] = data[i].ZDDLX
           trArr.push(temp)
         }
       }
