@@ -870,6 +870,7 @@ export default {
       }
       this.putInShow = true
       if (this.urlParams === 'product') {
+        let _this = this
         // if (this.status4 === 0) {
           V.get(url, params).then(function(data) {
             data = JSON.parse(data.responseText)
@@ -877,6 +878,7 @@ export default {
               data = data.MT_Product_OrderPost_Resp.Item
               if (data.ZXXLX === 'S') {
                 alert('入库成功!入库凭证为' + data.ZTXXX)
+                _this.$router.back()
               } else {
                 alert(data.ZTXXX)
               }
@@ -1035,7 +1037,7 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+<!- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import "../../assets/sass/variable.scss";
 .snList{

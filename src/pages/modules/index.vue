@@ -161,7 +161,7 @@ export default {
         // 扫标签码
         if (this.bottomBtnName === 'scanbq') {
           url = path.sap + 'product/getorder'
-          params = "{ 'Item': {SN: '" + num + "'} }"
+          params = '{ "Item": {SN: "' + num + '",ZGH:"' + this.account + '"} }'
           // params = {
           //   body: '{ "Item": {SN: "' + num + '"} }'
           // }
@@ -413,7 +413,7 @@ export default {
           'ZRKEQ: 11,' +
           'ZRKSJ: 11,' +
           // 'ZIP: "' + this.printVal + '",' +
-          'ZIP: "TSC_TTP-244_PRO",' +
+          'ZIP: "' + localStorage.getItem('printVal') + '",' +
           temp +
         '}}'
         // params = {
@@ -467,6 +467,8 @@ export default {
               alert(data.ZTXXX)
             } else if (data.ZXXTX) {
               alert(data.ZXXTX)
+            } else {
+              alert('打印成功。')
             }
           } else {
             if (data.ZTXXX) {
