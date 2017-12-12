@@ -591,6 +591,7 @@ export default {
           }
         } else {
           _this.errorShow = true
+          _this.inputVal = ''
           _this.$store.commit('errorMsg', data.ZTXXX)
           // _this.inputVal = ''
           // alert(data.ZTXXX)
@@ -939,6 +940,7 @@ export default {
           }
           if (data.ZXXLX === 'S') {
             alert('入库成功!入库凭证为' + data.ZTXXX)
+            _this.$router.back()
           } else {
             alert(data.ZTXXX)
           }
