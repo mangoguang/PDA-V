@@ -77,7 +77,7 @@ import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import HeadComponent from '../../components/header'
 import md5 from 'js-md5'
-import {path, V, getFactorySel} from '../../js/variable.js'
+import {path, V, getFactorySel, getPrintPlanMsg} from '../../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -119,15 +119,6 @@ export default {
     changeType() {
       localStorage.setItem('skinCol', this.typeVal)
       this.setSkinCol(this.typeVal)
-    },
-    getPrintPlanMsg() {
-      let printPlanMsg = localStorage.getItem('printPlanMsg')
-      console.log(printPlanMsg)
-      let printPlanObj = eval('(' + printPlanMsg + ')')
-      if (printPlanMsg) {
-        this.printPlanSel = printPlanObj.ZBQMC
-        this.printPlanSelNum = printPlanObj.ZBQXH
-      }
     },
     getAccountMsg: function() {
       let accountMsg = localStorage.getItem('accountMsg')
@@ -268,8 +259,8 @@ export default {
   },
   created() {
     this.loadingShow(false)
+    getPrintPlanMsg(this)
     getFactorySel(this)
-    this.getPrintPlanMsg()
     this.setSkinCol(localStorage.getItem('skinCol'))
     // 获取防伪打印模板
     this.getModule()

@@ -125,4 +125,13 @@ function getFactorySel(_this) {
   }
 }
 
-export { path, V, cloneObj, getFactorySel }
+function getPrintPlanMsg(_this) {
+	let printPlanMsg = localStorage.getItem('printPlanMsg')
+	let printPlanObj = eval('(' + printPlanMsg + ')')
+	if (printPlanMsg) {
+		_this.printPlanSel = printPlanObj.ZBQMC
+		_this.printPlanSelNum = printPlanObj.ZBQXH
+	}
+}
+
+export { path, V, cloneObj, getFactorySel, getPrintPlanMsg }

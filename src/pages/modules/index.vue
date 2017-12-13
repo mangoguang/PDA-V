@@ -32,7 +32,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {path, V, cloneObj, getFactorySel} from '../../js/variable.js'
+import {path, V, cloneObj, getFactorySel, getPrintPlanMsg} from '../../js/variable.js'
 import HeadComponent from '../../components/header'
 // import TableH from '../../components/table-h'
 import TableTr from '../../components/table-tr-op'
@@ -58,7 +58,8 @@ export default {
       bottomBtn: true,
       btnName: '',
       printVal: localStorage.getItem('printVal'),
-      account: ''
+      account: '',
+      printPlanSelNum: ''
     }
   },
   computed: {
@@ -469,7 +470,7 @@ export default {
           arr[i] = 'Item: {' +
             'ZFWMA: "' + snArr[i] + '",' +
             'ZIP: "' + this.printVal + '",' +
-            'ZBQXH: "35",' +
+            'ZBQXH: "' + this.printPlanSelNum + '",' +
             'ZGH: "' + this.account + '"' +
           '}'
         }
@@ -556,6 +557,7 @@ export default {
   created: function() {
     // 设置注销的回退步数
     localStorage.setItem('routeIndex', '4')
+    getPrintPlanMsg(this)
     getFactorySel(this)
     let _this = this
     if (this.moduleName !== 'product') {
