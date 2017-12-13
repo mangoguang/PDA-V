@@ -1,25 +1,25 @@
 <template>
   <div class="table-h">
-    <ul v-if="isOp === true && (moduleName === 'allot' || moduleName === 'allotinbound')" :style="{width: 182 + tr1+tr2 + 'px', 'min-width': '10rem'}" class="clearfix table-h">
+    <ul v-if="isOp === true && (moduleName === 'allot' || moduleName === 'allotinbound')" class="clearfix table-h">
       <li>{{names[0]}}</li>
       <li>{{names[1]}}</li>
-      <li v-if="moduleName === 'productScan'" :style="{width: stateTr1 + 20 + 'px'}">{{names[2]}}</li>
-      <li v-else :style="{width: tr1 + 20 + 'px'}">{{names[2]}}</li>
-      <li v-if="moduleName === 'productScan'" :style="{width: stateTr2 + 20 + 'px'}">{{names[3]}}</li>
-      <li v-else :style="{width: tr2 + 20 + 'px'}">{{names[3]}}</li>
+      <li v-if="moduleName === 'productScan'">{{names[2]}}</li>
+      <li v-else>{{names[2]}}</li>
+      <li v-if="moduleName === 'productScan'">{{names[3]}}</li>
+      <li v-else>{{names[3]}}</li>
     </ul>
-    <ul v-if="isOp === true && (moduleName !== 'allot' && moduleName !== 'allotinbound')" :style="{width: 182 + tr1+tr2 + 'px', 'min-width': '10rem'}" class="clearfix table-h">
+    <ul v-if="isOp === true && (moduleName !== 'allot' && moduleName !== 'allotinbound')" class="clearfix table-h">
       <li>{{names[0]}}</li>
       <li>{{names[1]}}</li>
-      <li v-if="moduleName === 'productScan'" :style="{width: stateTr2 + 20 + 'px'}">{{names[3]}}</li>
-      <li v-else :style="{width: tr2 + 20 + 'px'}">{{names[3]}}</li>
-      <li v-if="moduleName === 'productScan'" :style="{width: stateTr1 + 20 + 'px'}">{{names[2]}}</li>
-      <li v-else :style="{width: tr1 + 20 + 'px'}">{{names[2]}}</li>
+      <li v-if="moduleName === 'productScan'">{{names[3]}}</li>
+      <li v-else>{{names[3]}}</li>
+      <li v-if="moduleName === 'productScan'">{{names[2]}}</li>
+      <li v-else>{{names[2]}}</li>
     </ul>
-    <ul v-if="!isOp" :style="{width: 140 + tr1+tr2 + 'px'}" class="clearfix table-h">
+    <ul v-if="!isOp" class="clearfix table-h">
       <li>{{names[0]}}</li>
-      <li :style="{width: tr1 + 'px'}">{{names[1]}}</li>
-      <li v-if="!isTr3" :style="{width: tr2 + 'px'}">{{names[2]}}</li>
+      <li>{{names[1]}}</li>
+      <li v-if="!isTr3">{{names[2]}}</li>
       <li v-if="isTr3">{{names[2]}}</li>
       <li v-else>{{names[3]}}</li>
     </ul>
@@ -28,7 +28,6 @@
 <script>
   export default {
     name: 'table-h',
-    props: ['tr1', 'tr2', 'isOp', 'moduleName'],
     data() {
       return {
         isTbleH: false
@@ -46,6 +45,9 @@
       },
       stateTr2() {
         return this.$store.state.tr2
+      },
+      isOp() {
+        return this.$store.state.isOp
       }
     }
   }
