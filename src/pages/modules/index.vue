@@ -11,12 +11,10 @@
         <button @click="clearInput" class="clearBtn" type="button"></button>
       </div>
     </div>
-    <div class="table">
-      <TableTr 
-      class="contain" 
-      v-bind:style="{height: height+'px'}"
-      ></TableTr>
-    </div>
+    <TableTr 
+    class="contain" 
+    v-bind:style="{height: height+'px'}"
+    ></TableTr>
     <button v-if="moduleName === 'scanbq' || moduleName === 'scanfw'" @click="setIn" class="setIn" type="button">{{btnName}}</button>
     <ul class="bottomBtn clearfix" v-if="moduleName === 'salestockup' || moduleName === 'salesoutput'">
       <li :class="{on: bottomBtn}" @click="sales('salestockup')">销售备货</li>
@@ -169,7 +167,9 @@ export default {
       let url = ''
       let params = ''
       let num = this.searchNum
+      alert(num.length)
       if (num.length === 23 || num.length === 22 || num.length >= 27) {
+        alert('success')
         // 扫标签码
         if (this.bottomBtnName === 'scanbq') {
           url = path.sap + 'product/getorder'

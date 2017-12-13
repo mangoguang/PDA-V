@@ -1,5 +1,5 @@
 <template>
-  <div class="tableHBox">
+  <div class="table-h">
     <ul v-if="isOp === true && (moduleName === 'allot' || moduleName === 'allotinbound')" :style="{width: 182 + tr1+tr2 + 'px', 'min-width': '10rem'}" class="clearfix table-h">
       <li>{{names[0]}}</li>
       <li>{{names[1]}}</li>
@@ -54,10 +54,6 @@
 @import "./../assets/sass/variable.scss";
 @import "./../assets/css/common.css";
 
-.tableHBox{
-  width: 10rem;
-  top: 0;
-}
 .table-h{
   // width: 100%;
   padding-left: 0;
@@ -73,7 +69,6 @@
     line-height: $f30;
     font-size: $textSize;
     color: $textSubCol;
-    overflow: scroll;
     background: #f0f0f0;
   }
   li:first-child{
@@ -82,11 +77,6 @@
 }
 .tableH1{
   li:nth-child(2){
-    width: 5.625rem;
-  }
-}
-.tableH2{
-  li:nth-child(3){
     width: 5.625rem;
   }
 }

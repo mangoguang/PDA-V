@@ -34,7 +34,7 @@
         <li @click="btn4" :class="{on: btnStatus[3]}">未扫：{{scanCount - hadscanCount}}</li>
       </ul>
     </div>
-    <div class="table">
+    <div>
       <TableH></TableH>
       <!-- <table border="1">
         <tr>
