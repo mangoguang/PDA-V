@@ -924,15 +924,6 @@ export default {
           ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
           LGORT: this.warehouseNum
         }
-        // params = {
-        //   body: {
-        //     ZRKDH: this.BUS_NO,
-        //     ZGZRY: '' + this.account + '',
-        //     ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
-        //     ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
-        //     LGORT: this.warehouseNum
-        //   }
-        // }
       } else if (this.urlParams === 'allot') {
         params = '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
         // params = {

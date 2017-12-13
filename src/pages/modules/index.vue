@@ -167,9 +167,7 @@ export default {
       let url = ''
       let params = ''
       let num = this.searchNum
-      alert(num.length)
       if (num.length === 23 || num.length === 22 || num.length >= 27) {
-        alert('success')
         // 扫标签码
         if (this.bottomBtnName === 'scanbq') {
           url = path.sap + 'product/getorder'
