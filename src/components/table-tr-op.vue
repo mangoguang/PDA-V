@@ -1,38 +1,38 @@
 <template>
   <div>
-    <TableH :tr1=tr1 :tr2=tr2 :isOp=true :moduleName=name></TableH>
-    <ul v-if="name === 'productScan'" class="clearfix table-tr-op" :style="{width: 182 + stateTr1 + stateTr2 + 'px'}">
+    <TableH></TableH>
+    <ul v-if="name === 'productScan'" class="clearfix table-tr-op">
       <li v-for="(arr, index) in productScanList" :key="arr[0]" :class="{on: arr[3]}">
         <ul>
           <li class="li1">{{index+1}}</li>
           <li class="li2"><p>{{arr[0]}}</p></li>
-          <li class="li4" :style="{width: stateTr2 + 20 + 'px'}">{{arr[2]}}</li>
-          <li class="li3" :style="{width: stateTr1 + 20 + 'px'}"><p>{{arr[1]}}</p></li>
+          <li class="li4">{{arr[2]}}</li>
+          <li class="li3"><p>{{arr[1]}}</p></li>
         </ul>
       </li>
     </ul>
-    <ul v-else class="clearfix table-tr-op" :style="{width: 182 + tr1 + tr2 + 'px'}">
+    <ul v-else class="clearfix table-tr-op">
       <li v-if="name === 'purchase'" v-for="(order,index) in orders" :key="index" @click="toOrderDetail(order[0], order[3])">
         <ul>
           <li class="li1">{{index+1}}</li>
           <li class="li2">{{order[0]}}</li>
-          <li class="li3" :style="{width: tr1 + 20 + 'px'}"><p>{{order[1]}}</p></li>
+          <li class="li3"><p>{{order[1]}}</p></li>
         </ul>
       </li>
       <li v-if="name==='salesreturn' || name==='stock' || name==='product'" v-for="(order,index) in orders" :key="order[0]" @click="toOrderDetail(order[0], order[3])">
         <ul>
           <li class="li1">{{index+1}}</li>
           <li class="li2">{{order[0]}}</li>
-          <li class="li4" :style="{width: tr2 + 20 + 'px'}">{{order[2]}}</li>
-          <li class="li3" :style="{width: tr1 + 20 + 'px'}"><p>{{order[1]}}</p></li>
+          <li class="li4">{{order[2]}}</li>
+          <li class="li3"><p>{{order[1]}}</p></li>
         </ul>
       </li>
       <li v-if="name==='allot' || name==='allotinbound'" v-for="(order,index) in orders" :key="order[0]" @click="toOrderDetail(order[0], order[3])">
         <ul>
           <li class="li1">{{index+1}}</li>
           <li class="li2">{{order[0]}}</li>
-          <li class="li3" :style="{width: tr1 + 20 + 'px'}"><p>{{order[1]}}</p></li>
-          <li class="li4" :style="{width: tr2 + 20 + 'px'}">{{order[2]}}</li>
+          <li class="li3"><p>{{order[1]}}</p></li>
+          <li class="li4">{{order[2]}}</li>
         </ul>
       </li>
     </ul>
@@ -46,7 +46,6 @@ Vue.use(Vuex)
   export default {
     name: 'table-tr',
     components: { TableH },
-    props: ['tr1', 'tr2'],
     data() {
       return {
         name: this.$route.params.module
@@ -64,12 +63,6 @@ Vue.use(Vuex)
       },
       productScanList() {
         return this.$store.state.productScanList
-      },
-      stateTr1() {
-        return this.$store.state.tr1
-      },
-      stateTr2() {
-        return this.$store.state.tr2
       }
     },
     methods: {
