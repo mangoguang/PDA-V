@@ -1,29 +1,51 @@
 <template>
-  <ul class="clearfix table-tr-op">
-    <li v-if="name !== 'productScan'" v-for="(order,index) in orders" @click="toOrderDetail(order[0], order[3])">
-      <ul>
-        <li>{{index+1}}</li>
-        <li>{{order[0]}}</li>
-        <li><input :value="order[1]" disabled="disabled"></li>
-        <li>{{order[2]}}</li>
-      </ul>
-    </li>
-    <li v-if="name === 'productScan'" v-for="(arr, index) in productScanList" :class="{on: arr[3]}">
-      <ul>
-        <li>{{index+1}}</li>
-        <li><input :value="arr[0]" disabled="disabled"></li>
-        <li><input :value="arr[1]" disabled="disabled"></li>
-        <li>{{arr[2]}}</li>
-      </ul>
-    </li>
-  </ul>
+  <div>
+    <TableH></TableH>
+    <ul v-if="name === 'productScan'" class="clearfix table-tr-op">
+      <li v-for="(arr, index) in productScanList" :key="arr[0]" :class="{on: arr[3]}">
+        <ul>
+          <li class="li1">{{index+1}}</li>
+          <li class="li2"><p>{{arr[0]}}</p></li>
+          <li class="li4">{{arr[2]}}</li>
+          <li class="li3"><p>{{arr[1]}}</p></li>
+        </ul>
+      </li>
+    </ul>
+    <ul v-else class="clearfix table-tr-op">
+      <li v-if="name === 'purchase'" v-for="(order,index) in orders" :key="index" @click="toOrderDetail(order[0], order[3])">
+        <ul>
+          <li class="li1">{{index+1}}</li>
+          <li class="li2">{{order[0]}}</li>
+          <li class="li3 tr2in1"><p>{{order[1]}}</p></li>
+        </ul>
+      </li>
+      <li v-if="name==='salesreturn' || name==='stock' || name==='product'" v-for="(order,index) in orders" :key="order[0]" @click="toOrderDetail(order[0], order[3])">
+        <ul>
+          <li class="li1">{{index+1}}</li>
+          <li class="li2">{{order[0]}}</li>
+          <li class="li4">{{order[2]}}</li>
+          <li class="li3"><p>{{order[1]}}</p></li>
+        </ul>
+      </li>
+      <li v-if="name==='allot' || name==='allotinbound'" v-for="(order,index) in orders" :key="order[0]" @click="toOrderDetail(order[0], order[3])">
+        <ul>
+          <li class="li1">{{index+1}}</li>
+          <li class="li2">{{order[0]}}</li>
+          <li class="li3"><p>{{order[1]}}</p></li>
+          <li class="li4">{{order[2]}}</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
 </template>
 <script>
 import Vue from 'vue'
 import Vuex from 'vuex'
+import TableH from '../components/table-h'
 Vue.use(Vuex)
   export default {
     name: 'table-tr',
+    components: { TableH },
     data() {
       return {
         name: this.$route.params.module

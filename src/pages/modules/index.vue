@@ -12,7 +12,6 @@
       </div>
     </div>
     <div class="table">
-      <TableH></TableH>
       <TableTr 
       class="contain" 
       v-bind:style="{height: height+'px'}"
@@ -37,14 +36,14 @@ import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import {path, V, cloneObj, getFactorySel} from '../../js/variable.js'
 import HeadComponent from '../../components/header'
-import TableH from '../../components/table-h'
+// import TableH from '../../components/table-h'
 import TableTr from '../../components/table-tr-op'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
 export default {
   name: 'Modules',
-  components: {HeadComponent, TableH, TableTr},
+  components: {HeadComponent, TableTr},
   data () {
     return {
       height: document.documentElement.clientHeight,
@@ -87,11 +86,24 @@ export default {
     },
     // 设置表头标题
     setTableH() {
-      if (this.$route.params.module === 'productScan') {
-        this.$store.commit('tableH', ['序号', '品名', '条码', '状态'])
+      let module = this.$route.params.module
+      if (module === 'productScan') {
+        this.$store.commit('tableH', ['序号', '单号', '客户地址', '归属仓库'])
+      } else if (module === 'purchase') {
+        this.$store.commit('tableH', ['序号', '单号', '归属仓库'])
+        this.setisTr3(true)
+      } else if (module === 'allot') {
+        this.$store.commit('tableH', ['序号', '单号', '调出仓库', '调入仓库'])
+        this.setisTr3(false)
+      } else if (module === 'allotinbound') {
+        this.$store.commit('tableH', ['序号', '单号', '调出仓库', '调入仓库'])
+        this.setisTr3(false)
       } else {
         this.$store.commit('tableH', ['序号', '单号', '归属仓库', '客户地址'])
       }
+    },
+    setisTr3(x) {
+      this.$store.commit('isTr3', x)
     },
     setProductScanList(arr) {
       this.$store.commit('productScanList', arr)
@@ -246,12 +258,10 @@ export default {
     },
     // 转化生产扫描数组
     setScanArr(data) {
-      console.log(data)
       let temp = false
       let index = 0
-      console.log(this.productScanList)
       if (this.productScanList.length > 0) {
-        // 检查该SN是否已扫描 true时表示已扫描，将不添加入productScanList打印数组
+        // 检查该SN是否已扫描temp为true时表示已扫描，将不添加入productScanList打印数组
         for (let i in this.productScanList) {
           if (this.productScanList[i][1] === this.searchNum) {
             temp = true
@@ -279,6 +289,28 @@ export default {
                 arr[3] = true
               }
             }
+            // if (this.moduleName === 'scanfw' || this.moduleName === 'scanbq') {
+            //   let reg = new RegExp('[\\u4E00-\\u9FFF]+', 'g')
+            //   let tempNum = 0
+            //   for (let i in arr[0]) {
+            //     if (reg.test(arr[0][i])) {
+            //       tempNum += 14
+            //     } else {
+            //       tempNum += 8.5
+            //     }
+            //   }
+            //   if (tempNum > tr1) {
+            //     tr1 = tempNum
+            //   }
+            //   if (arr[0].length > tr2) {
+            //     alert(arr[1])
+            //     tr2 = arr[0].length
+            //   }
+            //   // this.tr1 = tr1 * 8.5
+            //   // this.tr2 = tr2 * 8.5
+            //   this.$store.commit('tr1', (tr1))
+            //   this.$store.commit('tr2', (tr2 * 8.5))
+            // }
             this.productScanList.push(arr)
           }
           this.setProductScanList(this.productScanList)
@@ -290,6 +322,7 @@ export default {
       } else {
         // 扫防伪码
         if (!temp) {
+          console.log('0011')
           let arr = ['', data, '']
           this.productScanList.push(arr)
           this.setProductScanList(this.productScanList)
@@ -353,6 +386,8 @@ export default {
           trArr.push(temp)
         }
       }
+      console.log('8989')
+      console.log(trArr)
       this.setOrders(trArr)
       // 将获取的数据保存到本地变量
       this.orders = trArr
@@ -539,10 +574,15 @@ export default {
           this.moduleName = 'scanfw'
           // 设置底部模块分类
           this.setbottomBtnName('scanfw')
+          this.btnName = '打印出货标签'
         } else {
           this.moduleName = this.bottomBtnName
+          if (this.bottomBtnName === 'scanfw') {
+            this.btnName = '打印出货标签'
+          } else {
+            this.btnName = '打印入库单'
+          }
         }
-        this.btnName = '打印出货标签'
       }
       if (this.bottomBtnName === 'salestockup' || this.bottomBtnName === 'scanfw') {
           this.bottomBtn = true
@@ -573,13 +613,16 @@ export default {
 @import "../../assets/sass/variable.scss";
 @import "../../assets/css/common.css";
 .contain{
+  width: 100%;
   position: absolute;
   top: 0;
   left: 0;
-  padding-top: 4.4rem;
+  padding-top: 3.35rem;
   padding-bottom: 1.5rem;
   box-sizing: border-box;
-  overflow-x: hidden;
+  overflow: scroll;
+  // overflow-x: hidden;
+  // overflow-y: hidden;
   z-index: -1;
 }
 .searchOrder{
