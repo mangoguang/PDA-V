@@ -192,6 +192,7 @@ Vue.use(Vuex)
 @import "./../assets/css/common.css";
 
 .table-tr-sn{
+  width: 100%;
   label{
     position: absolute;
     display: block;
@@ -229,7 +230,7 @@ Vue.use(Vuex)
       border-bottom: none;
     }
     li{
-      // width: 2.8125rem;
+      width: 2.8125rem;
       height: $f30;
       line-height: $f30;
       font-size: $textSize;
@@ -261,9 +262,6 @@ Vue.use(Vuex)
       width: 0;
     }
     li:first-child{
-      width: $f50;
-    }
-    li:last-child{
       width: $f50;
     }
     li.paddingLfet20{

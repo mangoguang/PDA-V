@@ -102,12 +102,12 @@ Vue.use(Vuex)
 @import "./../assets/css/common.css";
 
 .table-tr-op{
-  // width: 500px;
+  width: 100%;
   li{
     float: left;
   }   
   &>li{
-    // width: 100%;
+    width: 100%;
     border-bottom: 1px solid $borderIn;
     li{
       width: 2.8125rem;
@@ -119,7 +119,7 @@ Vue.use(Vuex)
       position: relative;
       padding: 0 $f4;
       box-sizing: border-box;
-      // overflow-y: hidden;
+      overflow-y: hidden;
     }
     li:nth-child(2),li:nth-child(4){
       overflow-y: hidden;
