@@ -253,7 +253,11 @@ export default {
     },
     sureIn() {
       if (this.hadscanCount < this.scanCount) {
-        this.setsureBoxShow(true)
+        if (this.urlParams === 'product') {
+          alert('扫描数量少于应扫数量，不能入库！')
+        } else {
+          this.setsureBoxShow(true)
+        }
       } else {
         this.setSureIn()
         this.$store.commit('checkBoxShow', false)

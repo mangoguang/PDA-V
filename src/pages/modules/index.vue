@@ -428,24 +428,26 @@ export default {
       return arr
     },
     setIn() {
-      let _this = this
-      let temp = ''
-      let url = ''
-      let params = ''
+      let [_this, temp, url, params, departmentMsg, myDate] = [this, '', '', '', eval('(' + localStorage.getItem('departmentMsg') + ')'), new Date()]
       // let canSetIn = true
       if (this.bottomBtnName === 'scanbq') {
-        console.log(this.snArr())
         for (let i in this.snArr()) {
           temp += 'Item:{ZTIAOM:"' + this.snArr()[i] + '"},'
         }
         temp = temp.substr(0, temp.length - 1)
         url = path.sap + 'product/generateorder'
+        function turnDate(num) {
+          if (num < 10) {
+            num = '0' + num
+          }
+          return num
+        }
         params = '{Header:{' +
-          'ZBMDH: 11,' +
-          'ZBMMC: 11,' +
-          'ZRKYY: 11,' +
-          'ZRKEQ: 11,' +
-          'ZRKSJ: 11,' +
+          'ZBMDH: "' + departmentMsg.id + '",' +
+          'ZBMMC: "' + departmentMsg.name + '",' +
+          'ZRKYY: "' + this.account + '",' +
+          'ZRKEQ: "' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()) + '",' +
+          'ZRKSJ: "' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()) + '",' +
           // 'ZIP: "' + this.printVal + '",' +
           'ZIP: "' + localStorage.getItem('printVal') + '",' +
           temp +

@@ -60,7 +60,8 @@ Vue.use(Vuex)
     data() {
       return {
         canDel: false,
-        urlParams: this.$route.query.name
+        urlParams: this.$route.query.name,
+        ZDDLX: this.$route.query.ZDDLX
       }
     },
     computed: {
@@ -95,7 +96,7 @@ Vue.use(Vuex)
         if (this.urlParams === 'salestockup' || this.urlParams === 'salesoutput' || this.urlParams === 'salesreturn') {
           params = {
             VBELN: BUS_NO,
-            POSNR: 10,
+            POSNR: ITEM_NO,
             ZTIAOM: SN
           }
         // 采购入库模块
@@ -103,7 +104,7 @@ Vue.use(Vuex)
           params = {
             BUS_NO: BUS_NO,
             ITEM_NO: ITEM_NO,
-            ZDDLX: 1,
+            ZDDLX: this.ZDDLX,
             ZTIAOM: SN
           }
         } else if (this.urlParams === 'allot' || this.urlParams === 'allotinbound') {

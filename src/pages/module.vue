@@ -8,6 +8,7 @@
     <ul class="clearfix moduleBox" :style="{height: (height - 73)+'px'}">
       <li 
       v-for="(module,index) in modules" 
+      :key="module.coding"
       v-if="module.jurisdiction === 'true'"
       @click="toModule(module.coding, module.jurisdiction, module.name)" 
       :style="{
@@ -18,6 +19,7 @@
       </li>
       <li 
       v-for="(module,index) in modules" 
+      :key="module.coding"
       v-if="module.jurisdiction === 'false'"
       @click="toModule(module.coding, module.jurisdiction, module.name)" 
       :style="{
@@ -84,6 +86,8 @@ export default {
         _this.loadingShow(false)
         if (data.status) {
           console.log(data)
+          let departmentMsg = '{name: "' + data.depname + '", id: "' + data.depid + '"}'
+          localStorage.setItem('departmentMsg', departmentMsg)
           _this.modules = data.permissions
           // for (let i in _this.modules) {
           //   if (_this.modules[i].coding === 'salesReturn') {
