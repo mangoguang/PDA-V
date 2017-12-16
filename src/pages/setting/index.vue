@@ -24,7 +24,7 @@
         <span></span>
       </li>
       <li>
-        <label for="fwPrintIP">打印机IP</label>
+        <label for="fwPrintIP">生产线</label>
         <input id="fwPrintIP" type="text" :value="fwPrintIPVal">
         <span class="close"></span>
       </li>
@@ -35,6 +35,13 @@
         <label for="djPrintIP">打印机IP</label>
         <input id="djPrintIP" type="text" value="192.168.1.32">
         <span class="close"></span>
+      </li>
+      <li>
+        <label @click="changeLine" for="line">仓库/生产线</label>
+        <select id="line" v-model="line" @change="changeLine">
+          <option v-for="obj in lineList" :value="1232">{{ obj }}</option>
+        </select>
+        <span></span>
       </li>
       <li>
         <h2 :style="{'background': 'url(./static/images/skinImg/' + skinCol + '/style.png) no-repeat', 'background-size': 'auto $f14', 'background-position': '0 0.1rem' }">风格选择</h2>
@@ -92,6 +99,8 @@ export default {
       printPlanSelNum: '',
       printList: [], // 标签打印机
       printVal: localStorage.getItem('printVal'),
+      line: '',
+      lineList: [],
       fwPrintIPVal: '', // 标签打印机ip
       djPrintIPVal: '192.168.1.50', // 单据打印机ip
       typeList: ['skinA', 'skinB', 'skinC'], // 风格选择
@@ -219,6 +228,22 @@ export default {
         }
       }
       localStorage.setItem('printPlanMsg', '{ZBQMC: "' + this.printPlanSel + '", ZBQXH: "' + this.printPlanSelNum + '"}')
+    },
+    changeLine() {
+      let _this = this
+      let url = path.oa + '/PDAPrinterF.jsp'
+      let obj = this.getAccountMsg()
+      let params = {
+        account: obj.account,
+        password: md5(obj.password).toLocaleUpperCase()
+      }
+      _this.putInShow = true
+      V.post(url, params).then(function(data) {
+        _this.putInShow = false
+      }).catch((res) => {
+        alert('请求超时！')
+        _this.loadingShow(false)
+      })
     },
     // 将打印机名称缓存到本地
     changePrint() {
