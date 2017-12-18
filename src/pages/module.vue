@@ -85,9 +85,6 @@ export default {
       V.post(url, params).then(function(data) {
         _this.loadingShow(false)
         if (data.status) {
-          console.log(data)
-          let departmentMsg = '{name: "' + data.depname + '", id: "' + data.depid + '"}'
-          localStorage.setItem('departmentMsg', departmentMsg)
           _this.modules = data.permissions
           // for (let i in _this.modules) {
           //   if (_this.modules[i].coding === 'salesReturn') {

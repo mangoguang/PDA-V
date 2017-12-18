@@ -719,21 +719,30 @@ export default {
     },
     verify3() {
       let temp = this.snArr
+      // 用于条码不存在是，提示信息
+      let alertMsg = false
       for (let i in temp) {
         if (temp[i].ZDEZTMA === '') {
           if (temp[i].ZTIAOM === this.inputVal) {
+            alertMsg = true
             temp[i].status = true
             this.inputVal = ''
           }
         } else {
           if (temp[i].ZDEZTMA === this.inputVal) {
+            alertMsg = true
             temp[i].status = true
             this.inputVal = ''
           }
         }
       }
-      this.setSNArr(temp)
-      this.turnArr(temp)
+      if (alertMsg) {
+        this.setSNArr(temp)
+        this.turnArr(temp)
+      } else {
+        alert('条码不存在！')
+        this.inputVal = ''
+      }
     },
     // verifyUrl1为采购入库校验参数
     verifyUrl1 (arr, i) {

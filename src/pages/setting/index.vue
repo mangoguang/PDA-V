@@ -12,33 +12,42 @@
       <li>
         <label for="scanPlan">打印方案</label>
         <select id="scanPlan" v-model="printPlanSelNum" @change="changePrintPlan">
-          <option v-for="obj in printPlanList" :value="obj.ZBQXH">{{ obj.ZBQMC }}</option>
+          <option v-for="obj in printPlanList" :value="obj.ZBQXH" :key="obj.ZBQXH">{{ obj.ZBQMC }}</option>
+        </select>
+        <span></span>
+      </li>
+      <li>
+        <label for="department">部门</label>
+        <select id="department" v-model="departmentVal" @change="changeDepartment">
+          <option v-for="name in departmentList" :value="name" :key="name">{{ name }}</option>
+        </select>
+        <span></span>
+      </li>
+      <li>
+        <label for="line">生产线</label>
+        <select id="line" v-model="lineVal" @change="changeLine">
+          <option v-for="name in lineList" :value="name" :key="name">{{ name }}</option>
         </select>
         <span></span>
       </li>
       <li>
         <label for="print">打印机</label>
         <select id="print" v-model="printVal" @change="changePrint">
-          <option v-for="obj in printList" :value="obj.PRINT_NAME">{{ obj.PRINT_NAME }}</option>
+          <option v-for="obj in printList" :value="obj.PRINT_NAME" :key="obj.PRINT_NAME">{{ obj.PRINT_NAME }}</option>
         </select>
         <span></span>
-      </li>
-      <li>
-        <label for="fwPrintIP">生产线</label>
-        <input id="fwPrintIP" type="text" :value="fwPrintIPVal">
-        <span class="close"></span>
       </li>
       <li>
         <h2 :style="{'background': 'url(./static/images/skinImg/' + skinCol + '/print.png) no-repeat', 'background-size': 'auto $f14', 'background-position': '0 0.1rem' }">单据打印设置</h2>
       </li>
       <li>
-        <label for="djPrintIP">打印机IP</label>
+        <label for="djPrintIP">打印机</label>
         <input id="djPrintIP" type="text" value="192.168.1.32">
         <span class="close"></span>
       </li>
       <li>
-        <label @click="changeLine" for="line">仓库/生产线</label>
-        <select id="line" v-model="line" @change="changeLine">
+        <label for="line">仓库/生产线</label>
+        <select id="line" v-model="lineVal" @change="changeLine">
           <option v-for="obj in lineList" :value="1232">{{ obj }}</option>
         </select>
         <span></span>
@@ -84,7 +93,7 @@ import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import HeadComponent from '../../components/header'
 import md5 from 'js-md5'
-import {path, V, getFactorySel, getPrintPlanMsg} from '../../js/variable.js'
+import {path, V, getFactorySel, getPrintPlanMsg, ajax} from '../../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -99,7 +108,9 @@ export default {
       printPlanSelNum: '',
       printList: [], // 标签打印机
       printVal: localStorage.getItem('printVal'),
-      line: '',
+      departmentVal: localStorage.getItem('departmentVal'),
+      departmentList: [],
+      lineVal: localStorage.getItem('lineVal'),
       lineList: [],
       fwPrintIPVal: '', // 标签打印机ip
       djPrintIPVal: '192.168.1.50', // 单据打印机ip
@@ -145,17 +156,14 @@ export default {
         password: md5(obj.password).toLocaleUpperCase()
       }
       _this.loadingShow(true)
-      V.post(url, params).then(function(data) {
-        console.log(1231)
-        console.log(data)
-        _this.loadingShow(false)
+      ajax('POST', url, params).then((data) => {
         if (data.status) {
           _this.factoryList = data.factorys
           _this.setWarehouse()
         }
-      }).catch((res) => {
-        alert('您的网络有问题。')
-        _this.loadingShow(false)
+      }).catch(() => {
+        alert('请求超时！')
+          _this.loadingShow(false)
       })
     },
     setWarehouse: function() {
@@ -171,7 +179,7 @@ export default {
       }
 
       _this.loadingShow(true)
-      V.post(url, params).then(function(data) {
+      ajax('POST', url, params).then((data) => {
         _this.loadingShow(false)
         _this.warehouse = data.warehouse[0].name
         localStorage.setItem('factoryMsg', '{factory: "' + _this.factory + '",warehouse: "' + _this.warehouse + '", factoryNum: "' + _this.factoryNum + '", warehouseNum: "' + _this.warehouseNum + '"}')
@@ -179,44 +187,45 @@ export default {
         if (data.status) {
           _this.warehouseList = data.warehouse
         }
-      }).catch((res) => {
-        alert('您的网络有问题。')
-        _this.loadingShow(false)
+      }).catch(() => {
+        alert('请求超时！')
+          _this.loadingShow(false)
       })
     },
     getPrint() {
       let _this = this
       let url = path.sap + 'getprint'
       _this.putInShow = true
-      V.get(url).then(function(data) {
+      ajax('GET', url, null).then((data) => {
         _this.putInShow = false
-        data = JSON.parse(data.responseText).MT_GetPrint_Resp.Item
+        data = data.MT_GetPrint_Resp.Item
         _this.printList = data
         if (!_this.printVal && data.length > 0) {
           _this.printVal = data[0].PRINT_NAME
           localStorage.setItem('printVal', data[0].PRINT_NAME)
         }
-        _this.getFactory()
+      }).catch(() => {
+        alert('请求超时！')
+          _this.loadingShow(false)
       })
     },
     getModule() {
       let _this = this
       let url = path.sap + 'securitycode/getmodule'
       _this.putInShow = true
-      V.get(url).then(function(data) {
+      ajax('GET', url, null).then((data) => {
         _this.putInShow = false
-        data = JSON.parse(data.responseText).MT_SecurityCode_GetModule_Resp.Item
+        console.log('pppppoooo', data)
+        data = data.MT_SecurityCode_GetModule_Resp.Item
         _this.printPlanList = data
         let temp = localStorage.getItem('printPlanMsg')
         if (!temp) {
           _this.printPlanSelNum = data[0].ZBQXH
           localStorage.setItem('printPlanMsg', JSON.stringify(data[0]))
         }
-        // 获取打印机列表
-        _this.getPrint()
-      }).catch((res) => {
+      }).catch(() => {
         alert('请求超时！')
-        _this.loadingShow(false)
+          _this.loadingShow(false)
       })
     },
     // 将打印方案缓存到本地
@@ -229,7 +238,7 @@ export default {
       }
       localStorage.setItem('printPlanMsg', '{ZBQMC: "' + this.printPlanSel + '", ZBQXH: "' + this.printPlanSelNum + '"}')
     },
-    changeLine() {
+    getDepartment() {
       let _this = this
       let url = path.oa + '/PDAPrinterF.jsp'
       let obj = this.getAccountMsg()
@@ -238,12 +247,47 @@ export default {
         password: md5(obj.password).toLocaleUpperCase()
       }
       _this.putInShow = true
-      V.post(url, params).then(function(data) {
+      ajax('POST', url, params).then((data) => {
+        data = data.factorys
         _this.putInShow = false
-      }).catch((res) => {
+        _this.departmentList = data.map((param) => param.factorycode)
+        if (!_this.departmentVal && data.length > 0) {
+          _this.departmentVal = data[0].factorycode
+          localStorage.setItem('departmentVal', data[0].factorycode)
+        }
+      }).catch(() => {
         alert('请求超时！')
-        _this.loadingShow(false)
+          _this.loadingShow(false)
       })
+    },
+    changeDepartment() {
+      localStorage.setItem('departmentVal', this.departmentVal)
+    },
+    getLine() {
+      let _this = this
+      let url = path.oa + '/PDAPrinterH.jsp'
+      let obj = this.getAccountMsg()
+      let params = {
+        account: obj.account,
+        password: md5(obj.password).toLocaleUpperCase(),
+        factory: this.departmentVal.substr(0, 3)
+      }
+      _this.putInShow = true
+      ajax('POST', url, params).then((data) => {
+        data = data.warehouse
+        _this.putInShow = false
+        _this.lineList = data.map((param) => param.housecode)
+        if (!_this.lineVal && data.length > 0) {
+          _this.lineVal = data[0].housecode
+          localStorage.setItem('lineVal', data[0].housecode)
+        }
+      }).catch(() => {
+        alert('请求超时！')
+          _this.loadingShow(false)
+      })
+    },
+    changeLine() {
+      localStorage.setItem('lineVal', this.lineVal)
     },
     // 将打印机名称缓存到本地
     changePrint() {
@@ -289,6 +333,12 @@ export default {
     this.setSkinCol(localStorage.getItem('skinCol'))
     // 获取防伪打印模板
     this.getModule()
+    // 获取生产线列表
+    this.getLine()
+    // 获取打印机列表
+    this.getPrint()
+    this.getFactory()
+    this.getDepartment()
   },
   mounted() {
 
