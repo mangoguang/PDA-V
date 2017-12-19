@@ -33,7 +33,7 @@
       <li>
         <label for="print">打印机</label>
         <select id="print" v-model="printVal" @change="changePrint">
-          <option v-for="obj in printList" :value="obj.PRINT_NAME" :key="obj.PRINT_NAME">{{ obj.PRINT_NAME }}</option>
+          <option v-for="obj in printList" :value="obj.printercode" :key="obj.printercode">{{ obj.printercode }}</option>
         </select>
         <span></span>
       </li>
@@ -192,23 +192,6 @@ export default {
           _this.loadingShow(false)
       })
     },
-    getPrint() {
-      let _this = this
-      let url = path.sap + 'getprint'
-      _this.putInShow = true
-      ajax('GET', url, null).then((data) => {
-        _this.putInShow = false
-        data = data.MT_GetPrint_Resp.Item
-        _this.printList = data
-        if (!_this.printVal && data.length > 0) {
-          _this.printVal = data[0].PRINT_NAME
-          localStorage.setItem('printVal', data[0].PRINT_NAME)
-        }
-      }).catch(() => {
-        alert('请求超时！')
-          _this.loadingShow(false)
-      })
-    },
     getModule() {
       let _this = this
       let url = path.sap + 'securitycode/getmodule'
@@ -270,7 +253,7 @@ export default {
       let params = {
         account: obj.account,
         password: md5(obj.password).toLocaleUpperCase(),
-        factory: this.departmentVal.substr(0, 3)
+        factory: this.departmentVal
       }
       _this.putInShow = true
       ajax('POST', url, params).then((data) => {
@@ -288,6 +271,31 @@ export default {
     },
     changeLine() {
       localStorage.setItem('lineVal', this.lineVal)
+    },
+    getPrint() {
+      let _this = this
+      let url = path.oa + '/PDAPrinterR.jsp'
+      let obj = this.getAccountMsg()
+      let params = {
+        account: obj.account,
+        password: md5(obj.password).toLocaleUpperCase(),
+        factory: this.departmentVal,
+        house: this.lineVal
+      }
+      _this.putInShow = true
+      ajax('POST', url, params).then((data) => {
+        _this.putInShow = false
+        console.log('88888', data)
+        data = data.printers
+        _this.printList = data
+        if (!_this.printVal && data.length > 0) {
+          _this.printVal = data[0].printercode
+          localStorage.setItem('printVal', data[0].printercode)
+        }
+      }).catch(() => {
+        alert('请求超时！')
+          _this.loadingShow(false)
+      })
     },
     // 将打印机名称缓存到本地
     changePrint() {

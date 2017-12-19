@@ -24,7 +24,7 @@
               {{index+1}}
             </li>
             <li class="li2"><p>{{sn.arr[0]}}</p></li>
-            <li class="li3" @click="snDetailUrl(sn.arr[1], sn.arr[3], sn.arr[6], false)"><p>{{sn.arr[1]}}</p>></li>
+            <li class="li3" @click="snDetailUrl(sn.arr[1], sn.arr[3], sn.arr[6], false)"><input type="text" :value="sn.arr[1]" disabled="disabled"></li>
             <li class="li4"><p v-if="sn.arr[5]">匹配</p></li>
           </ul>
           <!-- 存在子条码 -->
@@ -37,10 +37,10 @@
             </li>
             <li class="li2" v-else></li>
 
-            <li class="li3" v-if="index1 == 0"><p>{{sn.arr[0]}}</p></li>
+            <li class="li3" v-if="index1 == 0"><input type="text" :value="sn.arr[0]" disabled="disabled"></li>
             <li v-else></li>
 
-            <li  class="li4" @click="snDetailUrl(sn.arr[1][index1], sn.arr[3], sn.arr[6], true)"><p>{{sn.arr[1][i-1]}}</p>></li>
+            <li  class="li4" @click="snDetailUrl(sn.arr[1][index1], sn.arr[3], sn.arr[6], true)"><input type="text" :value="sn.arr[1][i-1]" disabled="disabled"></li>
             <li class="li5"><p v-if="sn.arr[2][index1]">匹配</p></li>
           </ul>
         </div>
