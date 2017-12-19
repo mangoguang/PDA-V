@@ -212,6 +212,9 @@ export default {
           _this.printPlanSelNum = data[0].ZBQXH
           localStorage.setItem('printPlanMsg', JSON.stringify(data[0]))
         }
+        // 获取生产线列表
+        _this.getLine()
+        _this.getLine1()
       }).catch(() => {
         alert('请求超时！')
           _this.loadingShow(false)
@@ -270,6 +273,9 @@ export default {
           _this.lineVal = data[0].housecode
           localStorage.setItem('lineVal', data[0].housecode)
         }
+        // 获取打印机列表
+        _this.getPrint()
+        _this.getPrint1()
       }).catch(() => {
         alert('请求超时！')
           _this.loadingShow(false)
@@ -429,12 +435,6 @@ export default {
     this.setSkinCol(localStorage.getItem('skinCol'))
     // 获取防伪打印模板
     this.getModule()
-    // 获取生产线列表
-    this.getLine()
-    this.getLine1()
-    // 获取打印机列表
-    this.getPrint()
-    this.getPrint1()
     this.getFactory()
     this.getDepartment()
   },
