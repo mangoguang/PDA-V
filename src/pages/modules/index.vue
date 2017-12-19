@@ -430,6 +430,7 @@ export default {
     setIn() {
       let [_this, temp, url, params, departmentMsg, myDate] = [this, '', '', '', eval('(' + localStorage.getItem('departmentMsg') + ')'), new Date()]
       let ZIP = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal') + '_' + localStorage.getItem('printVal')
+      let ZIP1 = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal1') + '_' + localStorage.getItem('printVal1')
       // let canSetIn = true
       if (this.bottomBtnName === 'scanbq') {
         for (let i in this.snArr()) {
@@ -449,7 +450,7 @@ export default {
           'ZRKYY: "' + this.account + '",' +
           'ZRKEQ: "' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()) + '",' +
           'ZRKSJ: "' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()) + '",' +
-          'ZIP: "' + ZIP + '",' +
+          'ZIP: "' + ZIP1 + '",' +
           // 'ZIP: "' + localStorage.getItem('printVal') + '",' +
           temp +
         '}}'
@@ -472,7 +473,7 @@ export default {
         for (let i in snArr) {
           arr[i] = 'Item: {' +
             'ZFWMA: "' + snArr[i] + '",' +
-            'ZIP: "' + this.printVal + '",' +
+            'ZIP: "' + ZIP + '",' +
             'ZBQXH: "' + this.printPlanSelNum + '",' +
             'ZGH: "' + this.account + '"' +
           '}'

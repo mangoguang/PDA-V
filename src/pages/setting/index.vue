@@ -41,14 +41,16 @@
         <h2 :style="{'background': 'url(./static/images/skinImg/' + skinCol + '/print.png) no-repeat', 'background-size': 'auto $f14', 'background-position': '0 0.1rem' }">单据打印设置</h2>
       </li>
       <li>
-        <label for="djPrintIP">打印机</label>
-        <input id="djPrintIP" type="text" value="192.168.1.32">
-        <span class="close"></span>
+        <label for="line1">仓库/生产线</label>
+        <select id="line1" v-model="lineVal1" @change="changeLine1">
+          <option v-for="name in lineList1" :value="name" :key="name">{{ name }}</option>
+        </select>
+        <span></span>
       </li>
       <li>
-        <label for="line">仓库/生产线</label>
-        <select id="line" v-model="lineVal" @change="changeLine">
-          <option v-for="obj in lineList" :value="1232">{{ obj }}</option>
+        <label for="print1">打印机</label>
+        <select id="print1" v-model="printVal1" @change="changePrint1">
+          <option v-for="obj in printList1" :value="obj.printercode" :key="obj.printercode">{{ obj.printercode }}</option>
         </select>
         <span></span>
       </li>
@@ -106,12 +108,16 @@ export default {
       printPlanList: [], // 打印方案
       printPlanSel: '',
       printPlanSelNum: '',
-      printList: [], // 标签打印机
-      printVal: localStorage.getItem('printVal'),
-      departmentVal: localStorage.getItem('departmentVal'),
-      departmentList: [],
       lineVal: localStorage.getItem('lineVal'),
       lineList: [],
+      lineVal1: localStorage.getItem('lineVal1'),
+      lineList1: [],
+      printVal: localStorage.getItem('printVal'),
+      printList: [], // 标签打印机
+      printVal1: localStorage.getItem('printVal1'),
+      printList1: [], // 标签打印机
+      departmentVal: localStorage.getItem('departmentVal'),
+      departmentList: [],
       fwPrintIPVal: '', // 标签打印机ip
       djPrintIPVal: '192.168.1.50', // 单据打印机ip
       typeList: ['skinA', 'skinB', 'skinC'], // 风格选择
@@ -269,8 +275,62 @@ export default {
           _this.loadingShow(false)
       })
     },
+    // getLine(lineVal, lineList, setItemName) {
+    //   let _this = this
+    //   let url = path.oa + '/PDAPrinterH.jsp'
+    //   let obj = this.getAccountMsg()
+    //   let params = {
+    //     account: obj.account,
+    //     password: md5(obj.password).toLocaleUpperCase(),
+    //     factory: this.departmentVal
+    //   }
+    //   _this.putInShow = true
+    //   ajax('POST', url, params).then((data) => {
+    //     data = data.warehouse
+    //     _this.putInShow = false
+    //     lineList = data.map((param) => param.housecode)
+    //     console.log('jjjj', lineList)
+    //     console.log(_this.lineList)
+    //     console.log('eee', lineVal, data.length)
+    //     if (!lineVal && data.length > 0) {
+    //       console.log(lineVal)
+    //       lineVal = data[0].housecode
+    //       localStorage.setItem('' + setItemName, data[0].housecode)
+    //       console.log(lineVal)
+    //     }
+    //   }).catch(() => {
+    //     alert('请求超时！')
+    //       _this.loadingShow(false)
+    //   })
+    // },
     changeLine() {
       localStorage.setItem('lineVal', this.lineVal)
+    },
+    getLine1() {
+      let _this = this
+      let url = path.oa + '/PDAPrinterH.jsp'
+      let obj = this.getAccountMsg()
+      let params = {
+        account: obj.account,
+        password: md5(obj.password).toLocaleUpperCase(),
+        factory: this.departmentVal
+      }
+      _this.putInShow = true
+      ajax('POST', url, params).then((data) => {
+        data = data.warehouse
+        _this.putInShow = false
+        _this.lineList1 = data.map((param) => param.housecode)
+        if (!_this.lineVal1 && data.length > 0) {
+          _this.lineVal1 = data[0].housecode
+          localStorage.setItem('lineVal1', data[0].housecode)
+        }
+      }).catch(() => {
+        alert('请求超时！')
+          _this.loadingShow(false)
+      })
+    },
+    changeLine1() {
+      localStorage.setItem('lineVal1', this.lineVal1)
     },
     getPrint() {
       let _this = this
@@ -300,6 +360,34 @@ export default {
     // 将打印机名称缓存到本地
     changePrint() {
       localStorage.setItem('printVal', this.printVal)
+    },
+    getPrint1() {
+      let _this = this
+      let url = path.oa + '/PDAPrinterR.jsp'
+      let obj = this.getAccountMsg()
+      let params = {
+        account: obj.account,
+        password: md5(obj.password).toLocaleUpperCase(),
+        factory: this.departmentVal,
+        house: this.lineVal1
+      }
+      _this.putInShow = true
+      ajax('POST', url, params).then((data) => {
+        _this.putInShow = false
+        data = data.printers
+        _this.printList1 = data
+        if (!_this.printVal1 && data.length > 0) {
+          _this.printVal1 = data[0].printercode
+          localStorage.setItem('printVal1', data[0].printercode)
+        }
+      }).catch(() => {
+        alert('请求超时！')
+          _this.loadingShow(false)
+      })
+    },
+    // 将打印机名称缓存到本地
+    changePrint1() {
+      localStorage.setItem('printVal1', this.printVal1)
     },
     // 将工厂信息缓存到本地
     changeFactory(status) {
@@ -343,8 +431,10 @@ export default {
     this.getModule()
     // 获取生产线列表
     this.getLine()
+    this.getLine1()
     // 获取打印机列表
     this.getPrint()
+    this.getPrint1()
     this.getFactory()
     this.getDepartment()
   },
