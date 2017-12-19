@@ -86,6 +86,8 @@ export default {
         _this.loadingShow(false)
         if (data.status) {
           _this.modules = data.permissions
+          let departmentMsg = '{name: "' + data.depname + '", id: "' + data.depid + '"}'
+          localStorage.setItem('departmentMsg', departmentMsg)
           // for (let i in _this.modules) {
           //   if (_this.modules[i].coding === 'salesReturn') {
           //     _this.modules[i].coding = 'salesreturn'
