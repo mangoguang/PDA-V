@@ -20,9 +20,33 @@ export var router = new VueRouter({
     name: 'Module',
     component: resolve => require(['../pages/module'], resolve)
   }, {
-    path: '/production',
-    name: 'Production',
-    component: resolve => require(['../pages/production/index'], resolve)
+    path: '/purchase',
+    name: 'Purchase',
+    component: resolve => require(['../pages/purchase'], resolve)
+  }, {
+    path: '/purchase/:num',
+    name: 'PurchaseSN',
+    component: resolve => require(['../pages/purchase/child'], resolve)
+  }, {
+    path: '/allotIn',
+    name: 'allotIn',
+    component: resolve => require(['../pages/allotIn'], resolve)
+  }, {
+    path: '/allotIn/:num',
+    name: 'AllotInSN',
+    component: resolve => require(['../pages/allotIn/child'], resolve)
+  }, {
+    path: '/product',
+    name: 'Product',
+    component: resolve => require(['../pages/product'], resolve)
+  }, {
+    path: '/product/:num',
+    name: 'ProductSN',
+    component: resolve => require(['../pages/product/child'], resolve)
+  }, {
+    path: '/sales',
+    name: 'Sales',
+    component: resolve => require(['../pages/sales'], resolve)
   }, {
     path: '/modules/:module',
     name: 'Modules',

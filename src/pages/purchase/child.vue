@@ -1,15 +1,11 @@
 <!-- <keep-alive> -->
 <template>
-  <div class="modules">
+  <div class="purchaseChild">
     <div class="h25"></div>
     <div class="header">
       <HeadComponent>
-        <h1>调拨入库</h1>
+        <h1>采购入库</h1>
       </HeadComponent>
-      <SearchInput
-      :opListClone=opListClone
-      :placeholder="'采购入库'"
-      ></SearchInput>
     </div>
     <TableComponent :list=opList :tableHList=tableHList></TableComponent>
   </div>
@@ -23,16 +19,15 @@ import Vuex from 'vuex'
 // import {path, V, cloneObj, getFactorySel, getPrintPlanMsg} from '../../js/variable.js'
 import {path, V, getaccount, getFactorySel} from '../../js/variable.js'
 import HeadComponent from '../../components/header'
-import SearchInput from '../../components/common/search-input'
 import TableComponent from '../../components/common/table'
 // import TableTr from '../../components/table-tr-op'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
 export default {
-  name: 'Modules',
+  name: 'purchaseChild',
   // components: {HeadComponent, TableTr},
-  components: {HeadComponent, SearchInput, TableComponent},
+  components: {HeadComponent, TableComponent},
   data () {
     return {
       height: document.documentElement.clientHeight,
@@ -76,11 +71,11 @@ export default {
     getOrderList() {
       let _this = this
       // let temp = this.$route.params.module
-      let url = path.sap + 'allotinbound/getsite?WERKS=' + this.factoryNum
+      let url = path.sap + 'purchase' + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
       _this.loadingShow(true)
       V.get(url).then(function(data) {
         _this.loadingShow(false)
-        data = JSON.parse(data.responseText).MT_AllotInbound_GetSite_Resp.Item
+        data = JSON.parse(data.responseText).MT_Purchase_GetInCity_Resp.Item
         let temp = data.map((obj) => [obj.BUS_NO, obj.LGOBE])
         _this.setOpList(temp)
         _this.opListClone = temp
@@ -112,3 +107,9 @@ export default {
 }
 </script>
 
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="scss">
+@import "../../assets/sass/variable.scss";
+@import "../../assets/css/common.css";
+// 
+</style>

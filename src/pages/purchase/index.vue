@@ -4,7 +4,7 @@
     <div class="h25"></div>
     <div class="header">
       <HeadComponent>
-        <h1>调拨入库</h1>
+        <h1>采购入库</h1>
       </HeadComponent>
       <SearchInput
       :opListClone=opListClone
@@ -76,11 +76,11 @@ export default {
     getOrderList() {
       let _this = this
       // let temp = this.$route.params.module
-      let url = path.sap + 'allotinbound/getsite?WERKS=' + this.factoryNum
+      let url = path.sap + 'purchase' + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
       _this.loadingShow(true)
       V.get(url).then(function(data) {
         _this.loadingShow(false)
-        data = JSON.parse(data.responseText).MT_AllotInbound_GetSite_Resp.Item
+        data = JSON.parse(data.responseText).MT_Purchase_GetInCity_Resp.Item
         let temp = data.map((obj) => [obj.BUS_NO, obj.LGOBE])
         _this.setOpList(temp)
         _this.opListClone = temp

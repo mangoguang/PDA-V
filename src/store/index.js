@@ -41,7 +41,9 @@ const store = new Vuex.Store({
     alertMsg: '',
     sureBoxShow: false,
     tr1: 0,
-    tr2: 0
+    tr2: 0,
+    opList: [],
+    moduleNameEN: ''
   },
   mutations: {
     // 皮肤选择
@@ -91,7 +93,11 @@ const store = new Vuex.Store({
     // 入库，删除是弹框显示信息
     alertMsg: (state, x) => state.alertMsg = x,
     tr1: (state, x) => state.tr1 = x,
-    tr2: (state, x) => state.tr2 = x
+    tr2: (state, x) => state.tr2 = x,
+
+    // 模块一级页面
+    opList: (state, arr) => state.opList = arr,
+    moduleNameEN: (state, x) => state.moduleNameEN = x
   },
   actions: {
     incrementAsync({

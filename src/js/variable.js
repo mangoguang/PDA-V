@@ -135,6 +135,17 @@ function getPrintPlanMsg(_this) {
 	}
 }
 
+function getaccount(_this) {
+	// 获取本地存储账号信息
+	let accountMsg = localStorage.getItem('accountMsg')
+	if (accountMsg) {
+		let obj = eval('(' + accountMsg + ')')
+		_this.account = obj.account
+	} else {
+		console.log('没有本地存储')
+	}
+}
+
 function ajax (type, url, params) {
   let data = new Promise((resolve, reject) => {
     $.ajax({
@@ -155,4 +166,4 @@ function ajax (type, url, params) {
   return data
 }
 
-export { path, V, cloneObj, getFactorySel, getPrintPlanMsg, ajax }
+export { path, V, cloneObj, getFactorySel, getPrintPlanMsg, getaccount, ajax }

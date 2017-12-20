@@ -1,17 +1,22 @@
 <!-- <keep-alive> -->
 <template>
-  <div class="modules">
+  <div class="sales">
     <div class="h25"></div>
     <div class="header">
       <HeadComponent>
-        <h1>调拨入库</h1>
+        <h1>{{titNameCN}}</h1>
       </HeadComponent>
       <SearchInput
       :opListClone=opListClone
-      :placeholder="'采购入库'"
+      :placeholder=titNameCN
+      :moduleName=titNameEN
       ></SearchInput>
     </div>
     <TableComponent :list=opList :tableHList=tableHList></TableComponent>
+    <ul class="bottomBtn clearfix">
+      <li :class="{on: titNameEN === 'salestockup'}" @click="sales('salestockup')">销售备货</li>
+      <li :class="{on: titNameEN === 'salesoutput'}" @click="sales('salesoutput')">销售出库</li>
+    </ul>
   </div>
 </template>
 <!-- </keep-alive> --> 
@@ -30,7 +35,7 @@ Vue.use(VueRouter)
 Vue.use(Vuex)
 
 export default {
-  name: 'Modules',
+  name: 'Sales',
   // components: {HeadComponent, TableTr},
   components: {HeadComponent, SearchInput, TableComponent},
   data () {
@@ -39,22 +44,9 @@ export default {
       account: '',
       factoryNum: '',
       tableHList: ['序号', '单号', '归属仓库'],
-      opListClone: []
-      // orderArr: [],
-      // // 将获取的订单列表保存到本地
-      // orders: [],
-      // searchNum: '',
-      // focusStatus: true,
-      // titName: this.$route.query.moduleName,
-      // moduleName: this.$route.params.module,
-      // factoryNum: '',
-      // warehouse: '',
-      // warehouseNum: '',
-      // bottomBtn: true,
-      // btnName: '',
-      // printVal: localStorage.getItem('printVal'),
-      // account: '',
-      // printPlanSelNum: ''
+      opListClone: [],
+      titNameCN: '销售备货',
+      titNameEN: 'salestockup'
     }
   },
   computed: {
@@ -72,15 +64,34 @@ export default {
     setOpList(arr) {
       this.$store.commit('opList', arr)
     },
+    setModuleNameEN(x) {
+      this.$store.commit('moduleNameEN', x)
+    },
+    sales(str) {
+      alert(str)
+      this.titNameEN = str
+      this.setModuleNameEN(str)
+      if (str === 'salestockup') {
+        this.titNameCN = '销售备货'
+        this.getOrderList()
+      } else {
+        this.titNameCN = '销售出库'
+        this.getOrderList()
+      }
+    },
     // 从后台获取订单列表
     getOrderList() {
       let _this = this
       // let temp = this.$route.params.module
-      let url = path.sap + 'allotinbound/getsite?WERKS=' + this.factoryNum
+      let url = path.sap + this.titNameEN + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
       _this.loadingShow(true)
       V.get(url).then(function(data) {
         _this.loadingShow(false)
-        data = JSON.parse(data.responseText).MT_AllotInbound_GetSite_Resp.Item
+        if (_this.titNameEN === 'salestockup') {
+          data = JSON.parse(data.responseText).MT_Salestockup_GetInCity_Resp.Document
+        } else {
+          data = JSON.parse(data.responseText).MT_Salesoutput_GetInCity_Resp.Document
+        }
         let temp = data.map((obj) => [obj.BUS_NO, obj.LGOBE])
         _this.setOpList(temp)
         _this.opListClone = temp
@@ -108,7 +119,43 @@ export default {
   mounted() {
     // ajax获取订单列表
     this.getOrderList()
+    this.setModuleNameEN(this.titNameEN)
   }
 }
 </script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="scss">
+@import "../../assets/sass/variable.scss";
+@import "../../assets/css/common.css";
+
+.bottomBtn{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background: #fff;
+  li{
+    float: left;
+    height: $f40;
+    width: 5rem;
+    line-height: $f40;
+    text-align: center;
+    font-size: $btnSize
+  }
+}
+
+@each $skin, $col, $subCol, $strongCol, $btnBgCol, $btnBgSubCol in $skin-data {
+  .#{$skin} {
+    .bottomBtn{
+      li{
+        color: $btnBgSubCol;
+      }
+      li.on{
+        background: $col;
+        color: #fff;
+      }
+    }
+  }
+}
+</style>
 
