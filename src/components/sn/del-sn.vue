@@ -1,5 +1,5 @@
 <template>
-  <button @click="checkBoxShowFn(showCheckbox)" class="delBtn"></button>
+  <button v-show="delBtn" @click="setChekboxShow(chekboxShow)" class="delBtn"></button>
 </template>
 <script>
   export default {
@@ -10,13 +10,21 @@
         inputVal: ''
       }
     },
+    computed: {
+      delBtn() {
+        return this.$store.state.delBtn
+      },
+      chekboxShow() {
+        return this.$store.state.chekboxShow
+      }
+    },
     methods: {
-      clearInput() {
-        this.inputVal = ''
+      setChekboxShow(boole) {
+        this.$store.commit('chekboxShow', !boole)
       }
     },
     mounted() {
-
+      this.setChekboxShow(true)
     }
   }
 </script>

@@ -1,27 +1,31 @@
 <template>
   <tr @click="snDetail()">
-    <td>{{index + 1}}</td>
+    <td class="clearfix" :class="{on: chekboxShow}">
+      <label v-show="chekboxShow" :for= "'checkbox' + index" :class="{on: checkboxList[index]}">
+      </label>
+      <input v-show="false" type="checkbox" :id="'checkbox' + index" v-model="checkboxList[index]">
+      <span>{{index + 1}}</span>
+    </td>
     <td v-for="name in arr" :key="name"><p>{{name}}</p></td>
   </tr>
 </template>
 <script>
   export default {
     name: 'TableD',
-    props: ['index', 'arr'],
+    props: ['index', 'arr', 'chekboxShow', 'checkboxList'],
     data() {
       return {
 
       }
     },
     computed: {
-      // evenArr() {
-      //   return this.arr.filter((index) => {
-      //     return index = (this.arr.length - 1)
-      //   })
+      // chekboxShow() {
+      //   return this.$store.state.chekboxShow
       // }
     },
     methods: {
       snDetail() {
+
       }
     },
     mounted() {
@@ -46,6 +50,26 @@ tr{
   td{
     padding: 0 .2rem;
     white-space: nowrap;
+  }
+  td:first-child{
+    position: relative;
+  }
+  td.on{
+    padding-left: $f20;
+  }
+  label{
+    position: absolute;
+    display: inline-block;
+    top: .1875rem;
+    left: $f4;
+    width: $f14;
+    height: $f14;
+    border: 1px solid #b8b8b8;
+    border-radius: 3px;
+  }
+  label.on{
+    background: url(../../assets/img/purchase/6_choose.png) no-repeat;
+    background-size: 105% 105%;
   }
 }
 </style>

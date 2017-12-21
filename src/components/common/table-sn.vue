@@ -5,6 +5,8 @@
     v-for="(arr, index) in list" 
     :index=index 
     :arr=arr 
+    :chekboxShow=chekboxShow
+    :checkboxList=checkboxList
     :key="arr[0]"
     ></TableDSN>
   </table>
@@ -15,7 +17,7 @@ import TableDSN from './table-d-sn'
   export default {
     name: 'TableComponent',
     components: { TableH, TableDSN },
-    props: ['list', 'tableHList'],
+    props: ['list', 'tableHList', 'chekboxShow', 'checkboxList'],
     data() {
       return {
 

@@ -29,7 +29,6 @@ const store = new Vuex.Store({
     isTr3: true,
     isOP: true,
     snArr: [],
-    canDel: false,
     checkboxVal: [],
     errorMsg: '',
     ifFB: false,
@@ -42,7 +41,12 @@ const store = new Vuex.Store({
     sureBoxShow: false,
     tr1: 0,
     tr2: 0,
-    opList: []
+    // 模块一级页面
+    opList: [],
+    // sn页面
+    delBtn: true,
+    chekboxShow: false,
+    checkboxList: []
   },
   mutations: {
     // 皮肤选择
@@ -95,7 +99,14 @@ const store = new Vuex.Store({
     tr2: (state, x) => state.tr2 = x,
 
     // 模块一级页面
-    opList: (state, arr) => state.opList = arr
+    opList: (state, arr) => state.opList = arr,
+    // sn页面
+    // 控制删除sn条码按钮的显示与隐藏
+    delBtn: (state, x) => state.delBtn = x,
+    // 控制复选框的显示隐藏
+    chekboxShow: (state, x) => state.chekboxShow = x,
+    // 用于表示复选框是否选中
+    checkboxList: (state, x) => state.checkboxList = x
   },
   actions: {
     incrementAsync({

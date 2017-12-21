@@ -2,16 +2,26 @@
 <template>
   <div class="purchaseChild">
     <div class="h25"></div>
-    <div class="header">
+    <div class="headBox">
       <HeadComponent>
         <h1>采购入库</h1>
         <DelSNComponent></DelSNComponent>
       </HeadComponent>
-      <ScanInputComponent :num=BUS_NO></ScanInputComponent>
+      <!-- <ScanInputComponent :num=BUS_NO></ScanInputComponent> -->
+      <BtnListComponent></BtnListComponent>
     </div>
     <div class="table-box">
-      <TableSNComponent :list=opList :tableHList=tableHList></TableSNComponent>
+      <TableSNComponent 
+      :list=opList 
+      :tableHList=tableHList 
+      :chekboxShow=chekboxShow
+      :checkboxList=checkboxList
+      ></TableSNComponent>
     </div>
+    <DelCancelBtnComponent 
+    v-show="chekboxShow"
+    :checkboxList=checkboxList
+    ></DelCancelBtnComponent>
   </div>
 </template>
 <!-- </keep-alive> --> 
@@ -26,6 +36,8 @@ import HeadComponent from '../../components/header'
 import TableSNComponent from '../../components/common/table-sn'
 import ScanInputComponent from '../../components/sn/scan-input'
 import DelSNComponent from '../../components/sn/del-sn'
+import BtnListComponent from '../../components/sn/btn-list'
+import DelCancelBtnComponent from '../../components/sn/del-cancel-btn'
 // import TableTr from '../../components/table-tr-op'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -33,7 +45,7 @@ Vue.use(Vuex)
 export default {
   name: 'purchaseChild',
   // components: {HeadComponent, TableTr},
-  components: {HeadComponent, TableSNComponent, ScanInputComponent, DelSNComponent},
+  components: {HeadComponent, TableSNComponent, ScanInputComponent, DelSNComponent, BtnListComponent, DelCancelBtnComponent},
   data () {
     return {
       height: document.documentElement.clientHeight,
@@ -49,6 +61,13 @@ export default {
   computed: {
     opList() {
       return this.$store.state.opList
+    },
+    chekboxShow() {
+      return this.$store.state.chekboxShow
+    },
+    // 用于表示复选框是否选中
+    checkboxList() {
+      return this.$store.state.checkboxList
     }
     // productScanList() {
     //   return this.$store.state.productScanList
@@ -60,6 +79,9 @@ export default {
     },
     setOpList(arr) {
       this.$store.commit('opList', arr)
+    },
+    setCheckboxList(arr) {
+      this.$store.commit('checkboxList', arr)
     },
     // 从后台获取订单列表
     getOrderList() {
@@ -76,8 +98,10 @@ export default {
         _this.loadingShow(false)
         data = JSON.parse(data.responseText).MT_Purchase_GetSN_Resp.Header
         let temp = data.map((obj) => [obj.BUS_NO, obj.MATKL, obj.ZTIAOM])
+        let checkboxList = data.map(() => false)
         _this.setOpList(temp)
         _this.opListClone = temp
+        _this.setCheckboxList(checkboxList)
       }).catch((res) => {
         alert('请求超时！')
         _this.loadingShow(false)
@@ -114,5 +138,12 @@ export default {
 .table-box{
   width: 10rem;
   overflow: scroll;
+}
+@each $skin, $col, $subCol, $strongCol, $btnBgCol, $btnBgSubCol in $skin-data {
+  .#{$skin} {
+    .headBox{
+      background: $col;
+    }
+  }
 }
 </style>
