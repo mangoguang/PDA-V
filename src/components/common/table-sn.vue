@@ -1,20 +1,20 @@
 <template>
   <table border="1">
     <TableH :list=tableHList></TableH>
-    <TableD 
+    <TableDSN 
     v-for="(arr, index) in list" 
     :index=index 
     :arr=arr 
     :key="arr[0]"
-    ></TableD>
+    ></TableDSN>
   </table>
 </template>
 <script>
 import TableH from './table-h'
-import TableD from './table-d'
+import TableDSN from './table-d-sn'
   export default {
     name: 'TableComponent',
-    components: { TableH, TableD },
+    components: { TableH, TableDSN },
     props: ['list', 'tableHList'],
     data() {
       return {

@@ -42,8 +42,7 @@ const store = new Vuex.Store({
     sureBoxShow: false,
     tr1: 0,
     tr2: 0,
-    opList: [],
-    moduleNameEN: ''
+    opList: []
   },
   mutations: {
     // 皮肤选择
@@ -96,8 +95,7 @@ const store = new Vuex.Store({
     tr2: (state, x) => state.tr2 = x,
 
     // 模块一级页面
-    opList: (state, arr) => state.opList = arr,
-    moduleNameEN: (state, x) => state.moduleNameEN = x
+    opList: (state, arr) => state.opList = arr
   },
   actions: {
     incrementAsync({

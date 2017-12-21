@@ -40,21 +40,6 @@ export default {
       factoryNum: '',
       tableHList: ['序号', '单号', '归属仓库'],
       opListClone: []
-      // orderArr: [],
-      // // 将获取的订单列表保存到本地
-      // orders: [],
-      // searchNum: '',
-      // focusStatus: true,
-      // titName: this.$route.query.moduleName,
-      // moduleName: this.$route.params.module,
-      // factoryNum: '',
-      // warehouse: '',
-      // warehouseNum: '',
-      // bottomBtn: true,
-      // btnName: '',
-      // printVal: localStorage.getItem('printVal'),
-      // account: '',
-      // printPlanSelNum: ''
     }
   },
   computed: {
@@ -81,7 +66,7 @@ export default {
       V.get(url).then(function(data) {
         _this.loadingShow(false)
         data = JSON.parse(data.responseText).MT_Purchase_GetInCity_Resp.Item
-        let temp = data.map((obj) => [obj.BUS_NO, obj.LGOBE])
+        let temp = data.map((obj) => [obj.BUS_NO, obj.LGOBE, obj.ZDDLX])
         _this.setOpList(temp)
         _this.opListClone = temp
       }).catch((res) => {
@@ -108,7 +93,13 @@ export default {
   mounted() {
     // ajax获取订单列表
     this.getOrderList()
+    console.log(this.opList)
   }
 }
 </script>
+
+<style scoped lang="scss">
+@import "../../assets/sass/variable.scss";
+@import "../../assets/css/common.css";
+</style>
 

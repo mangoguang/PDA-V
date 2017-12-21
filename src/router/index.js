@@ -19,7 +19,9 @@ export var router = new VueRouter({
     path: '/module',
     name: 'Module',
     component: resolve => require(['../pages/module'], resolve)
-  }, {
+  },
+  // 模块路由
+  {
     path: '/purchase',
     name: 'Purchase',
     component: resolve => require(['../pages/purchase'], resolve)

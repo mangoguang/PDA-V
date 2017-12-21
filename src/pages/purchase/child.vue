@@ -5,9 +5,13 @@
     <div class="header">
       <HeadComponent>
         <h1>采购入库</h1>
+        <DelSNComponent></DelSNComponent>
       </HeadComponent>
+      <ScanInputComponent :num=BUS_NO></ScanInputComponent>
     </div>
-    <TableComponent :list=opList :tableHList=tableHList></TableComponent>
+    <div class="table-box">
+      <TableSNComponent :list=opList :tableHList=tableHList></TableSNComponent>
+    </div>
   </div>
 </template>
 <!-- </keep-alive> --> 
@@ -19,7 +23,9 @@ import Vuex from 'vuex'
 // import {path, V, cloneObj, getFactorySel, getPrintPlanMsg} from '../../js/variable.js'
 import {path, V, getaccount, getFactorySel} from '../../js/variable.js'
 import HeadComponent from '../../components/header'
-import TableComponent from '../../components/common/table'
+import TableSNComponent from '../../components/common/table-sn'
+import ScanInputComponent from '../../components/sn/scan-input'
+import DelSNComponent from '../../components/sn/del-sn'
 // import TableTr from '../../components/table-tr-op'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -27,29 +33,17 @@ Vue.use(Vuex)
 export default {
   name: 'purchaseChild',
   // components: {HeadComponent, TableTr},
-  components: {HeadComponent, TableComponent},
+  components: {HeadComponent, TableSNComponent, ScanInputComponent, DelSNComponent},
   data () {
     return {
       height: document.documentElement.clientHeight,
       account: '',
+      tableHList: ['序号', '描述', '条码', '状态'],
+      opListClone: [],
+      BUS_NO: this.$route.params.num,
       factoryNum: '',
-      tableHList: ['序号', '单号', '归属仓库'],
-      opListClone: []
-      // orderArr: [],
-      // // 将获取的订单列表保存到本地
-      // orders: [],
-      // searchNum: '',
-      // focusStatus: true,
-      // titName: this.$route.query.moduleName,
-      // moduleName: this.$route.params.module,
-      // factoryNum: '',
-      // warehouse: '',
-      // warehouseNum: '',
-      // bottomBtn: true,
-      // btnName: '',
-      // printVal: localStorage.getItem('printVal'),
-      // account: '',
-      // printPlanSelNum: ''
+      warehouseNum: '',
+      ZDDLX: this.$route.query.ZDDLX
     }
   },
   computed: {
@@ -70,13 +64,18 @@ export default {
     // 从后台获取订单列表
     getOrderList() {
       let _this = this
-      // let temp = this.$route.params.module
-      let url = path.sap + 'purchase' + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
+      let params = {
+        BUS_NO: this.BUS_NO,
+        ZDDLX: this.ZDDLX,
+        WERKS: this.factoryNum,
+        LGORT: this.warehouseNum
+      }
+      let url = path.sap + 'purchase/getsn'
       _this.loadingShow(true)
-      V.get(url).then(function(data) {
+      V.get(url, params).then(function(data) {
         _this.loadingShow(false)
-        data = JSON.parse(data.responseText).MT_Purchase_GetInCity_Resp.Item
-        let temp = data.map((obj) => [obj.BUS_NO, obj.LGOBE])
+        data = JSON.parse(data.responseText).MT_Purchase_GetSN_Resp.Header
+        let temp = data.map((obj) => [obj.BUS_NO, obj.MATKL, obj.ZTIAOM])
         _this.setOpList(temp)
         _this.opListClone = temp
       }).catch((res) => {
@@ -111,5 +110,9 @@ export default {
 <style scoped lang="scss">
 @import "../../assets/sass/variable.scss";
 @import "../../assets/css/common.css";
-// 
+
+.table-box{
+  width: 10rem;
+  overflow: scroll;
+}
 </style>

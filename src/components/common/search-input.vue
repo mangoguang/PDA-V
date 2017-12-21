@@ -5,7 +5,6 @@
   </div>
 </template>
 <script>
-  import {cloneObj} from '../../js/variable.js'
   export default {
     name: 'searchInput',
     props: ['opListClone', 'placeholder'],
@@ -34,7 +33,7 @@
         if (str === '') {
           this.setOpList(this.opListClone)
         } else {
-          let orderArr = cloneObj(this.opListClone)
+          let orderArr = this.opListClone
           for (let i in orderArr) {
             let Str = orderArr[i][0].toString()
             if (Str.indexOf(str) !== -1) {

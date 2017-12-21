@@ -40,21 +40,6 @@ export default {
       factoryNum: '',
       tableHList: ['序号', '单号', '归属仓库'],
       opListClone: []
-      // orderArr: [],
-      // // 将获取的订单列表保存到本地
-      // orders: [],
-      // searchNum: '',
-      // focusStatus: true,
-      // titName: this.$route.query.moduleName,
-      // moduleName: this.$route.params.module,
-      // factoryNum: '',
-      // warehouse: '',
-      // warehouseNum: '',
-      // bottomBtn: true,
-      // btnName: '',
-      // printVal: localStorage.getItem('printVal'),
-      // account: '',
-      // printPlanSelNum: ''
     }
   },
   computed: {

@@ -12,7 +12,15 @@
       :moduleName=titNameEN
       ></SearchInput>
     </div>
-    <TableComponent :list=opList :tableHList=tableHList></TableComponent>
+    <table border="1">
+      <TableH :list=tableHList></TableH>
+      <TableD 
+      v-for="(arr, index) in opList" 
+      :index=index 
+      :arr=arr 
+      :key="arr[0]"
+      ></TableD>
+    </table>
     <ul class="bottomBtn clearfix">
       <li :class="{on: titNameEN === 'salestockup'}" @click="sales('salestockup')">销售备货</li>
       <li :class="{on: titNameEN === 'salesoutput'}" @click="sales('salesoutput')">销售出库</li>
@@ -29,15 +37,15 @@ import Vuex from 'vuex'
 import {path, V, getaccount, getFactorySel} from '../../js/variable.js'
 import HeadComponent from '../../components/header'
 import SearchInput from '../../components/common/search-input'
-import TableComponent from '../../components/common/table'
-// import TableTr from '../../components/table-tr-op'
+import TableH from '../../components/common/table-h'
+import TableD from '../../components/common/table-d'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
 export default {
   name: 'Sales',
   // components: {HeadComponent, TableTr},
-  components: {HeadComponent, SearchInput, TableComponent},
+  components: {HeadComponent, SearchInput, TableH, TableD},
   data () {
     return {
       height: document.documentElement.clientHeight,
@@ -64,13 +72,9 @@ export default {
     setOpList(arr) {
       this.$store.commit('opList', arr)
     },
-    setModuleNameEN(x) {
-      this.$store.commit('moduleNameEN', x)
-    },
     sales(str) {
       alert(str)
       this.titNameEN = str
-      this.setModuleNameEN(str)
       if (str === 'salestockup') {
         this.titNameCN = '销售备货'
         this.getOrderList()
@@ -119,7 +123,6 @@ export default {
   mounted() {
     // ajax获取订单列表
     this.getOrderList()
-    this.setModuleNameEN(this.titNameEN)
   }
 }
 </script>

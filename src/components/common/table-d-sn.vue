@@ -1,7 +1,7 @@
 <template>
-  <tr @click="toSNPages(arr[0], arr[arr.length-1])">
+  <tr @click="snDetail()">
     <td>{{index + 1}}</td>
-    <td v-for="name in evenArr" :key="name">{{name}}</td>
+    <td v-for="name in arr" :key="name"><p>{{name}}</p></td>
   </tr>
 </template>
 <script>
@@ -10,23 +10,22 @@
     props: ['index', 'arr'],
     data() {
       return {
-        name: this.$route.query.name
+
       }
     },
     computed: {
-      evenArr() {
-        return this.arr.filter((index) => {
-          return index > (this.arr.length - 1)
-        })
-      }
+      // evenArr() {
+      //   return this.arr.filter((index) => {
+      //     return index = (this.arr.length - 1)
+      //   })
+      // }
     },
     methods: {
-      toSNPages(num, ZDDLX) {
-        this.$router.push({ path: '/' + this.name + '/' + num + '?ZDDLX=' + this.arr[this.arr.length - 1] })
+      snDetail() {
       }
     },
     mounted() {
-      console.log(this.name)
+      // console.log(this.evenArr)
     }
   }
 </script>
