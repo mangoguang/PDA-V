@@ -166,4 +166,11 @@ function ajax (type, url, params) {
   return data
 }
 
-export { path, V, cloneObj, getFactorySel, getPrintPlanMsg, getaccount, ajax }
+function setParams(obj) {
+	// obj = {
+	// 	body: obj
+	// }
+	return obj
+}
+
+export { path, V, cloneObj, getFactorySel, getPrintPlanMsg, getaccount, ajax, setParams }

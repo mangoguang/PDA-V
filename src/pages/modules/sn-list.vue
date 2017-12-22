@@ -92,7 +92,7 @@ Vue.use(Vuex)
 
 export default {
   name: 'snList',
-  components: {HeadComponent, TableTr, TableH, ScanError, PutIn, SNDetail, Btn, SureBox},
+  components: {HeadComponent, TableTr, TableH, ScanError, PutIn, SNDetail, Btn, SureBox, setParams},
   data () {
     return {
       height: document.documentElement.clientHeight,
@@ -914,14 +914,10 @@ export default {
       let [_this, params, url] = [this, '', '']
       if (this.urlParams === 'salestockup' || this.urlParams === 'salesoutput' || this.urlParams === 'salesreturn') {
         params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1 } }'
-        // params = {
-        //   body: '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1 } }'
-        // }
+        params = setParams(params)
       } else if (this.urlParams === 'purchase') {
         params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '"} }'
-        // params = {
-        //   body: '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '"} }'
-        // }
+        params = setParams(params)
       } else if (this.urlParams === 'product') {
         let myDate = new Date()
         function turnDate(num) {
@@ -939,14 +935,10 @@ export default {
         }
       } else if (this.urlParams === 'allot') {
         params = '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
-        // params = {
-        //   body: '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
-        // }
+        params = setParams(params)
       } else if (this.urlParams === 'allotinbound') {
         params = '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
-        // params = {
-        //   body: '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
-        // }
+        params = setParams(params)
       }
       if (this.urlParams === 'product') {
         url = path.sap + this.urlParams + '/orderpost'
@@ -1046,11 +1038,7 @@ export default {
       let params = JSON.stringify({
         Item: paramsArr
       })
-      // let params = {
-      //   body: JSON.stringify({
-      //     Item: paramsArr
-      //   })
-      // }
+      params = setParams(params)
       this.setalertMsg('正在删除...')
       _this.putInShow = true
       V.post(url, params).then(function(data) {
