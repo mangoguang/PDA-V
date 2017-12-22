@@ -19,20 +19,13 @@
         :arr=opList 
         :chekboxShow=chekboxShow
         :checkboxList=checkboxList
-        :key="arr[0]"
+        :key="index"
         >
           <td>{{arr[0]}}</td>
           <td>{{arr[1]}}</td>
           <td><p v-show="checkboxList[index]">匹配</p></td>
         </TableDSNComponent>
       </table>
-
-      <!-- <TableSNComponent 
-      :list=opList 
-      :tableHList=tableHList 
-      :chekboxShow=chekboxShow
-      :checkboxList=checkboxList
-      ></TableSNComponent> -->
     </div>
     <DelCancelBtnComponent 
     v-show="chekboxShow"

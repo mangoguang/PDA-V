@@ -1,7 +1,7 @@
 <template>
   <tr @click="toSNPages(arr[0], arr[arr.length-1])">
     <td>{{index + 1}}</td>
-    <td v-for="name in evenArr" :key="name">{{name}}</td>
+    <slot></slot>
   </tr>
 </template>
 <script>

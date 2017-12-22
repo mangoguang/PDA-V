@@ -11,7 +11,22 @@
       :placeholder="'采购入库'"
       ></SearchInput>
     </div>
-    <TableComponent :list=opList :tableHList=tableHList></TableComponent>
+    <!-- <TableComponent :list=opList :tableHList=tableHList></TableComponent> -->
+    <!-- 表格 -->
+    <div class="table-box">
+      <table border="1">
+        <TableHComponent :list=tableHList></TableHComponent>
+        <TableDComponent 
+        v-for="(arr, index) in opList" 
+        :index=index 
+        :arr=arr 
+        :key="index"
+        >
+          <td>{{arr[0]}}</td>
+          <td>{{warehouse}}</td>
+        </TableDComponent>
+      </table>
+    </div>
   </div>
 </template>
 <!-- </keep-alive> --> 
@@ -24,7 +39,8 @@ import Vuex from 'vuex'
 import {path, V, getaccount, getFactorySel} from '../../js/variable.js'
 import HeadComponent from '../../components/header'
 import SearchInput from '../../components/common/search-input'
-import TableComponent from '../../components/common/table'
+import TableHComponent from '../../components/common/table-h'
+import TableDComponent from '../../components/common/table-d'
 // import TableTr from '../../components/table-tr-op'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -32,12 +48,13 @@ Vue.use(Vuex)
 export default {
   name: 'Modules',
   // components: {HeadComponent, TableTr},
-  components: {HeadComponent, SearchInput, TableComponent},
+  components: {HeadComponent, SearchInput, TableHComponent, TableDComponent},
   data () {
     return {
       height: document.documentElement.clientHeight,
       account: '',
       factoryNum: '',
+      warehouse: '',
       tableHList: ['序号', '单号', '归属仓库'],
       opListClone: []
     }
@@ -101,5 +118,10 @@ export default {
 <style scoped lang="scss">
 @import "../../assets/sass/variable.scss";
 @import "../../assets/css/common.css";
+
+.table-box{
+  width: 10rem;
+  overflow: scroll;
+}
 </style>
 
