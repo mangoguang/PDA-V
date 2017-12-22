@@ -405,10 +405,17 @@ export default {
     },
     // 将工厂信息缓存到本地
     changeFactory(status) {
+      console.log(status)
       localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
-        console.log(localStorage.getItem('factoryMsg'))
       if (status) {
         this.setWarehouse()
+      } else {
+        for (let i in this.warehouseList) {
+          if (this.warehouseList[i].code === this.warehouseNum) {
+            this.warehouse = this.warehouseList[i].name
+          }
+        }
+        localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
       }
     },
     logout() {

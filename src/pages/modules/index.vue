@@ -173,9 +173,7 @@ export default {
         if (this.bottomBtnName === 'scanbq') {
           url = path.sap + 'product/getorder'
           params = '{ "Item": {SN: "' + num + '",ZGH:"' + this.account + '"} }'
-          // params = {
-          //   body: '{ "Item": {SN: "' + num + '",ZGH:"' + this.account + '"} }'
-          // }
+          params = setParams(params)
           _this.putInShow = true
           V.post(url, params).then(function(data) {
             _this.putInShow = false
@@ -454,18 +452,7 @@ export default {
           // 'ZIP: "' + localStorage.getItem('printVal') + '",' +
           temp +
         '}}'
-        // params = {
-        //   body: '{Header:{' +
-        //   'ZBMDH: "' + departmentMsg.id + '",' +
-        //   'ZBMMC: "' + departmentMsg.name + '",' +
-        //   'ZRKYY: "' + this.account + '",' +
-        //   'ZRKEQ: "' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()) + '",' +
-        //   'ZRKSJ: "' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()) + '",' +
-        //   'ZIP: "' + ZIP1 + '",' +
-        //   // 'ZIP: "' + localStorage.getItem('printVal') + '",' +
-        //   temp +
-        // '}}'
-        // }
+        params = setParams(params)
       } else {
         console.log(this.snArr())
         let arr = []
@@ -479,9 +466,7 @@ export default {
           '}'
         }
         params = '{' + arr.join(',') + '}'
-        // params = {
-        //   body: '{' + arr.join(',') + '}'
-        // }
+        params = setParams(params)
         url = path.sap + 'securitycode/print'
       }
       _this.putInShow = true

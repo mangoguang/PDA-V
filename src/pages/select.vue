@@ -56,7 +56,6 @@ export default {
       this.$store.commit('loadingShow', x)
     },
     select: function() {
-      localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
       // localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "1012", warehouseNum: "' + this.warehouseNum + '"}')
       // 仓库名称与代号保持一致
       for (let i in this.warehouses) {
@@ -64,6 +63,7 @@ export default {
           this.warehouse = this.warehouses[i].name
         }
       }
+      localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
       this.$router.push({ path: '/module?name=' + this.name })
       // this.$router.push({ path: '/module?name=' + this.name + '&factoryNum=1012&warehouseNum=' + this.warehouseNum + '&warehouse=' + this.warehouse })
     },
@@ -105,6 +105,9 @@ export default {
         _this.loadingShow(false)
       })
     },
+    // changeWarehouse() {
+
+    // },
     getAccountMsg: function() {
       let accountMsg = localStorage.getItem('accountMsg')
       let obj = eval('(' + accountMsg + ')')
