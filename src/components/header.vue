@@ -2,12 +2,13 @@
     <div class="head">
       <button class="back" @click="back()" type="button"></button>
       <slot></slot>
-      <router-link to="/setting" class="edit"></router-link>
+      <router-link v-if="settingShow" to="/setting" class="edit"></router-link>
     </div>
 </template>
 <script>
   export default {
     name: 'Head',
+    props: ['settingShow'],
     methods: {
       back() {
         this.$router.back()

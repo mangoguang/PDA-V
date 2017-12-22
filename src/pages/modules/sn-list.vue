@@ -14,7 +14,7 @@
       <SNDetail></SNDetail>
     </div>
     <div class="headBox">
-      <HeadComponent>
+      <HeadComponent :settingShow="true">
         <h1>{{moduleName}}</h1>
         <button v-show="canDel" @click="checkBoxShowFn(showCheckbox)" class="delBtn"></button>
       </HeadComponent>

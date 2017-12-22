@@ -6,7 +6,8 @@
       <input v-show="false" type="checkbox" :id="'checkbox' + index" v-model="checkboxList[index]">
       <span>{{index + 1}}</span>
     </td>
-    <td v-for="name in arr" :key="name"><p>{{name}}</p></td>
+    <slot></slot>
+    <!-- <td v-for="name in arr" :key="name">{{name}}</td> -->
   </tr>
 </template>
 <script>

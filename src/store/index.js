@@ -46,7 +46,8 @@ const store = new Vuex.Store({
     // sn页面
     delBtn: true,
     chekboxShow: false,
-    checkboxList: []
+    checkboxList: [],
+    scanSNVal: ''
   },
   mutations: {
     // 皮肤选择
@@ -106,7 +107,9 @@ const store = new Vuex.Store({
     // 控制复选框的显示隐藏
     chekboxShow: (state, x) => state.chekboxShow = x,
     // 用于表示复选框是否选中
-    checkboxList: (state, x) => state.checkboxList = x
+    checkboxList: (state, x) => state.checkboxList = x,
+    // 扫描输入框值
+    scanSNVal: (state, x) => state.scanSNVal = x
   },
   actions: {
     incrementAsync({

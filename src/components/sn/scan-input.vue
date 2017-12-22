@@ -15,12 +15,38 @@
     props: ['num'],
     data() {
       return {
+        focusStatus: true,
         inputVal: ''
       }
     },
+    computed: {
+
+    },
+    watch: {
+      'inputVal': function() {
+        this.setScanSNVal(this.inputVal)
+        // if (this.ifVerify) {
+        //   this.verify()
+        // } else {z
+        //   alert('请切换到应扫状态！')
+        // }
+      }
+    },
     methods: {
+      setScanSNVal(x) {
+        this.$store.commit('scanSNVal', x)
+      },
       clearInput() {
         this.inputVal = ''
+      }
+    },
+    directives: {
+      focus: {
+        inserted: function (el, {value}) {
+            if (value) {
+              el.focus()
+            }
+        }
       }
     },
     mounted() {

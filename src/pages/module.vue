@@ -2,7 +2,7 @@
 <template>
   <div class="module">
     <div class="h25"></div>
-    <HeadComponent>
+    <HeadComponent :settingShow="true">
       <h1>{{warehouse}}</h1>
     </HeadComponent>
     <ul class="clearfix moduleBox" :style="{height: (height - 73)+'px'}">

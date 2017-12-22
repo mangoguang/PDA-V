@@ -2,7 +2,7 @@
 <template>
   <div class="login" v-bind:style="{height: height+'px', background: 'url(./static/images/skinImg/' + skinCol + '/bg.png)','background-size': '100% 100%'}">
     <form>
-      <h1 @click="test">欢迎使用扫描枪</h1>
+      <h1 @click="test">欢迎使用仓卫</h1>
       <ul>
         <li>
           <label for="account"></label>

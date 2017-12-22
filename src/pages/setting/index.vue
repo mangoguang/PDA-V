@@ -2,7 +2,7 @@
 <template>
   <div class="setting">
     <div class="h25"></div>
-    <HeadComponent>
+    <HeadComponent :settingShow="false">
       <h1>系统设置</h1>
     </HeadComponent>
     <ul class="setting" :style="{height: (height - 73)+'px'}">
@@ -212,9 +212,6 @@ export default {
           _this.printPlanSelNum = data[0].ZBQXH
           localStorage.setItem('printPlanMsg', JSON.stringify(data[0]))
         }
-        // 获取生产线列表
-        _this.getLine()
-        _this.getLine1()
       }).catch(() => {
         alert('请求超时！')
           _this.loadingShow(false)
@@ -247,6 +244,9 @@ export default {
           _this.departmentVal = data[0].factorycode
           localStorage.setItem('departmentVal', data[0].factorycode)
         }
+        // 获取生产线列表
+        _this.getLine()
+        _this.getLine1()
       }).catch(() => {
         alert('请求超时！')
           _this.loadingShow(false)
@@ -254,6 +254,9 @@ export default {
     },
     changeDepartment() {
       localStorage.setItem('departmentVal', this.departmentVal)
+      // 获取生产线列表
+      this.getLine()
+      this.getLine1()
     },
     getLine() {
       let _this = this
@@ -275,7 +278,6 @@ export default {
         }
         // 获取打印机列表
         _this.getPrint()
-        _this.getPrint1()
       }).catch(() => {
         alert('请求超时！')
           _this.loadingShow(false)
@@ -311,6 +313,8 @@ export default {
     // },
     changeLine() {
       localStorage.setItem('lineVal', this.lineVal)
+      // 获取打印机列表
+      this.getPrint()
     },
     getLine1() {
       let _this = this
@@ -330,6 +334,8 @@ export default {
           _this.lineVal1 = data[0].housecode
           localStorage.setItem('lineVal1', data[0].housecode)
         }
+        // 获取打印机列表
+        this.getPrint1()
       }).catch(() => {
         alert('请求超时！')
           _this.loadingShow(false)
@@ -337,6 +343,8 @@ export default {
     },
     changeLine1() {
       localStorage.setItem('lineVal1', this.lineVal1)
+      // 获取打印机列表
+      this.getPrint1()
     },
     getPrint() {
       let _this = this

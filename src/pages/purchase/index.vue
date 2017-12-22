@@ -3,7 +3,7 @@
   <div class="modules">
     <div class="h25"></div>
     <div class="header">
-      <HeadComponent>
+      <HeadComponent :settingShow="true">
         <h1>采购入库</h1>
       </HeadComponent>
       <SearchInput

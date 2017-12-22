@@ -3,20 +3,36 @@
   <div class="purchaseChild">
     <div class="h25"></div>
     <div class="headBox">
-      <HeadComponent>
+      <HeadComponent :settingShow="true">
         <h1>采购入库</h1>
         <DelSNComponent></DelSNComponent>
       </HeadComponent>
-      <!-- <ScanInputComponent :num=BUS_NO></ScanInputComponent> -->
+      <ScanInputComponent :num=BUS_NO></ScanInputComponent>
       <BtnListComponent></BtnListComponent>
     </div>
     <div class="table-box">
-      <TableSNComponent 
+      <table border="1">
+        <TableHComponent :list=tableHList></TableHComponent>
+        <TableDSNComponent 
+        v-for="(arr, index) in opList" 
+        :index=index 
+        :arr=opList 
+        :chekboxShow=chekboxShow
+        :checkboxList=checkboxList
+        :key="arr[0]"
+        >
+          <td>{{arr[0]}}</td>
+          <td>{{arr[1]}}</td>
+          <td><p v-show="checkboxList[index]">匹配</p></td>
+        </TableDSNComponent>
+      </table>
+
+      <!-- <TableSNComponent 
       :list=opList 
       :tableHList=tableHList 
       :chekboxShow=chekboxShow
       :checkboxList=checkboxList
-      ></TableSNComponent>
+      ></TableSNComponent> -->
     </div>
     <DelCancelBtnComponent 
     v-show="chekboxShow"
@@ -33,7 +49,8 @@ import Vuex from 'vuex'
 // import {path, V, cloneObj, getFactorySel, getPrintPlanMsg} from '../../js/variable.js'
 import {path, V, getaccount, getFactorySel} from '../../js/variable.js'
 import HeadComponent from '../../components/header'
-import TableSNComponent from '../../components/common/table-sn'
+import TableHComponent from '../../components/common/table-h'
+import TableDSNComponent from '../../components/common/table-d-sn'
 import ScanInputComponent from '../../components/sn/scan-input'
 import DelSNComponent from '../../components/sn/del-sn'
 import BtnListComponent from '../../components/sn/btn-list'
@@ -45,7 +62,7 @@ Vue.use(Vuex)
 export default {
   name: 'purchaseChild',
   // components: {HeadComponent, TableTr},
-  components: {HeadComponent, TableSNComponent, ScanInputComponent, DelSNComponent, BtnListComponent, DelCancelBtnComponent},
+  components: {HeadComponent, TableHComponent, TableDSNComponent, ScanInputComponent, DelSNComponent, BtnListComponent, DelCancelBtnComponent},
   data () {
     return {
       height: document.documentElement.clientHeight,
@@ -68,6 +85,10 @@ export default {
     // 用于表示复选框是否选中
     checkboxList() {
       return this.$store.state.checkboxList
+    },
+    scanSNVal() {
+      alert(this.$store.state.scanSNVal)
+      return this.$store.state.scanSNVal
     }
     // productScanList() {
     //   return this.$store.state.productScanList
@@ -97,7 +118,7 @@ export default {
       V.get(url, params).then(function(data) {
         _this.loadingShow(false)
         data = JSON.parse(data.responseText).MT_Purchase_GetSN_Resp.Header
-        let temp = data.map((obj) => [obj.BUS_NO, obj.MATKL, obj.ZTIAOM])
+        let temp = data.map((obj) => [ obj.MATKL, obj.ZTIAOM, false ])
         let checkboxList = data.map(() => false)
         _this.setOpList(temp)
         _this.opListClone = temp
@@ -106,15 +127,6 @@ export default {
         alert('请求超时！')
         _this.loadingShow(false)
       })
-    }
-  },
-  directives: {
-    focus: {
-      inserted: function (el, {value}) {
-          if (value) {
-            el.focus()
-          }
-      }
     }
   },
   created: function() {
@@ -139,6 +151,11 @@ export default {
   width: 10rem;
   overflow: scroll;
 }
+// .headBox{
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+// }
 @each $skin, $col, $subCol, $strongCol, $btnBgCol, $btnBgSubCol in $skin-data {
   .#{$skin} {
     .headBox{

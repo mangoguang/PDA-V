@@ -3,7 +3,7 @@
   <div class="modules">
     <div class="h25"></div>
     <div class="header">
-      <HeadComponent>
+      <HeadComponent :settingShow="true">
         <h1>{{titName}}</h1>
       </HeadComponent>
       <div class="searchOrder">
