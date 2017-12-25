@@ -85,14 +85,14 @@ import PutIn from '../../components/purchase/put-in'
 import SNDetail from '../../components/purchase/sn-detail'
 import Btn from '../../components/btn'
 import SureBox from '../../components/sureBox'
-import { path, V, getFactorySel } from '../../js/variable.js'
+import { path, V, getFactorySel, setParams } from '../../js/variable.js'
 // import apiFn from '../../js/lib/api.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
 export default {
   name: 'snList',
-  components: {HeadComponent, TableTr, TableH, ScanError, PutIn, SNDetail, Btn, SureBox, setParams},
+  components: {HeadComponent, TableTr, TableH, ScanError, PutIn, SNDetail, Btn, SureBox},
   data () {
     return {
       height: document.documentElement.clientHeight,
@@ -912,8 +912,9 @@ export default {
     // 确认入库
     setSureIn() {
       let [_this, params, url] = [this, '', '']
+      let ZIP = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal') + '_' + localStorage.getItem('printVal')
       if (this.urlParams === 'salestockup' || this.urlParams === 'salesoutput' || this.urlParams === 'salesreturn') {
-        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1 } }'
+        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP + ' } }'
         params = setParams(params)
       } else if (this.urlParams === 'purchase') {
         params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '"} }'
