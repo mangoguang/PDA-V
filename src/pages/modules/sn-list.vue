@@ -955,7 +955,7 @@ export default {
             if (data.MT_Product_OrderPost_Resp.Item) {
               data = data.MT_Product_OrderPost_Resp.Item
               if (data.ZXXLX === 'S') {
-                alert('入库成功!入库凭证为' + data.ZTXXX)
+                alert(data.ZTXXX)
                 _this.$router.back()
               } else {
                 alert(data.ZTXXX)
@@ -1016,7 +1016,7 @@ export default {
             }
           }
           if (data.ZXXLX === 'S') {
-            alert('入库成功!入库凭证为' + data.ZTXXX)
+            alert(data.ZTXXX)
             _this.$router.back()
           } else {
             alert(data.ZTXXX)
