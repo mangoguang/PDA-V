@@ -546,6 +546,7 @@ export default {
               arr1.push(arr[i].Item[j].ZTIAOMA_FB)
               if (this.checkStatus(arr[i].Item[j].ZJYZT, this.urlParams)) {
                 arr2[j] = true
+                console.log('111', arr[i].Item[j].ZTIAOMA_FB.substr(0, 23))
                 if (fbtype) {
                   num3++
                 }
