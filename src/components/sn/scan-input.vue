@@ -27,7 +27,7 @@
         this.setScanSNVal(this.inputVal)
         // if (this.ifVerify) {
         //   this.verify()
-        // } else {z
+        // } else {
         //   alert('请切换到应扫状态！')
         // }
       }

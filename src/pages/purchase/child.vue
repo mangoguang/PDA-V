@@ -14,9 +14,9 @@
       <table border="1">
         <TableHComponent :list=tableHList></TableHComponent>
         <TableDSNComponent 
-        v-for="(arr, index) in opList" 
+        v-for="(arr, index) in snList" 
         :index=index 
-        :arr=opList 
+        :arr=snList 
         :chekboxShow=chekboxShow
         :checkboxList=checkboxList
         :key="index"
@@ -61,16 +61,17 @@ export default {
       height: document.documentElement.clientHeight,
       account: '',
       tableHList: ['序号', '描述', '条码', '状态'],
-      opListClone: [],
+      snListClone: [],
       BUS_NO: this.$route.params.num,
+      moduleNameEN: this.$route.path.split(/\//),
       factoryNum: '',
       warehouseNum: '',
       ZDDLX: this.$route.query.ZDDLX
     }
   },
   computed: {
-    opList() {
-      return this.$store.state.opList
+    snList() {
+      return this.$store.state.snList
     },
     chekboxShow() {
       return this.$store.state.chekboxShow
@@ -80,25 +81,31 @@ export default {
       return this.$store.state.checkboxList
     },
     scanSNVal() {
-      alert(this.$store.state.scanSNVal)
       return this.$store.state.scanSNVal
     }
     // productScanList() {
     //   return this.$store.state.productScanList
     // }
   },
+  watch: {
+    'scanSNVal': function() {
+      if (this.scanSNVal.length >= 23) {
+        alert(this.scanSNVal)
+      }
+    }
+  },
   methods: {
     loadingShow(x) {
       this.$store.commit('loadingShow', x)
     },
-    setOpList(arr) {
-      this.$store.commit('opList', arr)
+    setsnList(arr) {
+      this.$store.commit('snList', arr)
     },
     setCheckboxList(arr) {
       this.$store.commit('checkboxList', arr)
     },
     // 从后台获取订单列表
-    getOrderList() {
+    getSNList() {
       let _this = this
       let params = {
         BUS_NO: this.BUS_NO,
@@ -113,14 +120,29 @@ export default {
         data = JSON.parse(data.responseText).MT_Purchase_GetSN_Resp.Header
         let temp = data.map((obj) => [ obj.MATKL, obj.ZTIAOM, false ])
         let checkboxList = data.map(() => false)
-        _this.setOpList(temp)
-        _this.opListClone = temp
+        _this.setsnList(temp)
+        _this.snListClone = temp
         _this.setCheckboxList(checkboxList)
       }).catch((res) => {
         alert('请求超时！')
         _this.loadingShow(false)
       })
     }
+    // 扫描校验
+    // verify (arr, i) {
+    //   let params = {}
+    //   params.url = path.sap + this.moduleNameEN + '/verify'
+    //   params.data = {
+    //     BUS_NO: this.BUS_NO,
+    //     ITEM_NO: arr[i].ITEM_NO,
+    //     ZDDLX: this.ZDDLX,
+    //     ZTIAOM: this.scanSNVal,
+    //     WERKS: this.factoryNum,
+    //     LGORT: arr[i].LGORT,
+    //     ZQRKZ: 0,
+    //     ZDEL: 0
+    //   }
+    // }
   },
   created: function() {
     // 获取本地存储的账号
@@ -129,8 +151,9 @@ export default {
     getFactorySel(this)
   },
   mounted() {
+    // var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
     // ajax获取订单列表
-    this.getOrderList()
+    this.getSNList()
   }
 }
 </script>

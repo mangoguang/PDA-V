@@ -44,6 +44,7 @@ const store = new Vuex.Store({
     // 模块一级页面
     opList: [],
     // sn页面
+    snList: [],
     delBtn: true,
     chekboxShow: false,
     checkboxList: [],
@@ -102,6 +103,7 @@ const store = new Vuex.Store({
     // 模块一级页面
     opList: (state, arr) => state.opList = arr,
     // sn页面
+    snList: (state, arr) => state.snList = arr,
     // 控制删除sn条码按钮的显示与隐藏
     delBtn: (state, x) => state.delBtn = x,
     // 控制复选框的显示隐藏

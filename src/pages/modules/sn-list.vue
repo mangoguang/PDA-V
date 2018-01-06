@@ -913,9 +913,9 @@ export default {
     // 确认入库
     setSureIn() {
       let [_this, params, url] = [this, '', '']
-      let ZIP = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal') + '_' + localStorage.getItem('printVal')
+      let ZIP1 = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal1') + '_' + localStorage.getItem('printVal1')
       if (this.urlParams === 'salestockup' || this.urlParams === 'salesoutput' || this.urlParams === 'salesreturn') {
-        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP + ' } }'
+        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ' } }'
         params = setParams(params)
       } else if (this.urlParams === 'purchase') {
         params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '"} }'
@@ -1019,8 +1019,10 @@ export default {
           if (data.ZXXLX === 'S') {
             alert(data.ZTXXX)
             _this.$router.back()
-          } else {
+          } else if (data.ZTXXX === 'S') {
             alert(data.ZTXXX)
+          } else {
+            alert(data.ZXXLX)
           }
         }
       }
