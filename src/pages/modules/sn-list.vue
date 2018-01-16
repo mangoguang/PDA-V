@@ -180,7 +180,7 @@ export default {
         let obj = eval('(' + accountMsg + ')')
         this.account = obj.account
       } else {
-        console.log('没有本地存储')
+        // console.log('没有本地存储')
       }
     },
     // 点击头部切换按钮
@@ -340,6 +340,9 @@ export default {
       } else if (this.urlParams === 'purchase') {
         if (data.MT_Purchase_GetSN_Resp.Header) {
           arr = data.MT_Purchase_GetSN_Resp.Header
+          if (!arr[0].ZTIAOM) {
+            this.orderType = 2
+          }
         }
       } else if (this.urlParams === 'product') {
         if (data.MT_Product_GetSN_Resp.Header.Item) {
@@ -382,7 +385,6 @@ export default {
       // }
     },
     checkStatus(ZJYZT, urlParams) {
-      console.log(ZJYZT + '::' + urlParams)
       let status = false
       if (urlParams === 'purchase') {
         if (ZJYZT === 1 || ZJYZT === 9 || ZJYZT === 'Z') {
@@ -464,8 +466,6 @@ export default {
     turnArr(arr) {
       // trArr为临时数组   num用于计算应扫数量
       let [trArr, checkboxVal, num, num3] = [[], [], 0, 0]
-      console.log('090909')
-      console.log(arr)
       if (arr.length >= 0) {
         for (let i in arr) {
           // 页面初次加载时执行
@@ -546,7 +546,6 @@ export default {
               arr1.push(arr[i].Item[j].ZTIAOMA_FB)
               if (this.checkStatus(arr[i].Item[j].ZJYZT, this.urlParams)) {
                 arr2[j] = true
-                console.log('111', arr[i].Item[j].ZTIAOMA_FB.substr(0, 23))
                 if (fbtype) {
                   num3++
                 }
@@ -581,7 +580,7 @@ export default {
       }
       // 标示SN码是否扫描的状态数组
       this.setSN(trArr)
-      this.scanCount = num
+      this.scanCount = parseInt(num)
       // if (this.addStatus) {
       //   this.status4 = num
       // }
@@ -590,7 +589,8 @@ export default {
     // 校验sn码
     verify() {
       let num = this.inputVal
-      if (num.length === 23 || num.length === 22 || num.length >= 27) {
+      // if (num.length === 13 || num.length === 23 || num.length === 22 || num.length >= 27) {
+        if (num.length >= 13) {
         if (this.orderType === 1) {
           this.verify1()
         } else if (this.orderType === 2) {
@@ -606,15 +606,17 @@ export default {
       for (let i in arr) {
         // 标准包装
         if (arr[i].Item === null || arr[i].Item === undefined) {
-          if (num === arr[i].ZTIAOM) {
-            fbtype = 0
-            index = i
+          if (arr[i].ZTIAOM) {
+            if (num === arr[i].ZTIAOM.toString() || num === arr[i].MATNR.toString()) {
+              fbtype = 0
+              index = i
+            }
           }
         } else {
           // 分包
           if (arr[i].Item[0].ZFBFS === 1) {
             for (let j in arr[i].Item) {
-              if (num === arr[i].Item[j].ZTIAOMA_FB) {
+              if (num === arr[i].Item[j].ZTIAOMA_FB.toString()) {
                 fbtype = 1
                 index = i
                 subindex = j
@@ -622,7 +624,7 @@ export default {
             }
           } else {
             // 合包
-            if (num === arr[i].ZTIAOM) {
+            if (num === arr[i].ZTIAOM.toString()) {
               fbtype = 2
               index = i
             }
@@ -723,14 +725,14 @@ export default {
       // 用于条码不存在是，提示信息
       let alertMsg = false
       for (let i in temp) {
-        if (temp[i].ZDEZTMA === '') {
-          if (temp[i].ZTIAOM === this.inputVal) {
+        if (temp[i].ZDEZTMA.toString() === '') {
+          if (temp[i].ZTIAOM.toString() === this.inputVal) {
             alertMsg = true
             temp[i].status = true
             this.inputVal = ''
           }
         } else {
-          if (temp[i].ZDEZTMA === this.inputVal) {
+          if (temp[i].ZDEZTMA.toString() === this.inputVal) {
             alertMsg = true
             temp[i].status = true
             this.inputVal = ''
@@ -871,8 +873,6 @@ export default {
       }
       // 将分包的空数组去除
       function reDelArr(arr) {
-        console.log('11111')
-        console.log(arr)
         for (let i in arr) {
           if (arr[i].arr[1] !== undefined && arr[i].arr[1].length === 0) {
             arr.splice(i, 1)
@@ -974,22 +974,22 @@ export default {
       } else {
         _this.setalertMsg('正在入库...')
         _this.putInShow = true
-        // window.apiready(url, params).then(function(data) {
-        //   if (data) {
-        //     tip(data)
-        //     _this.putInShow = false
-        //   } else {
-        //     alert('请求超时！')
-        //     _this.putInShow = false
-        //   }
-        // })
-        V.post(url, params).then(function(data) {
-          _this.putInShow = false
-          tip(data)
-        }).catch((res) => {
-          alert('请求超时！')
-          _this.loadingShow(false)
+        window.apiready(url, params).then(function(data) {
+          if (data) {
+            tip(data)
+            _this.putInShow = false
+          } else {
+            alert('请求超时！')
+            _this.putInShow = false
+          }
         })
+        // V.post(url, params).then(function(data) {
+        //   _this.putInShow = false
+        //   tip(data)
+        // }).catch((res) => {
+        //   alert('请求超时！')
+        //   _this.loadingShow(false)
+        // })
         function tip(data) {
           if (_this.urlParams === 'purchase') {
             if (data.MT_Purchase_Confirm_Resp.Item) {
@@ -1022,7 +1022,7 @@ export default {
           } else if (data.ZTXXX === 'S') {
             alert(data.ZTXXX)
           } else {
-            alert(data.ZXXLX)
+            alert(data.ZTXXX)
           }
         }
       }
@@ -1045,38 +1045,38 @@ export default {
       params = setParams(params)
       this.setalertMsg('正在删除...')
       _this.putInShow = true
-      V.post(url, params).then(function(data) {
-        _this.putInShow = false
-        if (data.MT_DeleteSN_Resp.Item) {
-          data = data.MT_DeleteSN_Resp.Item
-        }
-        if (data.ZXXLX === 'S') {
-          alert('删除成功！')
-          _this.snListUrl()
-        } else {
-          alert(data.ZTXXX)
-        }
-      }).catch((res) => {
-        alert('请求超时！')
-        _this.loadingShow(false)
-      })
-      // window.apiready(url, params).then(function(data) {
-      //   if (data) {
-      //     _this.putInShow = false
-      //     if (data.MT_DeleteSN_Resp.Item) {
-      //       data = data.MT_DeleteSN_Resp.Item
-      //     }
-      //     if (data.ZXXLX === 'S') {
-      //       alert('删除成功！')
-      //       _this.snListUrl()
-      //     } else {
-      //       alert(data.ZTXXX)
-      //     }
-      //   } else {
-      //     alert('请求超时！')
-      //     _this.putInShow = false
+      // V.post(url, params).then(function(data) {
+      //   _this.putInShow = false
+      //   if (data.MT_DeleteSN_Resp.Item) {
+      //     data = data.MT_DeleteSN_Resp.Item
       //   }
+      //   if (data.ZXXLX === 'S') {
+      //     alert('删除成功！')
+      //     _this.snListUrl()
+      //   } else {
+      //     alert(data.ZTXXX)
+      //   }
+      // }).catch((res) => {
+      //   alert('请求超时！')
+      //   _this.loadingShow(false)
       // })
+      window.apiready(url, params).then(function(data) {
+        if (data) {
+          _this.putInShow = false
+          if (data.MT_DeleteSN_Resp.Item) {
+            data = data.MT_DeleteSN_Resp.Item
+          }
+          if (data.ZXXLX === 'S') {
+            alert('删除成功！')
+            _this.snListUrl()
+          } else {
+            alert(data.ZTXXX)
+          }
+        } else {
+          alert('请求超时！')
+          _this.putInShow = false
+        }
+      })
       this.$store.commit('checkBoxShow', false)
       this.showCheckbox = false
     }

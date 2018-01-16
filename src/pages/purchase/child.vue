@@ -20,6 +20,7 @@
         :chekboxShow=chekboxShow
         :checkboxList=checkboxList
         :key="index"
+        :class="{on: arr[2]}"
         >
           <td>{{arr[0]}}</td>
           <td>{{arr[1]}}</td>
@@ -63,7 +64,7 @@ export default {
       tableHList: ['序号', '描述', '条码', '状态'],
       snListClone: [],
       BUS_NO: this.$route.params.num,
-      moduleNameEN: this.$route.path.split(/\//),
+      moduleNameEN: this.$route.path.split(/\//)[1],
       factoryNum: '',
       warehouseNum: '',
       ZDDLX: this.$route.query.ZDDLX
@@ -90,7 +91,7 @@ export default {
   watch: {
     'scanSNVal': function() {
       if (this.scanSNVal.length >= 23) {
-        alert(this.scanSNVal)
+        this.verify(this.snList[this.filter()])
       }
     }
   },
@@ -118,7 +119,15 @@ export default {
       V.get(url, params).then(function(data) {
         _this.loadingShow(false)
         data = JSON.parse(data.responseText).MT_Purchase_GetSN_Resp.Header
-        let temp = data.map((obj) => [ obj.MATKL, obj.ZTIAOM, false ])
+        let temp = data.map((obj) => {
+          let status = false
+          if (obj.ZJYZT === 1 || obj.ZJYZT === 9 || obj.ZJYZT === 'Z') {
+            status = true
+          } else {
+            status = false
+          }
+          return [ obj.MATKL, obj.ZTIAOM, status, obj.ITEM_NO, obj.LGORT ]
+        })
         let checkboxList = data.map(() => false)
         _this.setsnList(temp)
         _this.snListClone = temp
@@ -127,22 +136,48 @@ export default {
         alert('请求超时！')
         _this.loadingShow(false)
       })
-    }
+    },
     // 扫描校验
-    // verify (arr, i) {
-    //   let params = {}
-    //   params.url = path.sap + this.moduleNameEN + '/verify'
-    //   params.data = {
-    //     BUS_NO: this.BUS_NO,
-    //     ITEM_NO: arr[i].ITEM_NO,
-    //     ZDDLX: this.ZDDLX,
-    //     ZTIAOM: this.scanSNVal,
-    //     WERKS: this.factoryNum,
-    //     LGORT: arr[i].LGORT,
-    //     ZQRKZ: 0,
-    //     ZDEL: 0
-    //   }
-    // }
+    verify (arr) {
+      let _this = this
+      let params = {}
+      params.url = path.sap + this.moduleNameEN + '/verify'
+      console.log(arr)
+      params.data = {
+        BUS_NO: this.BUS_NO,
+        ITEM_NO: arr[3],
+        ZDDLX: this.ZDDLX,
+        ZTIAOM: this.scanSNVal,
+        WERKS: this.factoryNum,
+        LGORT: arr[4],
+        ZQRKZ: 0,
+        ZDEL: 0
+      }
+      this.loadingShow(true)
+      V.get(params.url, params.data).then(function(data) {
+        _this.loadingShow(false)
+        data = JSON.parse(data.responseText).MT_Purchase_Verify_Resp.Item
+        if (data.ZXXLX === 'S') {
+          _this.getSNList()
+          _this.scanSNVal('')
+        } else {
+          alert(data.ZTXXX)
+          _this.scanSNVal('')
+        }
+      }).catch((res) => {
+        alert('请求超时！')
+        _this.loadingShow(false)
+      })
+    },
+    // 将扫描码与sn数组匹配，并返回匹配元素下标
+    filter() {
+      let i = null
+      this.snList.some((item, index) => {
+        i = index
+        return item[1] === this.scanSNVal
+      })
+      return i
+    }
   },
   created: function() {
     // 获取本地存储的账号

@@ -124,7 +124,7 @@ export default {
         let obj = eval('(' + accountMsg + ')')
         this.account = obj.account
       } else {
-        console.log('没有本地存储')
+        // console.log('没有本地存储')
       }
     },
     // url
@@ -260,7 +260,7 @@ export default {
       if (this.productScanList.length > 0) {
         // 检查该SN是否已扫描temp为true时表示已扫描，将不添加入productScanList打印数组
         for (let i in this.productScanList) {
-          if (this.productScanList[i][1] === this.searchNum) {
+          if (this.productScanList[i][1].toString() === this.searchNum) {
             temp = true
             index = i
           }
@@ -275,13 +275,13 @@ export default {
             arr[0] = data[i].MAKTX
             if (data[i].ZDEZTMA === '') {
               arr[1] = data[i].ZTIAOM
-              if (data[i].ZTIAOM === this.searchNum) {
+              if (data[i].ZTIAOM.toString() === this.searchNum) {
                 arr[2] = data[i].ZFBMS
                 arr[3] = true
               }
             } else {
               arr[1] = data[i].ZDEZTMA
-              if (data[i].ZDEZTMA === this.searchNum) {
+              if (data[i].ZDEZTMA.toString() === this.searchNum) {
                 arr[2] = data[i].ZFBMS
                 arr[3] = true
               }
@@ -319,7 +319,6 @@ export default {
       } else {
         // 扫防伪码
         if (!temp) {
-          console.log('0011')
           let arr = ['', data, '']
           this.productScanList.push(arr)
           this.setProductScanList(this.productScanList)
@@ -383,8 +382,6 @@ export default {
           trArr.push(temp)
         }
       }
-      console.log('8989')
-      console.log(trArr)
       this.setOrders(trArr)
       // 将获取的数据保存到本地变量
       this.orders = trArr
@@ -454,7 +451,6 @@ export default {
         '}}'
         params = setParams(params)
       } else {
-        console.log(this.snArr())
         let arr = []
         let snArr = this.snArr()
         for (let i in snArr) {
@@ -476,63 +472,63 @@ export default {
         printCode(url, params)
       }
       function printCode(url, params) {
-        V.post(url, params).then(function(data) {
-          _this.putInShow = false
-          if (_this.bottomBtnName === 'scanbq') {
-            data = data.MT_Produt_GenerateOrder_Resp.Header
-          } else if (_this.bottomBtnName === 'scanfw') {
-            data = data.MT_SecurityCode_Print_Resp.Item
-          }
-          if (data.ZXXLX === 'S') {
-            _this.setProductScanList([])
-            _this.searchNum = ''
-            if (data.ZTXXX) {
-              alert(data.ZTXXX)
-            } else if (data.ZXXTX) {
-              alert(data.ZXXTX)
-            } else {
-              alert('打印成功。')
-            }
-          } else {
-            if (data.ZTXXX) {
-              alert(data.ZTXXX)
-            } else if (data.ZXXTX) {
-              alert(data.ZXXTX)
-            }
-            _this.searchNum = ''
-          }
-        })
-        // window.apiready(url, params).then(function(data) {
-        //   if (data) {
-        //     _this.putInShow = false
-        //     if (_this.bottomBtnName === 'scanbq') {
-        //       data = data.MT_Produt_GenerateOrder_Resp.Header
-        //     } else if (_this.bottomBtnName === 'scanfw') {
-        //       data = data.MT_SecurityCode_Print_Resp.Item
-        //     }
-        //     if (data.ZXXLX === 'S') {
-        //       _this.setProductScanList([])
-        //       _this.searchNum = ''
-        //       if (data.ZTXXX) {
-        //         alert(data.ZTXXX)
-        //       } else if (data.ZXXTX) {
-        //         alert(data.ZXXTX)
-        //       } else {
-        //         alert('打印成功。')
-        //       }
+        // V.post(url, params).then(function(data) {
+        //   _this.putInShow = false
+        //   if (_this.bottomBtnName === 'scanbq') {
+        //     data = data.MT_Produt_GenerateOrder_Resp.Header
+        //   } else if (_this.bottomBtnName === 'scanfw') {
+        //     data = data.MT_SecurityCode_Print_Resp.Item
+        //   }
+        //   if (data.ZXXLX === 'S') {
+        //     _this.setProductScanList([])
+        //     _this.searchNum = ''
+        //     if (data.ZTXXX) {
+        //       alert(data.ZTXXX)
+        //     } else if (data.ZXXTX) {
+        //       alert(data.ZXXTX)
         //     } else {
-        //       if (data.ZTXXX) {
-        //         alert(data.ZTXXX)
-        //       } else if (data.ZXXTX) {
-        //         alert(data.ZXXTX)
-        //       }
-        //       _this.searchNum = ''
+        //       alert('打印成功。')
         //     }
         //   } else {
-        //     alert('请求超时！')
-        //     _this.putInShow = false
+        //     if (data.ZTXXX) {
+        //       alert(data.ZTXXX)
+        //     } else if (data.ZXXTX) {
+        //       alert(data.ZXXTX)
+        //     }
+        //     _this.searchNum = ''
         //   }
         // })
+        window.apiready(url, params).then(function(data) {
+          if (data) {
+            _this.putInShow = false
+            if (_this.bottomBtnName === 'scanbq') {
+              data = data.MT_Produt_GenerateOrder_Resp.Header
+            } else if (_this.bottomBtnName === 'scanfw') {
+              data = data.MT_SecurityCode_Print_Resp.Item
+            }
+            if (data.ZXXLX === 'S') {
+              _this.setProductScanList([])
+              _this.searchNum = ''
+              if (data.ZTXXX) {
+                alert(data.ZTXXX)
+              } else if (data.ZXXTX) {
+                alert(data.ZXXTX)
+              } else {
+                alert('打印成功。')
+              }
+            } else {
+              if (data.ZTXXX) {
+                alert(data.ZTXXX)
+              } else if (data.ZXXTX) {
+                alert(data.ZXXTX)
+              }
+              _this.searchNum = ''
+            }
+          } else {
+            alert('请求超时！')
+            _this.putInShow = false
+          }
+        })
       }
     }
   },

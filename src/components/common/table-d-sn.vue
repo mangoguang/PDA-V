@@ -73,4 +73,7 @@ tr{
     background-size: 105% 105%;
   }
 }
+tr.on{
+  color: #38ce54;
+}
 </style>
