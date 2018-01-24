@@ -8,7 +8,7 @@
         <div v-if="isTr3">
           <ul>
             <li class="li1">{{index+1}}</li>
-            <li class="li2 tr2in1"><p>{{sn.arr[0]}}</p></li>
+            <li class="li2 tr2in1"><input type="text" :value="sn.arr[0]" disabled="disabled"></li>
   <!--           <li><input :value="sn.arr[1]" disabled="disabled"></li> -->
             <li class="li3">{{sn.arr[7]}}</li>
           </ul>
@@ -23,7 +23,7 @@
               <input type="checkbox" :id="sn.arr[1]" v-model="checkboxVal[index]">
               {{index+1}}
             </li>
-            <li class="li2"><p>{{sn.arr[0]}}</p></li>
+            <li class="li2"><input type="text" :value="sn.arr[0]" disabled="disabled"></li>
             <li class="li3" @click="snDetailUrl(sn.arr[1], sn.arr[3], sn.arr[6], false)"><input type="text" :value="sn.arr[1]" disabled="disabled"></li>
             <li class="li4"><p v-if="sn.arr[5]">匹配</p></li>
           </ul>

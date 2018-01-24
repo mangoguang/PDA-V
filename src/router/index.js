@@ -19,6 +19,10 @@ export var router = new VueRouter({
     path: '/module',
     name: 'Module',
     component: resolve => require(['../pages/module'], resolve)
+  }, {
+    path: '/cropper',
+    name: 'Cropper',
+    component: resolve => require(['../pages/cropper'], resolve)
   },
   // 模块路由
   {

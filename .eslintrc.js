@@ -35,6 +35,7 @@ module.exports = {
     "no-undef": 0,
     "no-eval": 0,
     "no-new": 0,
-    "operator-linebreak": 0
+    "operator-linebreak": 0,
+    "no-unused-vars": 0
   }
 }

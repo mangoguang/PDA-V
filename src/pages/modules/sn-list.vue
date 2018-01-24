@@ -340,8 +340,10 @@ export default {
       } else if (this.urlParams === 'purchase') {
         if (data.MT_Purchase_GetSN_Resp.Header) {
           arr = data.MT_Purchase_GetSN_Resp.Header
-          if (!arr[0].ZTIAOM) {
-            this.orderType = 2
+          for (let i = 0; i < arr.length; i++) {
+            if (!arr[i].ZTIAOM) {
+              this.orderType = 2
+            }
           }
         }
       } else if (this.urlParams === 'product') {
@@ -706,6 +708,12 @@ export default {
             } else {
               alert('条码有误！')
             }
+          } else if (_this.urlParams === 'purchase') {
+            if (data.MT_Purchase_Verify_Resp.Item) {
+              data = data.MT_Purchase_Verify_Resp.Item
+            } else {
+              alert('条码有误！')
+            }
           }
           if (data.ZXXLX === 'S') {
             _this.inputVal = ''
@@ -758,7 +766,7 @@ export default {
           ZDDLX: this.ZDDLX,
           ZTIAOM: this.inputVal,
           WERKS: this.factoryNum,
-          LGORT: arr[i].LGORT,
+          LGORT: this.warehouseNum,
           ZQRKZ: 0,
           ZDEL: 0
         }
@@ -770,7 +778,7 @@ export default {
           ZQRKZ: 0,
           ZDEL: 0,
           WERKS: arr[i].WERKS,
-          LGORT: arr[i].LGORT,
+          LGORT: this.warehouseNum,
           ITEM_NO: arr[i].ITEM_NO
         }
       } else if (this.urlParams === 'allotinbound') {
@@ -798,7 +806,7 @@ export default {
           ZQRKZ: 0,
           ZDEL: 0,
           WERKS: temp.WERKS,
-          LGORT: temp.LGORT
+          LGORT: this.warehouseNum
           // ITEM_NO: temp.ITEM_NO
         }
       } else if (this.urlParams === 'allot') {
@@ -811,6 +819,18 @@ export default {
           WERKS: this.factoryNum,
           LGORT: this.warehouseNum
           // EBELP: temp.ITEM_NO
+        }
+      } else if (this.urlParams === 'purchase') {
+        params.url = path.sap + this.urlParams + '/verify'
+        params.data = {
+          BUS_NO: temp.BUS_NO,
+          ITEM_NO: '',
+          ZDDLX: this.ZDDLX,
+          ZTIAOM: this.inputVal,
+          WERKS: this.factoryNum,
+          LGORT: this.warehouseNum,
+          ZQRKZ: 0,
+          ZDEL: 0
         }
       }
       return params
@@ -914,8 +934,11 @@ export default {
     setSureIn() {
       let [_this, params, url] = [this, '', '']
       let ZIP1 = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal1') + '_' + localStorage.getItem('printVal1')
-      if (this.urlParams === 'salestockup' || this.urlParams === 'salesoutput' || this.urlParams === 'salesreturn') {
+      if (this.urlParams === 'salesoutput' || this.urlParams === 'salesreturn') {
         params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ' } }'
+        params = setParams(params)
+      } else if (this.urlParams === 'salestockup') {
+        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1 } }'
         params = setParams(params)
       } else if (this.urlParams === 'purchase') {
         params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '"} }'
