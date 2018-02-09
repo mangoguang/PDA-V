@@ -59,7 +59,8 @@ export default {
       btnName: '',
       printVal: localStorage.getItem('printVal'),
       account: '',
-      printPlanSelNum: ''
+      printPlanSelNum: '',
+      dateVal: localStorage.getItem('dateVal')
     }
   },
   computed: {
@@ -172,7 +173,7 @@ export default {
         // 扫标签码
         if (this.bottomBtnName === 'scanbq') {
           url = path.sap + 'product/getorder'
-          params = '{ "Item": {SN: "' + num + '",ZGH:"' + this.account + '"} }'
+          params = '{ "Item": {SN: "' + num + '",ZGH:"' + this.account + '", ZDATE: "' + this.dateVal + '"} }'
           params = setParams(params)
           _this.putInShow = true
           // V.post(url, params).then(function(data) {
@@ -455,7 +456,7 @@ export default {
           'ZIP: "' + ZIP1 + '",' +
           // 'ZIP: "' + localStorage.getItem('printVal') + '",' +
           temp +
-        '}}'
+        ', date: "' + this.dateVal + '"}}'
         params = setParams(params)
       } else {
         let arr = []
@@ -468,7 +469,8 @@ export default {
             'ZGH: "' + this.account + '"' +
           '}'
         }
-        params = '{' + arr.join(',') + '}'
+        params = '{' + arr.join(',') + ', ZDATE: "' + this.dateVal + '"}'
+        console.log(params)
         params = setParams(params)
         url = path.sap + 'securitycode/print'
       }

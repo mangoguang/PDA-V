@@ -12,6 +12,15 @@
           <label for="password"></label>
           <input id="password" name="password" type="password" v-model="password" onkeyup="value=value.replace(/[^\w\.\/]/ig,'')"  maxlength="32" autocomplete="off" placeholder="请输入密码">
         </li>
+        <!-- mint ui基于vue2的日期插件 -->
+        <!-- <li @click="openPicker">
+          <mt-datetime-picker
+            ref="picker"
+            v-model="pickerVisible"
+            type="datetime"
+            @confirm="getDate">
+          </mt-datetime-picker>
+        </li> -->
         <li>
           <button type="button" @click="login">登录</button>
         </li>
@@ -49,6 +58,13 @@ export default {
     loadingShow: function(x) {
       this.$store.commit('loadingShow', x)
     },
+    // mint ui基于vue2的日期插件
+    // getDate() {
+    //   console.log(this.pickerVisible)
+    // },
+    // openPicker() {
+    //   this.$refs.picker.open()
+    // },
     test() {
       let params = '{' +
         'Item: {' +
@@ -88,6 +104,7 @@ export default {
             // 保存账号密码到本地存储
             localStorage.setItem('accountMsg', "{account: '" + _this.account + "'," +
               "password: '" + _this.password + "'}")
+            localStorage.setItem('fullName', data.name)
             _this.$router.push({ path: '/select?name=' + data.name })
           } else {
             if (data.type === '0') {
@@ -131,6 +148,7 @@ export default {
     this.loadingShow(false)
   },
   mounted() {
+
   }
 }
 </script>

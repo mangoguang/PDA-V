@@ -129,6 +129,7 @@ export default {
     this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
   },
   mounted() {
+    // alert(localStorage.getItem('dateVal'))
     this.jurisdiction()
   }
 }

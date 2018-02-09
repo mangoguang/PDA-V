@@ -14,6 +14,7 @@
       <select id="warehouse" v-model="warehouseNum">
         <option v-for="warehouse in warehouses" :value="warehouse.code">{{ warehouse.name }}</option>
       </select>
+      <input v-model="dateVal" type="text" class="demo-input" placeholder="请选择日期" id="date">
       <div @click="select"><Btn>确定</Btn></div>
 <!--       <button @click="select" type="button">确定</button> -->
     </form>
@@ -28,6 +29,7 @@ import Vuex from 'vuex'
 import {path, V, getFactorySel} from '../js/variable'
 import Btn from '../components/btn'
 import md5 from 'js-md5'
+import laydate from '../js/lib/laydate'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -45,7 +47,8 @@ export default {
       factoryNum: '',
       warehouseNum: '',
       warehouseStatus: false,
-      name: this.$route.query.name
+      name: this.$route.query.name,
+      dateVal: ''
     }
   },
   computed: {
@@ -57,6 +60,7 @@ export default {
     },
     select: function() {
       // localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "1012", warehouseNum: "' + this.warehouseNum + '"}')
+      let dateVal = document.getElementById('date').value
       // 仓库名称与代号保持一致
       for (let i in this.warehouses) {
         if (this.warehouses[i].code === this.warehouseNum) {
@@ -64,7 +68,9 @@ export default {
         }
       }
       localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
+      localStorage.setItem('dateVal', dateVal)
       this.$router.push({ path: '/module?name=' + this.name })
+
       // this.$router.push({ path: '/module?name=' + this.name + '&factoryNum=1012&warehouseNum=' + this.warehouseNum + '&warehouse=' + this.warehouse })
     },
     setWarehouse: function() {
@@ -164,7 +170,12 @@ export default {
     this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
   },
   mounted() {
-
+    let timestamp = Date.parse(new Date())
+    // 执行一个laydate实例
+    laydate.render({
+      elem: '#date', // 指定元素
+      value: new Date(timestamp)
+    })
   }
 }
 </script>
@@ -199,6 +210,16 @@ export default {
     padding-top: 20px;
   }
   select{
+    display: block;
+    width: 100%;
+    height: 30px;
+    margin-bottom: 10px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    border: 1px solid $borderOut;
+    text-indent: 10px;
+  }
+  form input{
     display: block;
     width: 100%;
     height: 30px;

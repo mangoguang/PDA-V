@@ -128,11 +128,17 @@ export default {
       warehouseNum: '',
       ZDDLX: this.$route.query.ZDDLX,
       clearsnArr: true, // 用于销售模块snArr初始化
-      salestockupNum: 0
+      salestockupNum: 0,
+      errorTime: 0,
+      dateVal: localStorage.getItem('dateVal')
     }
   },
   watch: {
     'inputVal': function() {
+      if (this.inputVal.indexOf('#') !== -1 || this.inputVal.indexOf('*') !== -1) {
+        this.inputVal = this.inputVal.replace(/#/g, '$').replace(/\*/g, '$')
+        return
+      }
       if (this.ifVerify) {
         this.verify()
       } else {
@@ -592,7 +598,7 @@ export default {
     verify() {
       let num = this.inputVal
       // if (num.length === 13 || num.length === 23 || num.length === 22 || num.length >= 27) {
-        if (num.length >= 13) {
+        if (num.length >= 8) {
         if (this.orderType === 1) {
           this.verify1()
         } else if (this.orderType === 2) {
@@ -644,6 +650,7 @@ export default {
         }
         // 校验成功
         if (data.ZXXLX === 'S') {
+          alert(fbtype)
           _this.inputVal = ''
           // 标准包
           if (fbtype === 0) {
@@ -662,6 +669,7 @@ export default {
             _this.focusStatus = true
             // _this.hadscanCount++
           } else {
+            alert(123)
             // 合包
             arr[index].ZJYZT = _this.verifyStatus()
             // 合包主条码通过，则子条码全部通过
@@ -679,7 +687,10 @@ export default {
           _this.inputVal = ''
           _this.errorShow = true
           _this.inputVal = ''
-          _this.$store.commit('errorMsg', data.ZTXXX)
+          setTimeout(function timer() {
+            _this.$store.commit('errorMsg', data.ZTXXX)
+          }, 1000)
+          // setTimeout(_this.errorShow = false, 1000)
           // _this.inputVal = ''
           // alert(data.ZTXXX)
         }
@@ -722,6 +733,9 @@ export default {
             _this.errorShow = true
             _this.$store.commit('errorMsg', data.ZTXXX)
             _this.inputVal = ''
+            setTimeout(function timer() {
+              _this.errorShow = false
+            }, 1000)
           }
         })
       // } else {
@@ -771,6 +785,7 @@ export default {
           ZDEL: 0
         }
       } else if (this.urlParams === 'salesoutput') {
+        console.log('11', arr[i].ITEM_NO, arr)
         // let temp = this.snArr[0]
         params.data = {
           VBELN: arr[i].BUS_NO,
@@ -930,21 +945,25 @@ export default {
       }
       return temp
     },
-    // 确认入库
+    // 确认入库123
     setSureIn() {
       let [_this, params, url] = [this, '', '']
       let ZIP1 = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal1') + '_' + localStorage.getItem('printVal1')
-      if (this.urlParams === 'salesoutput' || this.urlParams === 'salesreturn') {
-        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ' } }'
+      if (this.urlParams === 'salesreturn') {
+        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + this.dateVal + '" } }'
+        params = setParams(params)
+      } else if (this.urlParams === 'salesoutput') {
+        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '/' + localStorage.getItem('fullName') + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + this.dateVal + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'salestockup') {
-        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1 } }'
+        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZDATE: "' + this.dateVal + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'purchase') {
-        params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '"} }'
+        params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '", ZDATE: "' + this.dateVal + '"} }'
         params = setParams(params)
       } else if (this.urlParams === 'product') {
         let myDate = new Date()
+        let dateArr = localStorage.getItem('dateVal').split('-')
         function turnDate(num) {
           if (num < 10) {
             num = '0' + num
@@ -954,15 +973,16 @@ export default {
         params = {
           ZRKDH: this.BUS_NO,
           ZGZRY: '' + this.account + '',
-          ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
+          // ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
+          ZGZRQ: dateArr[0] + dateArr[1] + dateArr[2],
           ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
           LGORT: this.warehouseNum
         }
       } else if (this.urlParams === 'allot') {
-        params = '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
+        params = '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '", ZDATE: "' + this.dateVal + '"} }'
         params = setParams(params)
       } else if (this.urlParams === 'allotinbound') {
-        params = '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '"} }'
+        params = '{ "Item": {EBELN: ' + this.BUS_NO + ', ZQRKZ: 1, ZGH: "' + this.account + '", WERKS: "' + this.factoryNum + '", LGORT: "' + this.warehouseNum + '", ZDATE: "' + this.dateVal + '"} }'
         params = setParams(params)
       }
       if (this.urlParams === 'product') {
@@ -1086,15 +1106,15 @@ export default {
       window.apiready(url, params).then(function(data) {
         if (data) {
           _this.putInShow = false
-          if (data.MT_DeleteSN_Resp.Item) {
-            data = data.MT_DeleteSN_Resp.Item
-          }
-          if (data.ZXXLX === 'S') {
-            alert('删除成功！')
-            _this.snListUrl()
-          } else {
-            alert(data.ZTXXX)
-          }
+        if (data.MT_DeleteSN_Resp.Item) {
+          data = data.MT_DeleteSN_Resp.Item
+        }
+        if (data.ZXXLX === 'S') {
+          alert('删除成功！')
+          _this.snListUrl()
+        } else {
+          alert(data.ZTXXX)
+        }
         } else {
           alert('请求超时！')
           _this.putInShow = false

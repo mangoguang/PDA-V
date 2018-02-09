@@ -5,9 +5,9 @@
       <li v-for="(arr, index) in productScanList" :key="arr[0]" :class="{on: arr[3]}">
         <ul>
           <li class="li1">{{index+1}}</li>
-          <li class="li2"><p>{{arr[0]}}</p></li>
+          <li class="li2"><input type="text" :value="arr[0]" disabled="disabled"></li>
           <li class="li4">{{arr[2]}}</li>
-          <li class="li3"><p>{{arr[1]}}</p></li>
+          <li class="li3"><input type="text" :value="arr[1]"></li>
         </ul>
       </li>
     </ul>
@@ -16,23 +16,23 @@
         <ul>
           <li class="li1">{{index+1}}</li>
           <li class="li2">{{order[0]}}</li>
-          <li class="li3 tr2in1"><p>{{order[1]}}</p></li>
+          <li class="li3 tr2in1"><input type="text" :value="order[1]" disabled="disabled"></li>
         </ul>
       </li>
       <li v-if="name==='salesreturn' || name==='stock' || name==='product'" v-for="(order,index) in orders" :key="order[0]" @click="toOrderDetail(order[0], order[3])">
         <ul>
           <li class="li1">{{index+1}}</li>
-          <li class="li2">{{order[0]}}</li>
-          <li class="li4">{{order[2]}}</li>
-          <li class="li3"><p>{{order[1]}}</p></li>
+          <li class="li2"><input type="text" :value="order[0]" disabled="disabled"></li>
+          <li class="li4"><input type="text" :value="order[2]" disabled="disabled"></li>
+          <li class="li3"><input type="text" :value="order[1]" disabled="disabled"></li>
         </ul>
       </li>
       <li v-if="name==='allot' || name==='allotinbound'" v-for="(order,index) in orders" :key="order[0]" @click="toOrderDetail(order[0], order[3])">
         <ul>
           <li class="li1">{{index+1}}</li>
-          <li class="li2">{{order[0]}}</li>
-          <li class="li3"><p>{{order[1]}}</p></li>
-          <li class="li4">{{order[2]}}</li>
+          <li class="li2"><input type="text" :value="order[0]" disabled="disabled"></li>
+          <li class="li3"><input type="text" :value="order[1]" disabled="disabled"></li>
+          <li class="li4"><input type="text" :value="order[2]" disabled="disabled"></li>
         </ul>
       </li>
     </ul>
