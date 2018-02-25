@@ -650,7 +650,6 @@ export default {
         }
         // 校验成功
         if (data.ZXXLX === 'S') {
-          alert(fbtype)
           _this.inputVal = ''
           // 标准包
           if (fbtype === 0) {
@@ -669,7 +668,6 @@ export default {
             _this.focusStatus = true
             // _this.hadscanCount++
           } else {
-            alert(123)
             // 合包
             arr[index].ZJYZT = _this.verifyStatus()
             // 合包主条码通过，则子条码全部通过
@@ -947,8 +945,12 @@ export default {
     },
     // 确认入库123
     setSureIn() {
-      let [_this, params, url] = [this, '', '']
-      let ZIP1 = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal1') + '_' + localStorage.getItem('printVal1')
+      let [_this, params, url, ZIP1] = [this, '', '', '']
+      if (localStorage.getItem('departmentVal')) {
+        ZIP1 = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal1') + '_' + localStorage.getItem('printVal1')
+      } else {
+        alert('设置出错！')
+      }
       if (this.urlParams === 'salesreturn') {
         params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + this.dateVal + '" } }'
         params = setParams(params)
