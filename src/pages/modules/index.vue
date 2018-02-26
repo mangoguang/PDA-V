@@ -427,10 +427,11 @@ export default {
       let checkArr = this.productScanList.some(function(element) {
         return (element[3] === undefined)
       })
-      if (checkArr) {
-        alert('条码未扫完全。')
-        return
-      }
+      // 不需要检测是否扫描完。
+      // if (checkArr) {
+      //   alert('条码未扫完全。')
+      //   return
+      // }
       let [_this, temp, url, params, departmentMsg, myDate] = [this, '', '', '', eval('(' + localStorage.getItem('departmentMsg') + ')'), new Date()]
       let ZIP = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal') + '_' + localStorage.getItem('printVal')
       let ZIP1 = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal1') + '_' + localStorage.getItem('printVal1')
