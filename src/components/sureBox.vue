@@ -2,7 +2,7 @@
 	<div class="sureBoxContain">
 		<div class="sureBox">
 			<div class="top">
-			  <p>入库数量少于计划入库数量，是否继续入库？</p>
+			  <p>{{outinType}}库数量少于计划{{outinType}}库数量，是否继续{{outinType}}库？</p>
 			</div>
 			<div class="bottom clearfix">
 				<slot></slot>
@@ -11,8 +11,26 @@
 	</div>
 </template>
 <script>
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import Vuex from 'vuex'
+Vue.use(VueRouter)
+Vue.use(Vuex)
   export default {
-    name: 'SureBox'
+		name: 'SureBox',
+		data () {
+			return {
+
+			}
+		},
+		computed: {
+			outinType() {
+				return this.$store.state.outinType
+			}
+		},
+		mounted() {
+
+		}
   }
 </script>
 <style scoped lang="scss">

@@ -48,7 +48,8 @@ const store = new Vuex.Store({
     delBtn: true,
     chekboxShow: false,
     checkboxList: [],
-    scanSNVal: ''
+    scanSNVal: '',
+    outinType: '入'
   },
   mutations: {
     // 皮肤选择
@@ -111,7 +112,9 @@ const store = new Vuex.Store({
     // 用于表示复选框是否选中
     checkboxList: (state, x) => state.checkboxList = x,
     // 扫描输入框值
-    scanSNVal: (state, x) => state.scanSNVal = x
+    scanSNVal: (state, x) => state.scanSNVal = x,
+    // 出入库方式，（出库/入库）
+    outinType: (state, x) => state.outinType = x
   },
   actions: {
     incrementAsync({

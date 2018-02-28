@@ -173,6 +173,9 @@ export default {
     }
   },
   methods: {
+    setoutinType(x) {
+      this.$store.commit('outinType', x)
+    },
     setalertMsg(x) {
       this.$store.commit('alertMsg', x)
     },
@@ -952,18 +955,23 @@ export default {
         alert('设置出错！')
       }
       if (this.urlParams === 'salesreturn') {
+        this.setoutinType('入')
         params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + this.dateVal + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'salesoutput') {
+        this.setoutinType('出')
         params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '/' + localStorage.getItem('fullName') + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + this.dateVal + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'salestockup') {
+        this.setoutinType('入')
         params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZDATE: "' + this.dateVal + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'purchase') {
+        this.setoutinType('入')
         params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '", ZDATE: "' + this.dateVal + '"} }'
         params = setParams(params)
       } else if (this.urlParams === 'product') {
+        this.setoutinType('入')
         let myDate = new Date()
         let dateArr = localStorage.getItem('dateVal').split('-')
         function turnDate(num) {
