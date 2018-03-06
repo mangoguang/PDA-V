@@ -23,7 +23,7 @@
           <input :value="'单号：' + opNum" disabled="disabled">
         </li>
         <li v-show="canDel">
-          <input type="text" v-model="inputVal" placeholder="条码" v-focus="focusStatus">
+          <input type="text" v-model="inputVal" placeholder="条码" v-focus="focusStatus" @keyup.enter="enterKey">
           <button @click="clearInput" class="clearInput"></button>
         </li>
       </ul>
@@ -130,11 +130,24 @@ export default {
       clearsnArr: true, // 用于销售模块snArr初始化
       salestockupNum: 0,
       errorTime: 0,
-      dateVal: localStorage.getItem('dateVal')
+      dateVal: localStorage.getItem('dateVal'),
+      numLength: 0,
+      canVerify: true, // 判断输入框是否为人工输入
+      mixType: false // 既是标准包，又有子条码是，为true
     }
   },
   watch: {
     'inputVal': function() {
+      // 判断是否人工输入
+      if (this.inputVal.length === this.numLength + 1) {
+        this.numLength++
+        this.canVerify = false
+      } else if (this.inputVal.length === this.numLength - 1) {
+        this.numLength--
+        this.canVerify = false
+      } else {
+        this.canVerify = true
+      }
       if (this.inputVal.indexOf('#') !== -1 || this.inputVal.indexOf('*') !== -1) {
         this.inputVal = this.inputVal.replace(/#/g, '$').replace(/\*/g, '$')
         return
@@ -259,6 +272,15 @@ export default {
     },
     clearInput() {
       this.inputVal = ''
+    },
+    enterKey() {
+      if (this.orderType === 1) {
+        this.verify1()
+      } else if (this.orderType === 2) {
+        this.verify2()
+      } else {
+        this.verify3()
+      }
     },
     sureIn() {
       if (this.hadscanCount < this.scanCount) {
@@ -395,6 +417,7 @@ export default {
         this.turnArr(arr)
       // }
     },
+    // 检测条码的是否校验
     checkStatus(ZJYZT, urlParams) {
       let status = false
       if (urlParams === 'purchase') {
@@ -602,7 +625,7 @@ export default {
     verify() {
       let num = this.inputVal
       // if (num.length === 13 || num.length === 23 || num.length === 22 || num.length >= 27) {
-        if (num.length >= 8) {
+      if (num.length >= 8 && this.canVerify) {
         if (this.orderType === 1) {
           this.verify1()
         } else if (this.orderType === 2) {
@@ -620,6 +643,7 @@ export default {
         if (arr[i].Item === null || arr[i].Item === undefined) {
           if (arr[i].ZTIAOM) {
             if (num === arr[i].ZTIAOM.toString() || num === arr[i].MATNR.toString()) {
+              alert('biaozhun')
               fbtype = 0
               index = i
             }
@@ -629,14 +653,25 @@ export default {
           if (arr[i].Item[0].ZFBFS === 1) {
             for (let j in arr[i].Item) {
               if (num === arr[i].Item[j].ZTIAOMA_FB.toString()) {
+                alert('fenbao')
                 fbtype = 1
                 index = i
                 subindex = j
               }
             }
+          } else if (arr[i].Item[0].ZFBFS === 0) {
+            // 既是标准包又有子条码的订单
+            if (num === arr[i].Item[0].ZTIAOMA_FB.toString()) {
+              alert('biaozhun')
+              fbtype = 0
+              index = i
+              subindex = 0
+              this.mixType = true
+            }
           } else {
             // 合包
             if (num === arr[i].ZTIAOM.toString()) {
+              alert('hebao')
               fbtype = 2
               index = i
             }
@@ -657,7 +692,13 @@ export default {
           _this.inputVal = ''
           // 标准包
           if (fbtype === 0) {
-            arr[index].ZJYZT = _this.verifyStatus()
+            // 如果既是标准包，又有子条码且为销售出库时
+            if (_this.mixType) {
+              arr[index].Item[subindex].ZJYZT = _this.verifyStatus()
+              arr[index].ZJYZT = _this.verifyStatus()
+            } else {
+              arr[index].ZJYZT = _this.verifyStatus()
+            }
             _this.setSNArr(arr)
             _this.turnArr(arr)
             // _this.inputVal = ''
@@ -787,7 +828,6 @@ export default {
           ZDEL: 0
         }
       } else if (this.urlParams === 'salesoutput') {
-        console.log('11', arr[i].ITEM_NO, arr)
         // let temp = this.snArr[0]
         params.data = {
           VBELN: arr[i].BUS_NO,
@@ -1028,22 +1068,22 @@ export default {
       } else {
         _this.setalertMsg('正在入库...')
         _this.putInShow = true
-        // window.apiready(url, params).then(function(data) {
-        //   if (data) {
-        //     tip(data)
-        //     _this.putInShow = false
-        //   } else {
-        //     alert('请求超时！')
-        //     _this.putInShow = false
-        //   }
-        // })
-        V.post(url, params).then(function(data) {
-          _this.putInShow = false
-          tip(data)
-        }).catch((res) => {
-          alert('请求超时！')
-          _this.loadingShow(false)
+        window.apiready(url, params).then(function(data) {
+          if (data) {
+            tip(data)
+            _this.putInShow = false
+          } else {
+            alert('请求超时！')
+            _this.putInShow = false
+          }
         })
+        // V.post(url, params).then(function(data) {
+        //   _this.putInShow = false
+        //   tip(data)
+        // }).catch((res) => {
+        //   alert('请求超时！')
+        //   _this.loadingShow(false)
+        // })
         function tip(data) {
           if (_this.urlParams === 'purchase') {
             if (data.MT_Purchase_Confirm_Resp.Item) {
@@ -1099,24 +1139,8 @@ export default {
       params = setParams(params)
       this.setalertMsg('正在删除...')
       _this.putInShow = true
-      V.post(url, params).then(function(data) {
-        _this.putInShow = false
-        if (data.MT_DeleteSN_Resp.Item) {
-          data = data.MT_DeleteSN_Resp.Item
-        }
-        if (data.ZXXLX === 'S') {
-          alert('删除成功！')
-          _this.snListUrl()
-        } else {
-          alert(data.ZTXXX)
-        }
-      }).catch((res) => {
-        alert('请求超时！')
-        _this.loadingShow(false)
-      })
-      // window.apiready(url, params).then(function(data) {
-      //   if (data) {
-      //     _this.putInShow = false
+      // V.post(url, params).then(function(data) {
+      //   _this.putInShow = false
       //   if (data.MT_DeleteSN_Resp.Item) {
       //     data = data.MT_DeleteSN_Resp.Item
       //   }
@@ -1126,11 +1150,27 @@ export default {
       //   } else {
       //     alert(data.ZTXXX)
       //   }
-      //   } else {
-      //     alert('请求超时！')
-      //     _this.putInShow = false
-      //   }
+      // }).catch((res) => {
+      //   alert('请求超时！')
+      //   _this.loadingShow(false)
       // })
+      window.apiready(url, params).then(function(data) {
+        if (data) {
+          _this.putInShow = false
+        if (data.MT_DeleteSN_Resp.Item) {
+          data = data.MT_DeleteSN_Resp.Item
+        }
+        if (data.ZXXLX === 'S') {
+          alert('删除成功！')
+          _this.snListUrl()
+        } else {
+          alert(data.ZTXXX)
+        }
+        } else {
+          alert('请求超时！')
+          _this.putInShow = false
+        }
+      })
       this.$store.commit('checkBoxShow', false)
       this.showCheckbox = false
     }

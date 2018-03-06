@@ -61,6 +61,32 @@ export default{
       })
       return ajax
     }
+  },
+  mounted() {
+    /* 水波纹 */
+    var addRippleEffect = function(e) {
+        var body = document.getElementById('app')
+        console.log(body)
+        var target = e.target
+        if (target.tagName.toLowerCase() === '') return false
+        var rect = target.getBoundingClientRect()
+        var ripple = target.querySelector('.ripple')
+        if (!ripple) {
+            ripple = document.createElement('span')
+            ripple.className = 'ripple'
+            ripple.style.height = ripple.style.width = Math.max(30, 30) + 'px'
+            body.appendChild(ripple)
+        }
+        ripple.classList.remove('show')
+        var top = e.pageY - 15
+        var left = e.pageX - 15
+        ripple.style.top = top + 'px'
+        ripple.style.left = left + 'px'
+        ripple.classList.add('show')
+        return false
+    }
+
+    document.addEventListener('click', addRippleEffect, false)
   }
 }
 </script>
@@ -75,6 +101,96 @@ export default{
   z-index: 1000;
   height: 25px;
   width: 100%;
+}
+/* 水波纹样式 */
+span {
+  position: relative;
+  display: block;
+  height: 3em;
+  letter-spacing: .2em;
+  font-weight: bold;
+  cursor: pointer;
+  overflow: hidden;
+  user-select: none;
+  border-radius: 2px;
+}
+
+.ripple {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 100%;
+  pointer-events: none;
+  transform: scale(0);
+  -moz-transform: scale(0);
+  -webkit-transform: scale(0);
+  -o-transform: scale(0);
+  -ms-transform: scale(0);
+  z-index: 9999;
+  &.show {
+    animation: ripple .75s ease-out;
+    -moz-animation: ripple .75s ease-out;
+    -webkit-animation: ripple .75s ease-out;
+    -o-animation: ripple .75s ease-out;
+    -ms-animation: ripple .75s ease-out;
+  }
+}
+@keyframes ripple {
+  to {
+    transform: scale(2);
+    -moz-transform: scale(2);
+    -webkit-transform: scale(2);
+    -o-transform: scale(2);
+    -ms-transform: scale(2);
+    opacity: 0;
+  }
+}
+
+
+@-moz-keyframes ripple {
+  to {
+    transform: scale(2);
+    -moz-transform: scale(2);
+    -webkit-transform: scale(2);
+    -o-transform: scale(2);
+    -ms-transform: scale(2);
+    opacity: 0;
+  }
+}
+
+
+@-webkit-keyframes ripple {
+  to {
+    transform: scale(2);
+    -moz-transform: scale(2);
+    -webkit-transform: scale(2);
+    -o-transform: scale(2);
+    -ms-transform: scale(2);
+    opacity: 0;
+  }
+}
+
+
+@-o-keyframes ripple {
+  to {
+    transform: scale(2);
+    -moz-transform: scale(2);
+    -webkit-transform: scale(2);
+    -o-transform: scale(2);
+    -ms-transform: scale(2);
+    opacity: 0;
+  }
+}
+
+
+@-ms-keyframes ripple {
+  to {
+    transform: scale(2);
+    -moz-transform: scale(2);
+    -webkit-transform: scale(2);
+    -o-transform: scale(2);
+    -ms-transform: scale(2);
+    opacity: 0;
+  }
 }
 @each $skin, $col, $subCol, $strongCol, $btnBgCol, $btnBgSubCol in $skin-data {
   .#{$skin} {

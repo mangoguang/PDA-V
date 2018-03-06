@@ -41,6 +41,10 @@ table{
   border-collapse: collapse;
   min-width: 10rem;
 }
+button:hover{
+  box-shadow: 3px 3px 2px #888888;
+}
+@charset "UTF-8";
 .h25 {
   position: fixed;
   top: 0;
@@ -48,6 +52,51 @@ table{
   z-index: 1000;
   height: 25px;
   width: 100%;
+}
+
+/* 水波纹样式 */
+span {
+  position: relative;
+  display: block;
+  height: 3em;
+  letter-spacing: .2em;
+  font-weight: bold;
+  cursor: pointer;
+  overflow: hidden;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  border-radius: 2px;
+}
+.ripple {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 100%;
+  pointer-events: none;
+  transform: scale(0);
+  -moz-transform: scale(0);
+  -webkit-transform: scale(0);
+  -o-transform: scale(0);
+  -ms-transform: scale(0);
+  z-index: 9999;
+}
+.ripple.show {
+    animation: ripple .75s ease-out;
+    -moz-animation: ripple .75s ease-out;
+    -webkit-animation: ripple .75s ease-out;
+    -o-animation: ripple .75s ease-out;
+    -ms-animation: ripple .75s ease-out;
+}
+@keyframes ripple {
+to {
+    transform: scale(2);
+    -moz-transform: scale(2);
+    -webkit-transform: scale(2);
+    -o-transform: scale(2);
+    -ms-transform: scale(2);
+    opacity: 0;
+}
 }
 .skinA .h25 {
   background: #007aff;
@@ -296,4 +345,4 @@ li[data-v-db7be948]:last-child {
 }
 }
 
-/*# sourceMappingURL=app.c44e88ba52727fbe2b040b024580648f.css.map*/
+/*# sourceMappingURL=app.86acb25f1ba1a68bd0a70da2fc8dd21e.css.map*/

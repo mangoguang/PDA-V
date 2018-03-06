@@ -41,3 +41,6 @@ table{
   border-collapse: collapse;
   min-width: 10rem;
 }
+button:hover{
+  box-shadow: 3px 3px 2px #888888;
+}
