@@ -643,7 +643,6 @@ export default {
         if (arr[i].Item === null || arr[i].Item === undefined) {
           if (arr[i].ZTIAOM) {
             if (num === arr[i].ZTIAOM.toString() || num === arr[i].MATNR.toString()) {
-              alert('biaozhun')
               fbtype = 0
               index = i
             }
@@ -653,7 +652,6 @@ export default {
           if (arr[i].Item[0].ZFBFS === 1) {
             for (let j in arr[i].Item) {
               if (num === arr[i].Item[j].ZTIAOMA_FB.toString()) {
-                alert('fenbao')
                 fbtype = 1
                 index = i
                 subindex = j
@@ -662,7 +660,6 @@ export default {
           } else if (arr[i].Item[0].ZFBFS === 0) {
             // 既是标准包又有子条码的订单
             if (num === arr[i].Item[0].ZTIAOMA_FB.toString()) {
-              alert('biaozhun')
               fbtype = 0
               index = i
               subindex = 0
@@ -671,7 +668,6 @@ export default {
           } else {
             // 合包
             if (num === arr[i].ZTIAOM.toString()) {
-              alert('hebao')
               fbtype = 2
               index = i
             }

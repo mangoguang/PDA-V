@@ -68,7 +68,12 @@ export default {
         }
       }
       localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
-      localStorage.setItem('dateVal', dateVal)
+      if (dateVal === undefined || dateVal === '') {
+        alert('请选择日期！')
+        return
+      } else {
+        localStorage.setItem('dateVal', dateVal)
+      }
       this.$router.push({ path: '/module?name=' + this.name })
 
       // this.$router.push({ path: '/module?name=' + this.name + '&factoryNum=1012&warehouseNum=' + this.warehouseNum + '&warehouse=' + this.warehouse })
