@@ -133,11 +133,15 @@ export default {
       dateVal: localStorage.getItem('dateVal'),
       numLength: 0,
       canVerify: true, // 判断输入框是否为人工输入
-      mixType: false // 既是标准包，又有子条码是，为true
+      mixType: false, // 既是标准包，又有子条码是，为true
+      noRepeat: true
     }
   },
   watch: {
     'inputVal': function() {
+      if (this.inputVal === '') {
+        this.numLength = 0
+      }
       // 判断是否人工输入
       if (this.inputVal.length === this.numLength + 1) {
         this.numLength++
@@ -274,6 +278,10 @@ export default {
       this.inputVal = ''
     },
     enterKey() {
+      if (!this.noRepeat) {
+        return
+      }
+      this.noRepeat = false
       if (this.orderType === 1) {
         this.verify1()
       } else if (this.orderType === 2) {
@@ -358,17 +366,20 @@ export default {
     turnArrParams(data) {
       let arr = ''
       if (this.urlParams === 'salestockup') {
+        this.setoutinType('备货')
         if (data.MT_Salestockup_GetSN_Resp.Header) {
           arr = data.MT_Salestockup_GetSN_Resp.Header
           this.salestockupNum = parseInt(arr[0].LFIMG)
         }
         this.setinBtnName = '确认备货'
       } else if (this.urlParams === 'salesoutput') {
+        this.setoutinType('出库')
         if (data.MT_Salesoutput_GetSN_Resp.Header) {
           arr = data.MT_Salesoutput_GetSN_Resp.Header
         }
         this.setinBtnName = '确认出库'
       } else if (this.urlParams === 'purchase') {
+        this.setoutinType('入库')
         if (data.MT_Purchase_GetSN_Resp.Header) {
           arr = data.MT_Purchase_GetSN_Resp.Header
           for (let i = 0; i < arr.length; i++) {
@@ -378,6 +389,7 @@ export default {
           }
         }
       } else if (this.urlParams === 'product') {
+        this.setoutinType('入库')
         if (data.MT_Product_GetSN_Resp.Header.Item) {
           arr = data.MT_Product_GetSN_Resp.Header.Item
           for (let i in arr) {
@@ -385,14 +397,17 @@ export default {
           }
         }
       } else if (this.urlParams === 'salesreturn') {
+        this.setoutinType('入库')
         if (data.MT_SalesReturn_GetSN_Resp.Header) {
           arr = data.MT_SalesReturn_GetSN_Resp.Header
         }
       } else if (this.urlParams === 'allotinbound') {
+        this.setoutinType('入库')
         if (data.MT_AllotInbound_GetSN_Resp.Header) {
           arr = data.MT_AllotInbound_GetSN_Resp.Header
         }
       } else if (this.urlParams === 'allot') {
+        this.setoutinType('出库')
         if (data.MT_Allot_GetSN_Resp.Header) {
           arr = data.MT_Allot_GetSN_Resp.Header
         }
@@ -894,6 +909,7 @@ export default {
         _this.loadingShow(true)
         // 提交校验AJAX
         V.get(params.url, params.data).then(function(data) {
+          _this.noRepeat = true
           _this.loadingShow(false)
           data = JSON.parse(data.responseText)
           resolve(data)
@@ -992,23 +1008,18 @@ export default {
         alert('设置出错！')
       }
       if (this.urlParams === 'salesreturn') {
-        this.setoutinType('入')
         params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + this.dateVal + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'salesoutput') {
-        this.setoutinType('出')
         params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '/' + localStorage.getItem('fullName') + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + this.dateVal + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'salestockup') {
-        this.setoutinType('入')
         params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZDATE: "' + this.dateVal + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'purchase') {
-        this.setoutinType('入')
         params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '", ZDATE: "' + this.dateVal + '"} }'
         params = setParams(params)
       } else if (this.urlParams === 'product') {
-        this.setoutinType('入')
         let myDate = new Date()
         let dateArr = localStorage.getItem('dateVal').split('-')
         function turnDate(num) {
@@ -1062,7 +1073,7 @@ export default {
         //   _this.putInShow = false
         // }
       } else {
-        _this.setalertMsg('正在入库...')
+        _this.setalertMsg('正在' + this.$store.state.outinType + '...')
         _this.putInShow = true
         window.apiready(url, params).then(function(data) {
           if (data) {

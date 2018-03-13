@@ -2,7 +2,7 @@
 	<div class="sureBoxContain">
 		<div class="sureBox">
 			<div class="top">
-			  <p>{{outinType}}库数量少于计划{{outinType}}库数量，是否继续{{outinType}}库？</p>
+			  <p>{{outinType}}数量少于计划{{outinType}}数量，是否继续{{outinType}}？</p>
 			</div>
 			<div class="bottom clearfix">
 				<slot></slot>

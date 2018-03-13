@@ -49,7 +49,7 @@ const store = new Vuex.Store({
     chekboxShow: false,
     checkboxList: [],
     scanSNVal: '',
-    outinType: '入'
+    outinType: ''
   },
   mutations: {
     // 皮肤选择
