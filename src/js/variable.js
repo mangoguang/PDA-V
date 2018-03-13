@@ -169,9 +169,9 @@ function ajax (type, url, params) {
 }
 
 function setParams(obj) {
-	obj = {
-		body: obj
-	}
+	// obj = {
+	// 	body: obj
+	// }
 	return obj
 }
 
