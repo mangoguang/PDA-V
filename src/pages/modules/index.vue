@@ -60,8 +60,7 @@ export default {
       printVal: localStorage.getItem('printVal'),
       account: '',
       printPlanSelNum: '',
-      dateVal: localStorage.getItem('dateVal'),
-      canSetIn: true // 防止双击重复提交数据
+      dateVal: localStorage.getItem('dateVal')
     }
   },
   computed: {
@@ -84,6 +83,12 @@ export default {
   methods: {
     setbottomBtnName(name) {
       this.$store.commit('bottomBtnName', name)
+    },
+    testTime(func) {
+      var start = new Date().getTime() // 起始时间
+      func() // 执行待测函数
+      var end = new Date().getTime() // 接受时间
+      console.log(end - start) + 'ms' // 返回函数执行需要时间
     },
     // 设置表头标题
     setTableH() {
@@ -138,13 +143,6 @@ export default {
       } else {
         url = path.sap + temp + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
       }
-      // if (this.moduleName === 'stock') {
-      //   url = path.sap + this.bottomBtnName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
-      // } else if (this.moduleName === 'purchase') {
-      //   url = path.sap + this.moduleName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
-      // } else if (this.moduleName === 'product') {
-      //   url = path.sap + this.moduleName + '/getcity?WERKS=' + this.factoryNum + '&LGORT=' + this.warehouseNum
-      // }
       return url
     },
     // 从后台获取订单列表
@@ -272,6 +270,7 @@ export default {
       if (this.bottomBtnName === 'scanbq') {
         // SN条码未扫描
         if (!temp) {
+          console.log(111)
           for (let i in data) {
             let arr = []
             arr[0] = data[i].MAKTX
@@ -314,7 +313,14 @@ export default {
           }
           this.setProductScanList(this.productScanList)
         } else {
-          alert('条码已扫描！')
+          let _this = this
+          // 检测扫描的条码是否在条码数组
+          let isSubNum = this.productScanList.some(function(item) {
+            return item[1].toString() === _this.searchNum
+          })
+          if (!isSubNum) {
+            alert('条码已扫描！')
+          }
           let Arr = cloneObj(this.productScanList)
           Arr[index][3] = true
           this.setProductScanList(Arr)
@@ -428,12 +434,7 @@ export default {
       return arr
     },
     setIn() {
-      // 防止双击重复提交数据
-      if (!this.canSetIn) {
-        return false
-      } else {
-        this.canSetIn = false
-      }
+      this.loadingShow(true)
       // 扫标签码模块检测分包条码是否扫描完全
       if (this.bottomBtnName === 'scanbq') {
         let checkArr = this.productScanList.some(function(element) {
@@ -442,6 +443,7 @@ export default {
         // 不需要检测是否扫描完。 // 恢复检测
         if (checkArr) {
           alert('条码未扫完全。')
+          this.loadingShow(false)
           return
         }
       }
@@ -491,12 +493,13 @@ export default {
       _this.putInShow = true
       if (this.snArr().length === 0) {
         alert('请先扫码！')
+        return
       } else {
         printCode(url, params)
       }
       function printCode(url, params) {
         V.post(url, params).then(function(data) {
-          _this.canSetIn = true
+          _this.loadingShow(false)
           _this.putInShow = false
           if (_this.bottomBtnName === 'scanbq') {
             data = data.MT_Produt_GenerateOrder_Resp.Header
@@ -524,6 +527,7 @@ export default {
         })
         // window.apiready(url, params).then(function(data) {
         //   if (data) {
+        //     _this.loadingShow(false)
         //     _this.putInShow = false
         //     if (_this.bottomBtnName === 'scanbq') {
         //       data = data.MT_Produt_GenerateOrder_Resp.Header
