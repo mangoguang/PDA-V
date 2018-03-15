@@ -76,7 +76,7 @@ export default {
       if (this.$route.params.module === 'productScan') {
         this.scan()
       } else {
-        this.searchOrder()
+        this.testTime(this.searchOrder)
       }
     }
   },
@@ -88,7 +88,7 @@ export default {
       var start = new Date().getTime() // 起始时间
       func() // 执行待测函数
       var end = new Date().getTime() // 接受时间
-      console.log(end - start) + 'ms' // 返回函数执行需要时间
+      console.log((end - start) + 'ms') // 返回函数执行需要时间
     },
     // 设置表头标题
     setTableH() {

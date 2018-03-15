@@ -53,7 +53,7 @@ Vue.use(Vuex)
     },
     computed: {
       orders() {
-        return this.$store.state.orders
+        return this.$store.state.orders.slice(0, 50)
       },
       bottomBtnName() {
         return this.$store.state.bottomBtnName
@@ -62,7 +62,7 @@ Vue.use(Vuex)
         return this.$store.state.moduleName
       },
       productScanList() {
-        return this.$store.state.productScanList
+        return this.$store.state.productScanList.slice(0, 10)
       }
     },
     methods: {
@@ -79,8 +79,6 @@ Vue.use(Vuex)
       }
     },
     created: function() {
-      console.log('success')
-      console.log(this.orders)
       if (this.$route.params.module === 'stock') {
         // 销售备货
         if (this.bottomBtnName === 'salestockup') {
