@@ -1022,9 +1022,12 @@ export default {
       } else if (this.urlParams === 'product') {
         let myDate = new Date()
         let dateArr = localStorage.getItem('dateVal').split('-')
+        if (dateArr[2].length === 1) {
+          dateArr[2] = '0' + dateArr[2]
+        }
         function turnDate(num) {
           if (num < 10) {
-            num = '0' + num
+            num = '0' + parseInt(num)
           }
           return num
         }
@@ -1032,7 +1035,7 @@ export default {
           ZRKDH: this.BUS_NO,
           ZGZRY: '' + this.account + '',
           // ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
-          ZGZRQ: dateArr[0] + dateArr[1] + dateArr[2],
+          ZGZRQ: dateArr[0] + turnDate(dateArr[1]) + turnDate(dateArr[2]),
           ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
           LGORT: this.warehouseNum
         }

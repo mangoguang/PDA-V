@@ -57,7 +57,6 @@ export default {
       warehouseNum: '',
       bottomBtn: true,
       btnName: '',
-      printVal: localStorage.getItem('printVal'),
       account: '',
       printPlanSelNum: '',
       dateVal: localStorage.getItem('dateVal')
@@ -89,6 +88,12 @@ export default {
       func() // 执行待测函数
       var end = new Date().getTime() // 接受时间
       console.log((end - start) + 'ms') // 返回函数执行需要时间
+    },
+    turnDate(num) {
+      if (num < 10) {
+        num = '0' + parseInt(num)
+      }
+      return num
     },
     // 设置表头标题
     setTableH() {
@@ -448,8 +453,10 @@ export default {
         }
       }
       let [_this, temp, url, params, departmentMsg, myDate] = [this, '', '', '', eval('(' + localStorage.getItem('departmentMsg') + ')'), new Date()]
-      let ZIP = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal') + '_' + localStorage.getItem('printVal')
+      let ZIP = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal') + '_' + localStorage.getItem('redPrintVal')
       let ZIP1 = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal1') + '_' + localStorage.getItem('printVal1')
+      let dataArr = this.dateVal.split('-')
+
       // let canSetIn = true
       if (this.bottomBtnName === 'scanbq') {
         for (let i in this.snArr()) {
@@ -457,22 +464,16 @@ export default {
         }
         temp = temp.substr(0, temp.length - 1)
         url = path.sap + 'product/generateorder'
-        function turnDate(num) {
-          if (num < 10) {
-            num = '0' + num
-          }
-          return num
-        }
         params = '{Header:{' +
           'ZBMDH: "' + departmentMsg.id + '",' +
           'ZBMMC: "' + departmentMsg.name + '",' +
           'ZRKYY: "' + this.account + '",' +
-          'ZRKEQ: "' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()) + '",' +
-          'ZRKSJ: "' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()) + '",' +
+          'ZRKEQ: "' + myDate.getFullYear() + this.turnDate(myDate.getMonth() + 1) + this.turnDate(myDate.getDate()) + '",' +
+          'ZRKSJ: "' + this.turnDate(myDate.getHours()) + this.turnDate(myDate.getMinutes()) + this.turnDate(myDate.getSeconds()) + '",' +
           'ZIP: "' + ZIP1 + '",' +
           // 'ZIP: "' + localStorage.getItem('printVal') + '",' +
           temp +
-        ', date: "' + this.dateVal + '"}}'
+        ', date: "' + dateArr[0] + this.turnDate(dateArr[1]) + this.turnDate(dateArr[2]) + '"}}'
         params = setParams(params)
       } else {
         let arr = []
@@ -485,7 +486,7 @@ export default {
             'ZGH: "' + this.account + '"' +
           '}'
         }
-        params = '{' + arr.join(',') + ', ZDATE: "' + this.dateVal + '"}'
+        params = '{' + arr.join(',') + ', ZDATE: "' + dateArr[0] + this.turnDate(dateArr[1]) + this.turnDate(dateArr[2]) + '"}'
         console.log(params)
         params = setParams(params)
         url = path.sap + 'securitycode/print'

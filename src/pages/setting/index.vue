@@ -31,8 +31,8 @@
         <span></span>
       </li>
       <li>
-        <label for="print">打印机</label>
-        <select id="print" v-model="printVal" @change="changePrint">
+        <label for="print">打印机(红)</label>
+        <select id="print" v-model="redPrintVal" @change="changePrint">
           <option v-for="obj in printList" :value="obj.printercode" :key="obj.printercode">{{ obj.printercode }}</option>
         </select>
         <span></span>
@@ -112,7 +112,7 @@ export default {
       lineList: [],
       lineVal1: localStorage.getItem('lineVal1'),
       lineList1: [],
-      printVal: localStorage.getItem('printVal'),
+      redPrintVal: localStorage.getItem('redPrintVal'),
       printList: [], // 标签打印机
       printVal1: localStorage.getItem('printVal1'),
       printList1: [], // 标签打印机
@@ -362,9 +362,9 @@ export default {
         console.log('88888', data)
         data = data.printers
         _this.printList = data
-        if (!_this.printVal && data.length > 0) {
-          _this.printVal = data[0].printercode
-          localStorage.setItem('printVal', data[0].printercode)
+        if (!_this.redPrintVal && data.length > 0) {
+          _this.redPrintVal = data[0].printercode
+          localStorage.setItem('redPrintVal', data[0].printercode)
         }
       }).catch(() => {
         alert('请求超时！')
@@ -373,7 +373,7 @@ export default {
     },
     // 将打印机名称缓存到本地
     changePrint() {
-      localStorage.setItem('printVal', this.printVal)
+      localStorage.setItem('redPrintVal', this.redPrintVal)
     },
     getPrint1() {
       let _this = this
