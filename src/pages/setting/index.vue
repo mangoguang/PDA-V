@@ -31,8 +31,15 @@
         <span></span>
       </li>
       <li>
-        <label for="print">打印机(红)</label>
-        <select id="print" v-model="redPrintVal" @change="changePrint">
+        <label for="redPrint">打印机(红)</label>
+        <select id="redPrint" v-model="redPrintVal" @change="changeRedPrint">
+          <option v-for="obj in printList" :value="obj.printercode" :key="obj.printercode">{{ obj.printercode }}</option>
+        </select>
+        <span></span>
+      </li>
+      <li>
+        <label for="blackPrint">打印机(黑)</label>
+        <select id="blackPrint" v-model="blackPrintVal" @change="changeBlackPrint">
           <option v-for="obj in printList" :value="obj.printercode" :key="obj.printercode">{{ obj.printercode }}</option>
         </select>
         <span></span>
@@ -113,6 +120,7 @@ export default {
       lineVal1: localStorage.getItem('lineVal1'),
       lineList1: [],
       redPrintVal: localStorage.getItem('redPrintVal'),
+      blackPrintVal: localStorage.getItem('blackPrintVal'),
       printList: [], // 标签打印机
       printVal1: localStorage.getItem('printVal1'),
       printList1: [], // 标签打印机
@@ -204,7 +212,6 @@ export default {
       _this.putInShow = true
       ajax('GET', url, null).then((data) => {
         _this.putInShow = false
-        console.log('pppppoooo', data)
         data = data.MT_SecurityCode_GetModule_Resp.Item
         _this.printPlanList = data
         let temp = localStorage.getItem('printPlanMsg')
@@ -212,9 +219,6 @@ export default {
           _this.printPlanSelNum = data[0].ZBQXH
           localStorage.setItem('printPlanMsg', JSON.stringify(data[0]))
         }
-      }).catch(() => {
-        alert('请求超时！')
-          _this.loadingShow(false)
       })
     },
     // 将打印方案缓存到本地
@@ -365,6 +369,8 @@ export default {
         if (!_this.redPrintVal && data.length > 0) {
           _this.redPrintVal = data[0].printercode
           localStorage.setItem('redPrintVal', data[0].printercode)
+          _this.blackPrintVal = data[0].printercode
+          localStorage.setItem('blackPrintVal', data[0].printercode)
         }
       }).catch(() => {
         alert('请求超时！')
@@ -372,8 +378,11 @@ export default {
       })
     },
     // 将打印机名称缓存到本地
-    changePrint() {
+    changeRedPrint() {
       localStorage.setItem('redPrintVal', this.redPrintVal)
+    },
+    changeBlackPrint() {
+      localStorage.setItem('blackPrintVal', this.blackPrintVal)
     },
     getPrint1() {
       let _this = this
@@ -444,6 +453,9 @@ export default {
     }
   },
   created() {
+
+  },
+  mounted() {
     this.loadingShow(false)
     getPrintPlanMsg(this)
     getFactorySel(this)
@@ -452,9 +464,6 @@ export default {
     this.getModule()
     this.getFactory()
     this.getDepartment()
-  },
-  mounted() {
-
   }
 }
 </script>

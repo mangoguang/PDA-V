@@ -32,7 +32,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {path, V, cloneObj, getFactorySel, getPrintPlanMsg, setParams} from '../../js/variable.js'
+import {path, V, cloneObj, getFactorySel, getPrintPlanMsg, setParams, version} from '../../js/variable.js'
 import HeadComponent from '../../components/header'
 // import TableH from '../../components/table-h'
 import TableTr from '../../components/table-tr-op'
@@ -94,6 +94,47 @@ export default {
         num = '0' + parseInt(num)
       }
       return num
+    },
+    afterScan(_this, data) {
+      console.log('1212', data)
+      _this.putInShow = false
+      if (data.MT_Product_GetOrder_Resp.Item) {
+        data = data.MT_Product_GetOrder_Resp.Item
+        if (data[0].ZXXLX === 'S' || data[0].ZXXLX === '') {
+          _this.setScanArr(data, '')
+          _this.searchNum = ''
+        } else {
+          alert(data[0].ZTXXX)
+          _this.searchNum = ''
+        }
+      }
+    },
+    afterSetIn(_this, data) {
+      _this.loadingShow(false)
+      _this.putInShow = false
+      if (_this.bottomBtnName === 'scanbq') {
+        data = data.MT_Produt_GenerateOrder_Resp.Header
+      } else if (_this.bottomBtnName === 'scanfw') {
+        data = data.MT_SecurityCode_Print_Resp.Item
+      }
+      if (data.ZXXLX === 'S') {
+        _this.setProductScanList([])
+        _this.searchNum = ''
+        if (data.ZTXXX) {
+          alert(data.ZTXXX)
+        } else if (data.ZXXTX) {
+          alert(data.ZXXTX)
+        } else {
+          alert('打印成功。')
+        }
+      } else {
+        if (data.ZTXXX) {
+          alert(data.ZTXXX)
+        } else if (data.ZXXTX) {
+          alert(data.ZXXTX)
+        }
+        _this.searchNum = ''
+      }
     },
     // 设置表头标题
     setTableH() {
@@ -180,37 +221,20 @@ export default {
           params = '{ "Item": {SN: "' + num + '",ZGH:"' + this.account + '", ZDATE: "' + this.dateVal + '"} }'
           params = setParams(params)
           _this.putInShow = true
-          V.post(url, params).then(function(data) {
-            _this.putInShow = false
-            if (data.MT_Product_GetOrder_Resp.Item) {
-              data = data.MT_Product_GetOrder_Resp.Item
-              if (data[0].ZXXLX === 'S' || data[0].ZXXLX === '') {
-                _this.setScanArr(data)
-                _this.searchNum = ''
+          if (version === 'web') {
+            V.post(url, params).then(function(data) {
+              _this.afterScan(_this, data)
+            })
+          } else {
+            window.apiready(url, params).then(function(data) {
+              if (data) {
+                _this.afterScan(_this, data)
               } else {
-                alert(data[0].ZTXXX)
-                _this.searchNum = ''
+                alert('请求超时！')
+                _this.putInShow = false
               }
-            }
-          })
-          // window.apiready(url, params).then(function(data) {
-          //   if (data) {
-          //     _this.putInShow = false
-          //     if (data.MT_Product_GetOrder_Resp.Item) {
-          //       data = data.MT_Product_GetOrder_Resp.Item
-          //       if (data[0].ZXXLX === 'S' || data[0].ZXXLX === '') {
-          //         _this.setScanArr(data)
-          //         _this.searchNum = ''
-          //       } else {
-          //         alert(data[0].ZTXXX)
-          //         _this.searchNum = ''
-          //       }
-          //     }
-          //   } else {
-          //     alert('请求超时！')
-          //     _this.putInShow = false
-          //   }
-          // })
+            })
+          }
         } else if (this.bottomBtnName === 'scanfw') {
           // 扫防伪码
           url = path.sap + 'securitycode/verify'
@@ -224,7 +248,8 @@ export default {
             if (data.MT_SecurityCode_Verify_Resp.Item) {
               data = data.MT_SecurityCode_Verify_Resp.Item
               if (data.ZXXLX === 'S') {
-                _this.setScanArr(_this.searchNum)
+                console.log(123123, data)
+                _this.setScanArr(_this.searchNum, data.ZDZ)
                 _this.searchNum = ''
               } else {
                 alert(data.ZXXTX)
@@ -259,7 +284,7 @@ export default {
       }
     },
     // 转化生产扫描数组
-    setScanArr(data) {
+    setScanArr(data, printType) {
       let temp = false
       let index = 0
       if (this.productScanList.length > 0) {
@@ -292,28 +317,6 @@ export default {
                 arr[3] = true
               }
             }
-            // if (this.moduleName === 'scanfw' || this.moduleName === 'scanbq') {
-            //   let reg = new RegExp('[\\u4E00-\\u9FFF]+', 'g')
-            //   let tempNum = 0
-            //   for (let i in arr[0]) {
-            //     if (reg.test(arr[0][i])) {
-            //       tempNum += 14
-            //     } else {
-            //       tempNum += 8.5
-            //     }
-            //   }
-            //   if (tempNum > tr1) {
-            //     tr1 = tempNum
-            //   }
-            //   if (arr[0].length > tr2) {
-            //     alert(arr[1])
-            //     tr2 = arr[0].length
-            //   }
-            //   // this.tr1 = tr1 * 8.5
-            //   // this.tr2 = tr2 * 8.5
-            //   this.$store.commit('tr1', (tr1))
-            //   this.$store.commit('tr2', (tr2 * 8.5))
-            // }
             this.productScanList.push(arr)
           }
           this.setProductScanList(this.productScanList)
@@ -333,9 +336,10 @@ export default {
       } else {
         // 扫防伪码
         if (!temp) {
-          let arr = ['', data, '']
+          let arr = ['', data, '', printType]
           this.productScanList.push(arr)
           this.setProductScanList(this.productScanList)
+          console.log('successss', this.productScanList)
         } else {
           alert('条码已扫描！')
         }
@@ -453,7 +457,8 @@ export default {
         }
       }
       let [_this, temp, url, params, departmentMsg, myDate] = [this, '', '', '', eval('(' + localStorage.getItem('departmentMsg') + ')'), new Date()]
-      let ZIP = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal') + '_' + localStorage.getItem('redPrintVal')
+      let redZIP = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal') + '_' + localStorage.getItem('redPrintVal')
+      let blackZIP = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal') + '_' + localStorage.getItem('blackPrintVal')
       let ZIP1 = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal1') + '_' + localStorage.getItem('printVal1')
       let dateArr = this.dateVal.split('-')
 
@@ -478,10 +483,17 @@ export default {
       } else {
         let arr = []
         let snArr = this.snArr()
+        let zipType
         for (let i in snArr) {
+          // 判断用红标签还是黑标签
+          if (parseInt(_this.productScanList[i][3]) === 0) {
+            zipType = blackZIP
+          } else {
+            zipType = redZIP
+          }
           arr[i] = 'Item: {' +
             'ZFWMA: "' + snArr[i] + '",' +
-            'ZIP: "' + ZIP + '",' +
+            'ZIP: "' + zipType + '",' +
             'ZBQXH: "' + this.printPlanSelNum + '",' +
             'ZGH: "' + this.account + '"' +
           '}'
@@ -500,65 +512,20 @@ export default {
         printCode(url, params)
       }
       function printCode(url, params) {
-        V.post(url, params).then(function(data) {
-          _this.loadingShow(false)
-          _this.putInShow = false
-          if (_this.bottomBtnName === 'scanbq') {
-            data = data.MT_Produt_GenerateOrder_Resp.Header
-          } else if (_this.bottomBtnName === 'scanfw') {
-            data = data.MT_SecurityCode_Print_Resp.Item
-          }
-          if (data.ZXXLX === 'S') {
-            _this.setProductScanList([])
-            _this.searchNum = ''
-            if (data.ZTXXX) {
-              alert(data.ZTXXX)
-            } else if (data.ZXXTX) {
-              alert(data.ZXXTX)
+        if (version === 'web') {
+          V.post(url, params).then(function(data) {
+            _this.afterSetIn(_this, data)
+          })
+        } else {
+          window.apiready(url, params).then(function(data) {
+            if (data) {
+              _this.afterSetIn(_this, data)
             } else {
-              alert('打印成功。')
+              alert('请求超时！')
+              _this.putInShow = false
             }
-          } else {
-            if (data.ZTXXX) {
-              alert(data.ZTXXX)
-            } else if (data.ZXXTX) {
-              alert(data.ZXXTX)
-            }
-            _this.searchNum = ''
-          }
-        })
-        // window.apiready(url, params).then(function(data) {
-        //   if (data) {
-        //     _this.loadingShow(false)
-        //     _this.putInShow = false
-        //     if (_this.bottomBtnName === 'scanbq') {
-        //       data = data.MT_Produt_GenerateOrder_Resp.Header
-        //     } else if (_this.bottomBtnName === 'scanfw') {
-        //       data = data.MT_SecurityCode_Print_Resp.Item
-        //     }
-        //     if (data.ZXXLX === 'S') {
-        //       _this.setProductScanList([])
-        //       _this.searchNum = ''
-        //       if (data.ZTXXX) {
-        //         alert(data.ZTXXX)
-        //       } else if (data.ZXXTX) {
-        //         alert(data.ZXXTX)
-        //       } else {
-        //         alert('打印成功。')
-        //       }
-        //     } else {
-        //       if (data.ZTXXX) {
-        //         alert(data.ZTXXX)
-        //       } else if (data.ZXXTX) {
-        //         alert(data.ZXXTX)
-        //       }
-        //       _this.searchNum = ''
-        //     }
-        //   } else {
-        //     alert('请求超时！')
-        //     _this.putInShow = false
-        //   }
-        // })
+          })
+        }
       }
     }
   },

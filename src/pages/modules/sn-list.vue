@@ -85,7 +85,7 @@ import PutIn from '../../components/purchase/put-in'
 import SNDetail from '../../components/purchase/sn-detail'
 import Btn from '../../components/btn'
 import SureBox from '../../components/sureBox'
-import { path, V, getFactorySel, setParams } from '../../js/variable.js'
+import { path, V, getFactorySel, setParams, version } from '../../js/variable.js'
 // import apiFn from '../../js/lib/api.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -431,6 +431,18 @@ export default {
         this.uniq(arr)
         this.turnArr(arr)
       // }
+    },
+    afterDelSN(_this, data) {
+      _this.putInShow = false
+      if (data.MT_DeleteSN_Resp.Item) {
+        data = data.MT_DeleteSN_Resp.Item
+      }
+      if (data.ZXXLX === 'S') {
+        alert('删除成功！')
+        _this.snListUrl()
+      } else {
+        alert(data.ZTXXX)
+      }
     },
     // 检测条码的是否校验
     checkStatus(ZJYZT, urlParams) {
@@ -1078,22 +1090,25 @@ export default {
       } else {
         _this.setalertMsg('正在' + this.$store.state.outinType + '...')
         _this.putInShow = true
-        // window.apiready(url, params).then(function(data) {
-        //   if (data) {
-        //     tip(data)
-        //     _this.putInShow = false
-        //   } else {
-        //     alert('请求超时！')
-        //     _this.putInShow = false
-        //   }
-        // })
-        V.post(url, params).then(function(data) {
-          _this.putInShow = false
-          tip(data)
-        }).catch((res) => {
-          alert('请求超时！')
-          _this.loadingShow(false)
-        })
+        if (version === 'web') {
+          V.post(url, params).then(function(data) {
+            _this.putInShow = false
+            tip(data)
+          }).catch((res) => {
+            alert('请求超时！')
+            _this.loadingShow(false)
+          })
+        } else {
+          window.apiready(url, params).then(function(data) {
+            if (data) {
+              tip(data)
+              _this.putInShow = false
+            } else {
+              alert('请求超时！')
+              _this.putInShow = false
+            }
+          })
+        }
         function tip(data) {
           if (_this.urlParams === 'purchase') {
             if (data.MT_Purchase_Confirm_Resp.Item) {
@@ -1149,38 +1164,23 @@ export default {
       params = setParams(params)
       this.setalertMsg('正在删除...')
       _this.putInShow = true
-      V.post(url, params).then(function(data) {
-        _this.putInShow = false
-        if (data.MT_DeleteSN_Resp.Item) {
-          data = data.MT_DeleteSN_Resp.Item
-        }
-        if (data.ZXXLX === 'S') {
-          alert('删除成功！')
-          _this.snListUrl()
-        } else {
-          alert(data.ZTXXX)
-        }
-      }).catch((res) => {
-        alert('请求超时！')
-        _this.loadingShow(false)
-      })
-      // window.apiready(url, params).then(function(data) {
-      //   if (data) {
-      //     _this.putInShow = false
-      //   if (data.MT_DeleteSN_Resp.Item) {
-      //     data = data.MT_DeleteSN_Resp.Item
-      //   }
-      //   if (data.ZXXLX === 'S') {
-      //     alert('删除成功！')
-      //     _this.snListUrl()
-      //   } else {
-      //     alert(data.ZTXXX)
-      //   }
-      //   } else {
-      //     alert('请求超时！')
-      //     _this.putInShow = false
-      //   }
-      // })
+      if (version === 'web') {
+        V.post(url, params).then(function(data) {
+          afterDelSN(_this, data)
+        }).catch((res) => {
+          alert('请求超时！')
+          _this.loadingShow(false)
+        })
+      } else {
+        window.apiready(url, params).then(function(data) {
+          if (data) {
+            afterDelSN(_this, data)
+          } else {
+            alert('请求超时！')
+            _this.putInShow = false
+          }
+        })
+      }
       this.$store.commit('checkBoxShow', false)
       this.showCheckbox = false
     }
