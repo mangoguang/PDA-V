@@ -53,7 +53,12 @@ Vue.use(Vuex)
     },
     computed: {
       orders() {
-        return this.$store.state.orders.slice(0, 50)
+        let ordersArr = this.$store.state.orders
+        if (ordersArr.length > 50) {
+          return this.$store.state.orders.slice(0, 50)
+        } else {
+          return this.$store.state.orders
+        }
       },
       bottomBtnName() {
         return this.$store.state.bottomBtnName

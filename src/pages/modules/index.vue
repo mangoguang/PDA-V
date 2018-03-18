@@ -455,7 +455,7 @@ export default {
       let [_this, temp, url, params, departmentMsg, myDate] = [this, '', '', '', eval('(' + localStorage.getItem('departmentMsg') + ')'), new Date()]
       let ZIP = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal') + '_' + localStorage.getItem('redPrintVal')
       let ZIP1 = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal1') + '_' + localStorage.getItem('printVal1')
-      let dataArr = this.dateVal.split('-')
+      let dateArr = this.dateVal.split('-')
 
       // let canSetIn = true
       if (this.bottomBtnName === 'scanbq') {
@@ -494,6 +494,7 @@ export default {
       _this.putInShow = true
       if (this.snArr().length === 0) {
         alert('请先扫码！')
+        this.loadingShow(false)
         return
       } else {
         printCode(url, params)
