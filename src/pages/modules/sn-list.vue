@@ -1166,7 +1166,7 @@ export default {
       _this.putInShow = true
       if (version === 'web') {
         V.post(url, params).then(function(data) {
-          afterDelSN(_this, data)
+          _this.afterDelSN(_this, data)
         }).catch((res) => {
           alert('请求超时！')
           _this.loadingShow(false)
@@ -1174,7 +1174,7 @@ export default {
       } else {
         window.apiready(url, params).then(function(data) {
           if (data) {
-            afterDelSN(_this, data)
+            _this.afterDelSN(_this, data)
           } else {
             alert('请求超时！')
             _this.putInShow = false

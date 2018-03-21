@@ -96,7 +96,6 @@ export default {
       return num
     },
     afterScan(_this, data) {
-      console.log('1212', data)
       _this.putInShow = false
       if (data.MT_Product_GetOrder_Resp.Item) {
         data = data.MT_Product_GetOrder_Resp.Item
@@ -214,7 +213,7 @@ export default {
       let url = ''
       let params = ''
       let num = this.searchNum
-      if (num.length === 23 || num.length === 22 || num.length >= 27) {
+      if (num.length === 23 || num.length === 22 || num.length >= 25) {
         // 扫标签码
         if (this.bottomBtnName === 'scanbq') {
           url = path.sap + 'product/getorder'

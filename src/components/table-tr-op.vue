@@ -67,7 +67,7 @@ Vue.use(Vuex)
         return this.$store.state.moduleName
       },
       productScanList() {
-        return this.$store.state.productScanList.slice(0, 10)
+        return this.$store.state.productScanList
       }
     },
     methods: {
