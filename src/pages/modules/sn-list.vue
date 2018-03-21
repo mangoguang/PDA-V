@@ -1029,7 +1029,7 @@ export default {
         params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZDATE: "' + this.dateVal + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'purchase') {
-        params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '", ZDATE: "' + this.dateVal + '"} }'
+        params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ',LGORT: "' + this.warehouseNum + '"' + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '", ZDATE: "' + this.dateVal + '"} }'
         params = setParams(params)
       } else if (this.urlParams === 'product') {
         let myDate = new Date()
