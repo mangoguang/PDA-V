@@ -49,7 +49,9 @@ const store = new Vuex.Store({
     chekboxShow: false,
     checkboxList: [],
     scanSNVal: '',
-    outinType: ''
+    outinType: '',
+    // 设置button的disabled属性，防止按钮多次点击
+    btnDisabled: false
   },
   mutations: {
     // 皮肤选择
@@ -114,7 +116,9 @@ const store = new Vuex.Store({
     // 扫描输入框值
     scanSNVal: (state, x) => state.scanSNVal = x,
     // 出入库方式，（出库/入库）
-    outinType: (state, x) => state.outinType = x
+    outinType: (state, x) => state.outinType = x,
+    // 设置button的disabled属性，防止按钮多次点击
+    btnDisabled: (state, x) => state.btnDisabled = x
   },
   actions: {
     incrementAsync({

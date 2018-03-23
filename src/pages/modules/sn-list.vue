@@ -57,7 +57,7 @@
         </tr>
       </table> -->
       <TableTr class="contain" v-bind:style="{height: height+'px'}"></TableTr>
-      <div @click="sureIn" v-if="!checkBoxShow && !btnStatus[0]"><Btn class="btn100 sure">{{setinBtnName}}</Btn></div>
+      <div @click="sureIn" v-if="!checkBoxShow && !btnStatus[0]"><Btn class="btn100 sure" :disabled="btnDisabled">{{setinBtnName}}</Btn></div>
       <ul class="delCancel clearfix">
         <li @click="delSN" v-if="checkBoxShow && !btnStatus[0]"><Btn class="btn100 del">删除</Btn></li>
         <li @click="cancel" v-if="checkBoxShow && !btnStatus[0]"><Btn class="btn100 gray cancel">取消</Btn></li>
@@ -164,6 +164,10 @@ export default {
     }
   },
   computed: {
+    btnDisabled() {
+      console.log('ssssss', this.$store.state.btnDisabled)
+      return this.$store.state.btnDisabled
+    },
     sureBoxShow() {
       return this.$store.state.sureBoxShow
     },
@@ -190,6 +194,9 @@ export default {
     }
   },
   methods: {
+    setBtnDisabled(x) {
+      this.$store.commit('btnDisabled', x)
+    },
     setoutinType(x) {
       this.$store.commit('outinType', x)
     },
@@ -1013,6 +1020,8 @@ export default {
     },
     // 确认入库123
     setSureIn() {
+      // 为true时按钮不可点击
+      this.setBtnDisabled(true)
       let [_this, params, url, ZIP1] = [this, '', '', '']
       if (localStorage.getItem('departmentVal')) {
         ZIP1 = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal1') + '_' + localStorage.getItem('printVal1')
@@ -1068,6 +1077,7 @@ export default {
         let _this = this
         // if (this.status4 === 0) {
           V.get(url, params).then(function(data) {
+            _this.setBtnDisabled(false)
             data = JSON.parse(data.responseText)
             if (data.MT_Product_OrderPost_Resp.Item) {
               data = data.MT_Product_OrderPost_Resp.Item
@@ -1092,6 +1102,7 @@ export default {
         _this.putInShow = true
         if (version === 'web') {
           V.post(url, params).then(function(data) {
+            _this.setBtnDisabled(false)
             _this.putInShow = false
             tip(data)
           }).catch((res) => {
@@ -1100,6 +1111,7 @@ export default {
           })
         } else {
           window.apiready(url, params).then(function(data) {
+            _this.setBtnDisabled(false)
             if (data) {
               tip(data)
               _this.putInShow = false
