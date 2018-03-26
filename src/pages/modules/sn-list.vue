@@ -206,6 +206,11 @@ export default {
     setsureBoxShow(x) {
       this.$store.commit('sureBoxShow', x)
     },
+    arrElementUp(arr, i) {
+      i = parseInt(i)
+      arr.unshift(arr[i])
+      arr.splice(i + 1, 1)
+    },
     getaccount() {
       // 获取本地存储账号信息
       let accountMsg = localStorage.getItem('accountMsg')
@@ -531,7 +536,7 @@ export default {
       return temp
     },
     // 转化成组件table-tr-sn.vue的通用数组数据
-    turnArr(arr) {
+    turnArr(arr, elementIndex) {
       // trArr为临时数组   num用于计算应扫数量
       let [trArr, checkboxVal, num, num3] = [[], [], 0, 0]
       if (arr.length >= 0) {
@@ -647,6 +652,10 @@ export default {
           trArr.push(temp)
         }
       }
+      // 将校验到的条码提升到第一位
+      if (arguments[1]) {
+        this.arrElementUp(trArr, elementIndex)
+      }
       // 标示SN码是否扫描的状态数组
       this.setSN(trArr)
       this.scanCount = parseInt(num)
@@ -730,7 +739,7 @@ export default {
               arr[index].ZJYZT = _this.verifyStatus()
             }
             _this.setSNArr(arr)
-            _this.turnArr(arr)
+            _this.turnArr(arr, index)
             // _this.inputVal = ''
             _this.focusStatus = true
             // _this.hadscanCount++
@@ -738,7 +747,7 @@ export default {
             // 分包
             arr[index].Item[subindex].ZJYZT = _this.verifyStatus()
             _this.setSNArr(arr)
-            _this.turnArr(arr)
+            _this.turnArr(arr, index)
             // _this.inputVal = ''
             _this.focusStatus = true
             // _this.hadscanCount++
@@ -752,7 +761,7 @@ export default {
               // _this.hadscanCount++
             }
             // _this.setSNArr(arr)
-            _this.turnArr(arr)
+            _this.turnArr(arr, index)
             // _this.inputVal = ''
             _this.focusStatus = true
           }
@@ -1027,6 +1036,7 @@ export default {
         ZIP1 = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal1') + '_' + localStorage.getItem('printVal1')
       } else {
         alert('设置出错！')
+        return
       }
       if (this.urlParams === 'salesreturn') {
         params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + this.dateVal + '" } }'

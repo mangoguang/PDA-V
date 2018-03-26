@@ -66,7 +66,7 @@ Vue.use(Vuex)
     },
     computed: {
       sns() {
-        return this.$store.state.SN
+        return this.$store.state.SN.slice(0, 100)
       },
       checkBoxShow() {
         return this.$store.state.checkBoxShow
