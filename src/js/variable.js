@@ -180,4 +180,10 @@ function setParams(obj) {
 	}
 }
 
-export { path, V, cloneObj, getFactorySel, getPrintPlanMsg, getaccount, ajax, setParams, version }
+function arrElementUp(arr, i) {
+	i = parseInt(i)
+	arr.unshift(arr[i])
+	arr.splice(i + 1, 1)
+}
+
+export { path, V, cloneObj, getFactorySel, getPrintPlanMsg, getaccount, ajax, setParams, version, arrElementUp }

@@ -85,7 +85,7 @@ import PutIn from '../../components/purchase/put-in'
 import SNDetail from '../../components/purchase/sn-detail'
 import Btn from '../../components/btn'
 import SureBox from '../../components/sureBox'
-import { path, V, getFactorySel, setParams, version } from '../../js/variable.js'
+import { path, V, getFactorySel, setParams, version, arrElementUp } from '../../js/variable.js'
 // import apiFn from '../../js/lib/api.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -205,11 +205,6 @@ export default {
     },
     setsureBoxShow(x) {
       this.$store.commit('sureBoxShow', x)
-    },
-    arrElementUp(arr, i) {
-      i = parseInt(i)
-      arr.unshift(arr[i])
-      arr.splice(i + 1, 1)
     },
     getaccount() {
       // 获取本地存储账号信息
@@ -649,12 +644,12 @@ export default {
             // }
           }
           this.hadscanCount = num3
-          trArr.push(temp)
+          trArr.unshift(temp)
         }
       }
       // 将校验到的条码提升到第一位
       if (arguments[1]) {
-        this.arrElementUp(trArr, elementIndex)
+        arrElementUp(trArr, elementIndex)
       }
       // 标示SN码是否扫描的状态数组
       this.setSN(trArr)

@@ -275,7 +275,7 @@ export default {
           for (let i in orderArr) {
             let Str = orderArr[i][0].toString()
             if (Str.indexOf(str) !== -1) {
-              arr.push(orderArr[i])
+              arr.unshift(orderArr[i])
             }
           }
         }
@@ -316,7 +316,7 @@ export default {
                 arr[3] = true
               }
             }
-            this.productScanList.push(arr)
+            this.productScanList.unshift(arr)
           }
           this.setProductScanList(this.productScanList)
         } else {
@@ -336,7 +336,7 @@ export default {
         // 扫防伪码
         if (!temp) {
           let arr = ['', data, '', printType]
-          this.productScanList.push(arr)
+          this.productScanList.unshift(arr)
           this.setProductScanList(this.productScanList)
           console.log('successss', this.productScanList)
         } else {
@@ -357,7 +357,7 @@ export default {
           temp[1] = this.warehouse
           temp[2] = data[i].LGOBE
           temp[3] = data[i].ZDDLX
-          trArr.push(temp)
+          trArr.unshift(temp)
         }
       } else if (this.moduleName === 'salestockup' || this.moduleName === 'salesoutput') {
         // 销售备货
@@ -398,7 +398,7 @@ export default {
           temp[1] = _this.warehouse
           temp[2] = data[i].LGOBE
           temp[3] = data[i].ZDDLX
-          trArr.push(temp)
+          trArr.unshift(temp)
         }
       }
       this.setOrders(trArr)
@@ -437,7 +437,7 @@ export default {
     snArr() {
       let arr = []
       for (let i in this.productScanList) {
-        arr.push(this.productScanList[i][1])
+        arr.unshift(this.productScanList[i][1])
       }
       return arr
     },
