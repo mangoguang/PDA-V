@@ -36,26 +36,6 @@
     </div>
     <div>
       <TableH></TableH>
-      <!-- <table border="1">
-        <tr>
-          <th>Month</th>
-          <th></th>
-          <th>Savings</th>
-          <th>Savings</th>
-        </tr>
-        <tr>
-          <td>January</td>
-          <td></td>
-          <td>January</td>
-          <td>$100JanuaryJanuaryJanuaryJanuaryJanuaryJanuary</td>
-        </tr>
-        <tr>
-          <td>JanuaryJanuaryJanuary</td>
-          <td></td>
-          <td>January</td>
-          <td>$100</td>
-        </tr>
-      </table> -->
       <TableTr class="contain" v-bind:style="{height: height+'px'}"></TableTr>
       <div @click="sureIn" v-if="!checkBoxShow && !btnStatus[0]"><Btn class="btn100 sure" :disabled="btnDisabled">{{setinBtnName}}</Btn></div>
       <ul class="delCancel clearfix">
@@ -85,7 +65,7 @@ import PutIn from '../../components/purchase/put-in'
 import SNDetail from '../../components/purchase/sn-detail'
 import Btn from '../../components/btn'
 import SureBox from '../../components/sureBox'
-import { path, V, getFactorySel, setParams, version, arrElementUp } from '../../js/variable.js'
+import { path, V, getFactorySel, setParams, version } from '../../js/variable.js'
 // import apiFn from '../../js/lib/api.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -644,13 +624,13 @@ export default {
             // }
           }
           this.hadscanCount = num3
-          trArr.unshift(temp)
+          trArr.push(temp)
         }
       }
-      // 将校验到的条码提升到第一位
-      if (arguments[1]) {
-        arrElementUp(trArr, elementIndex)
-      }
+      // // 将校验到的条码提升到第一位
+      // if (arguments[1]) {
+      //   arrElementUp(trArr, elementIndex)
+      // }
       // 标示SN码是否扫描的状态数组
       this.setSN(trArr)
       this.scanCount = parseInt(num)

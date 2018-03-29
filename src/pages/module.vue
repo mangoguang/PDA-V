@@ -106,6 +106,8 @@ export default {
       if (status === 'true') {
         if (module === 'setting') {
           this.$router.push({ path: '/setting' })
+        } else if (module === 'check') {
+          this.$router.push({ path: '/check' })
         } else {
           this.$router.push({ path: '/modules/' + module + '?moduleName=' + moduleName })
         }

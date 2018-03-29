@@ -12,19 +12,9 @@
           <button @click="clearInput" class="clearBtn" type="button"></button>
         </div>
       </div>
-      <ul>
-        <li>
-          <label for="factory"></label>
-          <input type="text" id="factory" v-model="factory">
-        </li>
-        <li>
-          <label for="warehouse"></label>
-          <input type="text" id="warehouse" v-model="warehouse">
-        </li>
-        <li>
-          <label for="inputVal"></label>
-          <input type="text" id="inputVal" v-model="inputVal">
-        </li>
+      <ul class="snList">
+        <li>条码数量：{{snList.length}}</li>
+        <li v-for="sn in snList" :key="sn">{{sn}}</li>
       </ul>
     </div>
   </div>
@@ -51,7 +41,8 @@ export default {
       numLength: 0,
       canVerify: true,
       factoryNum: '',
-      warehouseNum: ''
+      warehouseNum: '',
+      snList: []
     }
   },
   computed: {
@@ -95,9 +86,20 @@ export default {
       }
       _this.loadingShow(true)
       ajax('POST', url, params).then((data) => {
-        _this.inputVal = ''
+        let result = data.result
         _this.loadingShow(false)
-        console.log('success', data)
+        _this.numLength = 0
+        if (result === 'true') {
+          _this.snList.unshift(_this.inputVal)
+          if (_this.snList.length > 100) {
+            _this.snList = _this.snList.slice(0, 100)
+          }
+        } else if (result === 'repeat') {
+          alert('条码重复扫描')
+        } else {
+          alert('数据上传失败')
+        }
+        _this.inputVal = ''
       })
       // .catch(() => {
       //   console.log(123)
@@ -109,6 +111,9 @@ export default {
   },
   created() {
     getFactorySel(this)
+  },
+  updated() {
+    console.log(this.snList)
   },
   mounted() {
     this.loadingShow(false)
@@ -155,6 +160,16 @@ export default {
   } input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     color: #fff;
     text-align: center;
+  }
+  .snList{
+    li{
+      height: 0.9375rem;
+      line-height: 0.9375rem;
+      font-size: 14px;
+      color: #666;
+      padding-left: .5rem;
+      border-bottom: 1px solid #e1e1e1;
+    }
   }
 }
 

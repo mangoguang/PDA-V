@@ -2,55 +2,59 @@
   <div>
     <TableH v-if="isTr3"></TableH>
     <TableH v-else></TableH>
-    <ul class="clearfix table-tr-sn">
-      <li v-for="(sn,index) in sns">
-        <!-- 表格为三列 -->
-        <div v-if="isTr3">
-          <ul>
-            <li class="li1">{{index+1}}</li>
-            <li class="li2 tr2in1"><input type="text" :value="sn.arr[0]" disabled="disabled"></li>
-  <!--           <li><input :value="sn.arr[1]" disabled="disabled"></li> -->
-            <li class="li3">{{sn.arr[7]}}</li>
-          </ul>
-        </div>
-        <!-- 表格为四列 -->
-        <div v-else>
-          <!-- 不存在子条码 -->
-          <ul v-if="!sn.status" :class="{on: sn.arr[5]}">
-            <li class="li1" v-bind:class="{paddingLfet20: checkBoxShow}">
-              <label v-show="checkBoxShow" :for= "sn.arr[1]" :class="{on: checkboxVal[index]}">
-              </label>
-              <input type="checkbox" :id="sn.arr[1]" v-model="checkboxVal[index]">
-              {{index+1}}
-            </li>
-            <li class="li2"><input type="text" :value="sn.arr[0]" disabled="disabled"></li>
-            <li class="li3" @click="snDetailUrl(sn.arr[1], sn.arr[3], sn.arr[6], false)"><input type="text" :value="sn.arr[1]" disabled="disabled"></li>
-            <li class="li4"><p v-if="sn.arr[5]">匹配</p></li>
-          </ul>
-          <!-- 存在子条码 -->
-          <ul v-else v-for="(i,index1) in sn.arr[1].length" :key="i" :class="{on: sn.arr[2][index1]}">
-            <li class="li1" v-if="index1 == 0" v-bind:class="{paddingLfet20: checkBoxShow}">
-              <label v-show="checkBoxShow" :for= "sn.arr[1][0]" :class="{on: checkboxVal[index]}">
-              </label>
-              <input type="checkbox" :id="sn.arr[1][0]" v-model="checkboxVal[index]">
-              {{index+1}}
-            </li>
-            <li class="li2" v-else></li>
+    <div class="snBox wrapper" ref="wrapper" :style="{height: (height - 6.8675 * fontSize) + 'px'}">
+      <ul class="content clearfix table-tr-sn">
+        <li v-for="(sn,index) in sns">
+          <!-- 表格为三列 -->
+          <div v-if="isTr3">
+            <ul>
+              <li class="li1">{{index+1}}</li>
+              <li class="li2 tr2in1"><input type="text" :value="sn.arr[0]" disabled="disabled"></li>
+    <!--           <li><input :value="sn.arr[1]" disabled="disabled"></li> -->
+              <li class="li3">{{sn.arr[7]}}</li>
+            </ul>
+          </div>
+          <!-- 表格为四列 -->
+          <div v-else>
+            <!-- 不存在子条码 -->
+            <ul v-if="!sn.status" :class="{on: sn.arr[5]}">
+              <li class="li1" v-bind:class="{paddingLfet20: checkBoxShow}">
+                <label v-show="checkBoxShow" :for= "sn.arr[1]" :class="{on: checkboxVal[index]}">
+                </label>
+                <input type="checkbox" :id="sn.arr[1]" v-model="checkboxVal[index]">
+                {{index+1}}
+              </li>
+              <li class="li2"><input type="text" :value="sn.arr[0]" disabled="disabled"></li>
+              <li class="li3" @click="snDetailUrl(sn.arr[1], sn.arr[3], sn.arr[6], false)"><input type="text" :value="sn.arr[1]" disabled="disabled"></li>
+              <li class="li4"><p v-if="sn.arr[5]">匹配</p></li>
+            </ul>
+            <!-- 存在子条码 -->
+            <ul v-else v-for="(i,index1) in sn.arr[1].length" :key="i" :class="{on: sn.arr[2][index1]}">
+              <li class="li1" v-if="index1 == 0" v-bind:class="{paddingLfet20: checkBoxShow}">
+                <label v-show="checkBoxShow" :for= "sn.arr[1][0]" :class="{on: checkboxVal[index]}">
+                </label>
+                <input type="checkbox" :id="sn.arr[1][0]" v-model="checkboxVal[index]">
+                {{index+1}}
+              </li>
+              <li class="li2" v-else></li>
 
-            <li class="li3" v-if="index1 == 0"><input type="text" :value="sn.arr[0]" disabled="disabled"></li>
-            <li v-else></li>
+              <li class="li3" v-if="index1 == 0"><input type="text" :value="sn.arr[0]" disabled="disabled"></li>
+              <li v-else></li>
 
-            <li  class="li4" @click="snDetailUrl(sn.arr[1][index1], sn.arr[3], sn.arr[6], true)"><input type="text" :value="sn.arr[1][i-1]" disabled="disabled"></li>
-            <li class="li5"><p v-if="sn.arr[2][index1]">匹配</p></li>
-          </ul>
-        </div>
-      </li>
-    </ul>
+              <li  class="li4" @click="snDetailUrl(sn.arr[1][index1], sn.arr[3], sn.arr[6], true)"><input type="text" :value="sn.arr[1][i-1]" disabled="disabled"></li>
+              <li class="li5"><p v-if="sn.arr[2][index1]">匹配</p></li>
+            </ul>
+          </div>
+        </li>
+        <li><span id="spanid"></span></li>
+      </ul>
+    </div>
   </div>
 </template>
 <script>
 import Vue from 'vue'
 import Vuex from 'vuex'
+// import BScroll from 'better-scroll'
 import TableH from '../components/table-h'
 import { path, V } from '../js/variable.js'
 Vue.use(Vuex)
@@ -59,6 +63,8 @@ Vue.use(Vuex)
     components: {TableH},
     data() {
       return {
+        height: document.documentElement.clientHeight,
+        fontSize: parseInt(document.getElementsByTagName('html')[0].style.fontSize),
         canDel: false,
         urlParams: this.$route.query.name,
         ZDDLX: this.$route.query.ZDDLX
@@ -66,7 +72,7 @@ Vue.use(Vuex)
     },
     computed: {
       sns() {
-        return this.$store.state.SN.slice(0, 100)
+        return this.$store.state.SN.slice(0, 10)
       },
       checkBoxShow() {
         return this.$store.state.checkBoxShow
@@ -185,6 +191,32 @@ Vue.use(Vuex)
       if (this.urlParams === 'stock') {
         this.urlParams = this.bottomBtnName
       }
+    },
+    mounted() {
+      // console.log(11111, document.getElementsByClassName('content')[0].offsetHeight)
+      // this.$nextTick(() => {
+      //   console.log('ssssss', this.$refs.wrapper)
+      //   this.scroll = new BScroll(this.$refs.wrapper, {
+      //     mouseWheel: true,
+      //     scrollbar: {
+      //       fade: false,
+      //       interactive: true
+      //     },
+      //     probeType: 3
+      //   })
+
+      //   this.scroll.on('scrollStart', () => {
+      //     console.log('scrollStart')
+      //   })
+
+      //   this.scroll.on('scroll', (pos) => {
+      //     console.log('pos:', pos)
+      //   })
+
+      //   this.scroll.on('scrollEnd', () => {
+      //     console.log('scrollEnd')
+      //   })
+      // })
     }
   }
 </script>
@@ -217,6 +249,7 @@ Vue.use(Vuex)
   &>li{
     width: 100%;
     border-bottom: 1px solid $borderIn;
+
     ul{
       position: relative;
       height: $f30;
@@ -268,6 +301,9 @@ Vue.use(Vuex)
     li.paddingLfet20{
       padding-left: $f20;
     }
+  }
+  &>li:last-child{
+    border-bottom: none;
   }
   div.on{
     input,li,ul,p{
