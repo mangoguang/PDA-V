@@ -36,7 +36,7 @@
     </div>
     <div>
       <TableH></TableH>
-      <TableTr class="contain" v-bind:style="{height: height+'px'}"></TableTr>
+      <TableTr id="contain" class="contain" v-bind:style="{height: height+'px'}"></TableTr>
       <div @click="sureIn" v-if="!checkBoxShow && !btnStatus[0]"><Btn class="btn100 sure" :disabled="btnDisabled">{{setinBtnName}}</Btn></div>
       <ul class="delCancel clearfix">
         <li @click="delSN" v-if="checkBoxShow && !btnStatus[0]"><Btn class="btn100 del">删除</Btn></li>
@@ -144,8 +144,11 @@ export default {
     }
   },
   computed: {
+    // 在文件table-tr-sn.vue设置
+    snCount() {
+      return this.$store.state.snCount
+    },
     btnDisabled() {
-      console.log('ssssss', this.$store.state.btnDisabled)
       return this.$store.state.btnDisabled
     },
     sureBoxShow() {
@@ -304,6 +307,9 @@ export default {
       this.$store.commit('checkBoxShow', false)
       this.showCheckbox = false
       this.setsureBoxShow(false)
+    },
+    setSNCopy(arr) {
+      this.$store.commit('SNCopy', arr)
     },
     setSN(arr) {
       this.$store.commit('SN', arr)
@@ -632,7 +638,8 @@ export default {
       //   arrElementUp(trArr, elementIndex)
       // }
       // 标示SN码是否扫描的状态数组
-      this.setSN(trArr)
+      this.setSN(trArr.slice(0, this.snCount))
+      this.setSNCopy(trArr)
       this.scanCount = parseInt(num)
       // if (this.addStatus) {
       //   this.status4 = num
@@ -973,7 +980,8 @@ export default {
         }
         return arr
       }
-      this.setSN(reDelArr(delArr(Arr)))
+      this.setSN(reDelArr(delArr(Arr)).slice(0, this.snCount))
+      this.setSNCopy(reDelArr(delArr(Arr)))
     },
     // 检测此分包是否有分包sn码被扫描
     checkSN(Arr, str, ifScan) {
@@ -1213,6 +1221,10 @@ export default {
   },
   mounted() {
     this.$store.commit('isOP', false)
+    // let scrollDiv = document.getElementsByClassName('contain')
+    // scrollDiv.addEventListener('scroll', () => {
+    //   console.log(scrollDiv.scrollTop)
+    // }, false)
   }
 }
 </script>

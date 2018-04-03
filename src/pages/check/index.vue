@@ -117,6 +117,9 @@ export default {
   },
   mounted() {
     this.loadingShow(false)
+    // window.addEventListener('hashchange', () => {
+    //   console.log('success')
+    // })
   }
 }
 </script>

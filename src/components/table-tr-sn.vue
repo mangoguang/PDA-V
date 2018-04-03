@@ -3,7 +3,7 @@
     <TableH v-if="isTr3"></TableH>
     <TableH v-else></TableH>
     <div class="snBox wrapper" ref="wrapper" :style="{height: (height - 6.8675 * fontSize) + 'px'}">
-      <ul class="content clearfix table-tr-sn">
+      <ul id="content" class="content clearfix table-tr-sn" ref="content">
         <li v-for="(sn,index) in sns">
           <!-- 表格为三列 -->
           <div v-if="isTr3">
@@ -52,9 +52,10 @@
   </div>
 </template>
 <script>
+// import $ from 'n-zepto'
 import Vue from 'vue'
 import Vuex from 'vuex'
-// import BScroll from 'better-scroll'
+import BScroll from 'better-scroll'
 import TableH from '../components/table-h'
 import { path, V } from '../js/variable.js'
 Vue.use(Vuex)
@@ -67,12 +68,19 @@ Vue.use(Vuex)
         fontSize: parseInt(document.getElementsByTagName('html')[0].style.fontSize),
         canDel: false,
         urlParams: this.$route.query.name,
-        ZDDLX: this.$route.query.ZDDLX
+        ZDDLX: this.$route.query.ZDDLX,
+        offsetHeight: 0
       }
     },
     computed: {
+      snCount() {
+        return this.$store.state.snCount
+      },
       sns() {
-        return this.$store.state.SN.slice(0, 10)
+        return this.$store.state.SN
+      },
+      SNCopy() {
+        return this.$store.state.SNCopy
       },
       checkBoxShow() {
         return this.$store.state.checkBoxShow
@@ -93,6 +101,13 @@ Vue.use(Vuex)
     methods: {
       loadingShow: function(x) {
         this.$store.commit('loadingShow', x)
+      },
+      // 在文件sn-list.vue获取
+      setSNCount(x) {
+        this.$store.commit('snCount', x)
+      },
+      setSN(x) {
+        this.$store.commit('SN', x)
       },
       // (SN, BUS_NO, ITEM_NO, status)
       snDetailUrl(SN, BUS_NO, ITEM_NO, status) {
@@ -184,7 +199,19 @@ Vue.use(Vuex)
       },
       detailBoxShow(x) {
         this.$store.commit('detailBoxShow', x)
+      },
+      getSnListHeight() {
+        let temp = document.getElementsByClassName('content')[0].offsetHeight
+        return temp
+        // if (temp > 200) {
+        //   return (temp)
+        // } else {
+        //   this.getSnListHeight()
+        // }
       }
+    },
+    updated() {
+
     },
     created: function() {
       this.$store.commit('isTr3', false)
@@ -193,29 +220,43 @@ Vue.use(Vuex)
       }
     },
     mounted() {
-      // console.log(11111, document.getElementsByClassName('content')[0].offsetHeight)
+      let _this = this
+      // 获取节点
+      let scrollBox = document.getElementById('contain')
+      scrollBox.addEventListener('scroll', function() {
+        let [scrollTop, contentHeight, htmlFontSize] = [scrollBox.scrollTop, document.getElementById('content').offsetHeight, document.getElementsByTagName('html')[0].style.fontSize]
+        if (scrollTop > contentHeight - parseInt(htmlFontSize) * 11) {
+          _this.setSNCount(_this.snCount + 50)
+          _this.setSN(_this.SNCopy.slice(0, _this.snCount))
+        }
+      })
+      // let snListHeight = this.getSnListHeight()
+      // this.setSNCount(this.snCount)
       // this.$nextTick(() => {
-      //   console.log('ssssss', this.$refs.wrapper)
-      //   this.scroll = new BScroll(this.$refs.wrapper, {
-      //     mouseWheel: true,
-      //     scrollbar: {
-      //       fade: false,
-      //       interactive: true
-      //     },
-      //     probeType: 3
+      //   $('.content').scroll(function() {
+      //     var t = $(this).scrollTop()
+      //     console.log(t)
       //   })
+        // this.scroll = new BScroll(this.$refs.wrapper, {
+        //   mouseWheel: true
+        //   // scrollbar: {
+        //   //   fade: true,
+        //   //   interactive: false
+        //   // },
+        //   // pullUpLoad: {
+        //   //   threshold: 0,
+        //   //   moreText: '加载更多',
+        //   //   noMoreText: '没有更多数据了'
+        //   // }
+        // })
 
-      //   this.scroll.on('scrollStart', () => {
-      //     console.log('scrollStart')
-      //   })
-
-      //   this.scroll.on('scroll', (pos) => {
-      //     console.log('pos:', pos)
-      //   })
-
-      //   this.scroll.on('scrollEnd', () => {
-      //     console.log('scrollEnd')
-      //   })
+        // this.scroll.on('pullingUp', () => {
+        //   if (this.snCount < this.SNCopy.length) {
+        //     this.setSNCount(this.snCount + 30)
+        //     this.setSN(this.SNCopy.slice(0, this.snCount))
+        //     this.scroll.finishPullUp()
+        //   }
+        // })
       // })
     }
   }

@@ -23,6 +23,7 @@ const store = new Vuex.Store({
     orders: [],
     SN: [],
     snCopy: [],
+    SNCopy: [],
     snDetail: {},
     tableH: [],
     snStatus: [],
@@ -51,7 +52,8 @@ const store = new Vuex.Store({
     scanSNVal: '',
     outinType: '',
     // 设置button的disabled属性，防止按钮多次点击
-    btnDisabled: false
+    btnDisabled: false,
+    snCount: 50
   },
   mutations: {
     // 皮肤选择
@@ -64,6 +66,7 @@ const store = new Vuex.Store({
     sureBoxShow: (state, x) => state.sureBoxShow = x,
     // 插入SN号数据
     SN: (state, arr) => state.SN = arr,
+    SNCopy: (state, arr) => state.SNCopy = arr,
     snCopy: (state, arr) => state.snCopy = arr,
     // SN码详情框显示/隐藏  组件table-tr.vue
     detailBoxShow: (state, x) => state.detailBoxShow = x,
@@ -118,7 +121,9 @@ const store = new Vuex.Store({
     // 出入库方式，（出库/入库）
     outinType: (state, x) => state.outinType = x,
     // 设置button的disabled属性，防止按钮多次点击
-    btnDisabled: (state, x) => state.btnDisabled = x
+    btnDisabled: (state, x) => state.btnDisabled = x,
+    // 显示sn条码的数量
+    snCount: (state, x) => state.snCount = x
   },
   actions: {
     incrementAsync({
