@@ -15,7 +15,7 @@
       <li v-if="name === 'purchase'" v-for="(order,index) in orders" :key="index" @click="toOrderDetail(order[0], order[3])">
         <ul>
           <li class="li1">{{index+1}}</li>
-          <li class="li2">{{order[0]}}</li>
+          <li class="li2"><input type="text" :value="order[0]" disabled="disabled"></li>
           <li class="li3 tr2in1"><input type="text" :value="order[1]" disabled="disabled"></li>
         </ul>
       </li>

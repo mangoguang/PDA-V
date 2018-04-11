@@ -24,6 +24,10 @@ export var router = new VueRouter({
     path: '/cropper',
     name: 'Cropper',
     component: resolve => require(['../pages/cropper'], resolve)
+  }, {
+    path: '/pandian',
+    name: 'Pandian',
+    component: resolve => require(['../pages/pandian'], resolve)
   },
   // 模块路由
   {

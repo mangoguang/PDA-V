@@ -8,7 +8,7 @@
           <h1>仓库盘点</h1>
         </HeadComponent>
         <div class="searchOrder">
-          <input v-model="inputVal" type="text" :placeholder="'条码'" @keyup.enter="verify">
+          <input v-focus="true" v-model="inputVal" type="text" :placeholder="'条码'" @keyup.enter="verify">
           <button @click="clearInput" class="clearBtn" type="button"></button>
         </div>
       </div>
@@ -25,7 +25,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {path, ajax, getFactorySel, version} from '../../js/variable.js'
+import {path, ajax, getFactorySel, getaccount, version} from '../../js/variable.js'
 import HeadComponent from '../../components/header'
 // import {pathOA} from '../../js/variable.js'
 Vue.use(VueRouter)
@@ -42,7 +42,10 @@ export default {
       canVerify: true,
       factoryNum: '',
       warehouseNum: '',
-      snList: []
+      snList: [],
+      account: '',
+      name: localStorage.getItem('name'),
+      key: true
     }
   },
   computed: {
@@ -77,36 +80,57 @@ export default {
 
     },
     verify() {
-      let _this = this
-      let url = 'http://10.12.0.53:8900/derucci/workflow/jsp/check.jsp'
+      let [_this, url, len] = [
+        this,
+        'http://10.12.0.53:8900/derucci/workflow/jsp/check.jsp',
+        this.inputVal.length
+      ]
+      console.log(len)
+      if (len < 6 || len > 40) {
+        alert('请检查条码是否正确！')
+        return
+      }
       let params = {
         factory: this.factoryNum,
         wareHouse: this.warehouseNum,
-        num: this.inputVal
+        num: this.inputVal,
+        account: this.account,
+        name: this.name
       }
       _this.loadingShow(true)
-      ajax('POST', url, params).then((data) => {
-        let result = data.result
-        _this.loadingShow(false)
-        _this.numLength = 0
-        if (result === 'true') {
-          _this.snList.unshift(_this.inputVal)
-          if (_this.snList.length > 100) {
-            _this.snList = _this.snList.slice(0, 100)
+      // 给提交时间上锁
+      if (this.key) {
+        this.key = false
+        ajax('POST', url, params).then((data) => {
+          _this.key = true
+          let result = data.result
+          _this.loadingShow(false)
+          _this.numLength = 0
+          if (result === 'true') {
+            _this.snList.unshift(_this.inputVal)
+            if (_this.snList.length > 100) {
+              _this.snList = _this.snList.slice(0, 100)
+            }
+          } else if (result === 'repeat') {
+            let temp = data.error
+            alert(`条码重复扫描，扫描人：${temp.name}，工号：${temp.account}，条码：${temp.num}，入库工厂/仓库：${temp.factory}/${temp.wareHouse}`)
+          } else {
+            alert('数据上传失败')
           }
-        } else if (result === 'repeat') {
-          alert('条码重复扫描')
-        } else {
-          alert('数据上传失败')
-        }
-        _this.inputVal = ''
-      })
-      // .catch(() => {
-      //   console.log(123)
-      //   // alert('请求超时！')
-      //   _this.inputVal = ''
-      //   _this.loadingShow(false)
-      // })
+          _this.inputVal = ''
+        }).catch(() => {
+          _this.key = true
+        })
+      }
+    }
+  },
+  directives: {
+    focus: {
+      inserted: function (el, {value}) {
+          if (value) {
+            el.focus()
+          }
+      }
     }
   },
   created() {
@@ -116,6 +140,7 @@ export default {
     console.log(this.snList)
   },
   mounted() {
+    getaccount(this)
     this.loadingShow(false)
     // window.addEventListener('hashchange', () => {
     //   console.log('success')

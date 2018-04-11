@@ -175,6 +175,7 @@ export default {
     this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
   },
   mounted() {
+    localStorage.setItem('name', this.name)
     let timestamp = Date.parse(new Date())
     // 执行一个laydate实例
     laydate.render({
