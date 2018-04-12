@@ -829,7 +829,7 @@ export default {
         this.setSNArr(temp)
         this.turnArr(temp)
       } else {
-        alert('条码不存在！')
+        alert('条码在入库单' + this.opNum + '不存在！')
         this.inputVal = ''
       }
     },
@@ -1050,7 +1050,7 @@ export default {
           ZGZRY: '' + this.account + '',
           // ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
           ZGZRQ: dateArr[0] + turnDate(dateArr[1]) + turnDate(dateArr[2]),
-          ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
+          ZGZSJ: '' + turnDate(myDate.getHours()) + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
           LGORT: this.warehouseNum
         }
       } else if (this.urlParams === 'allot') {
