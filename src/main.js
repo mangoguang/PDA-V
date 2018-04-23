@@ -3,10 +3,12 @@
 import Vue from 'vue'
 // import { DatetimePicker } from 'mint-ui'
 import App from './App'
+import axios from 'axios'
 // Vue.component(DatetimePicker.name, DatetimePicker)
 import {
   router
 } from './router/index.js'
+Vue.prototype.$ajax = axios
 new Vue({
   el: '#app',
   router,

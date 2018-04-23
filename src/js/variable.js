@@ -6,6 +6,8 @@ function Path() {
 	// this.local = 'http://mangoguang.cn/PDA/static/json'
 	this.sap = 'http://10.12.0.158:50100/RESTAdapter/'
 	// this.sap = 'http://10.12.0.154:50100/RESTAdapter/'
+	this.appTest = 'http://10.11.8.223:8081/api/v1/stocktake/'
+	this.app = 'http://10.12.0.61/api/pda/v1/stocktake/'
 }
 let path = new Path()
 // 网页版为'web'，app版为'app'
@@ -157,7 +159,8 @@ function ajax (type, url, params) {
       url: url,
       data: params,
       dataType: 'json',
-      // timeout: 300,
+			// timeout: 300,
+			// contentType: 'application/json;charset=UTF-8',
       context: $('body'),
       success: function (data) {
         resolve(data)

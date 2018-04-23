@@ -1,33 +1,14 @@
 <template>
-  <tr @click="toSNPages(arr[0], arr[arr.length-1])">
+  <tr>
     <td>{{index + 1}}</td>
+    <td v-for="item in arr" :key="item">{{item}}</td>
     <slot></slot>
   </tr>
 </template>
 <script>
   export default {
     name: 'TableD',
-    props: ['index', 'arr'],
-    data() {
-      return {
-        name: this.$route.query.name
-      }
-    },
-    computed: {
-      evenArr() {
-        return this.arr.filter((index) => {
-          return index > (this.arr.length - 1)
-        })
-      }
-    },
-    methods: {
-      toSNPages(num, ZDDLX) {
-        this.$router.push({ path: '/' + this.name + '/' + num + '?ZDDLX=' + this.arr[this.arr.length - 1] })
-      }
-    },
-    mounted() {
-      console.log(this.name)
-    }
+    props: ['index', 'arr']
   }
 </script>
 <style scoped lang="scss">
@@ -47,6 +28,9 @@ tr{
   td{
     padding: 0 .2rem;
     white-space: nowrap;
+    max-width: 8rem;
+    overflow: scroll;
+    // color: #333;
   }
 }
 </style>

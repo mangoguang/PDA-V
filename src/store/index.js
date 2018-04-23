@@ -53,7 +53,8 @@ const store = new Vuex.Store({
     outinType: '',
     // 设置button的disabled属性，防止按钮多次点击
     btnDisabled: false,
-    snCount: 50
+    snCount: 50,
+    inputVal: ''
   },
   mutations: {
     // 皮肤选择
@@ -123,7 +124,8 @@ const store = new Vuex.Store({
     // 设置button的disabled属性，防止按钮多次点击
     btnDisabled: (state, x) => state.btnDisabled = x,
     // 显示sn条码的数量
-    snCount: (state, x) => state.snCount = x
+    snCount: (state, x) => state.snCount = x,
+    inputVal: (state, x) => state.inputVal = x
   },
   actions: {
     incrementAsync({

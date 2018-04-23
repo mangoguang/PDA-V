@@ -99,6 +99,10 @@ export var router = new VueRouter({
     name: 'Check',
     component: resolve => require(['../pages/check'], resolve)
   }, {
+    path: '/checkSetting',
+    name: 'CheckSetting',
+    component: resolve => require(['../pages/check/setting'], resolve)
+  }, {
     path: '/edit',
     name: 'Edit',
     component: resolve => require(['../pages/edit'], resolve)
