@@ -26,11 +26,26 @@ tr{
   box-sizing: border-box;
   overflow-y: hidden;
   td{
+    position: relative;
     padding: 0 .2rem;
     white-space: nowrap;
     max-width: 8rem;
-    overflow: scroll;
+    overflow-y: hidden;
+    border-bottom: 1px solid $borderIn;
     // color: #333;
+  }
+  td:after{
+    display: block;
+    content: '';
+    width: 1px;
+    height: $f20;
+    background: $borderIn;
+    position: absolute;
+    top: $f5;
+    left: 0;
+  }
+  td:first-child:after{
+    width: 0;
   }
 }
 </style>

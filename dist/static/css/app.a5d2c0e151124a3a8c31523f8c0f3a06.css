@@ -42,7 +42,7 @@ table{
   min-width: 10rem;
 }
 button:hover{
-  box-shadow: 3px 3px 2px #888888;
+  opacity: 0.5;
 }
 @charset "UTF-8";
 .h25 {
@@ -255,7 +255,7 @@ li[data-v-db7be948]:last-child {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 100;
+  z-index: 1000;
 }
 .spinner[data-v-3f27a196] {
   position: absolute;
@@ -345,4 +345,4 @@ li[data-v-db7be948]:last-child {
 }
 }
 
-/*# sourceMappingURL=app.86acb25f1ba1a68bd0a70da2fc8dd21e.css.map*/
+/*# sourceMappingURL=app.a5d2c0e151124a3a8c31523f8c0f3a06.css.map*/

@@ -179,7 +179,7 @@ import md5 from 'js-md5'
   }
   li{
     padding: 0 $f15;
-    margin-top: $f5;
+    margin-top: $f15;
   }
   label{
     display: inline-block;

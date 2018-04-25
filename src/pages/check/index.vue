@@ -14,7 +14,7 @@
       </div>
     </div>
     <div class="tableBox">
-      <table border="1">
+      <table border="0" rules="none" frame="void">
         <TableH :list=tableHList></TableH>
         <TableD
         v-for="(arr, index) in snList.slice(0, 100)" 
@@ -38,6 +38,11 @@
       <p>本月盘点暂未开放</p>
       <p>请联系流程信息部相关人员</p>
     </Alert>
+    <Alert class="factoryAlert" v-if="factoryAlertShow" @closeAlert="closeFactoryAlert">
+      <p>该条码【{{sn}}】所在的工厂【{{oldFactoryVal}}】仓库【{{oldWareHouseVal}}】与你选择的工厂【{{factoryVal}}】仓库【{{warehouseVal}}】不一致，是否继续录入？</p>
+      <button class="half" @click="verify(sn, 1)" slot="btn">确认</button>
+      <button class="half" @click="closeFactoryAlert" slot="btn">取消</button>
+    </Alert>
   </div>
 </template>
 <!-- </keep-alive> -->
@@ -46,7 +51,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {path, ajax, getaccount, version} from '../../js/variable.js'
+import {path, ajax, getFactorySel, getaccount, version} from '../../js/variable.js'
 import HeadComponent from '../../components/check/header'
 import SetIcon from '../../components/check/setIcon'
 import HeadBott from '../../components/check/headBott'
@@ -68,21 +73,20 @@ export default {
       canVerify: true,
       factoryVal: '',
       warehouseVal: '',
+      oldFactoryVal: '',
+      oldWareHouseVal: '',
       tableHList: ['序号', 'SN', '状态'],
-      snList: [
-        ['12312423415243515', '='],
-        ['1231242341524351543123124234152435154', '='],
-        ['12312423415243515431231242341524351543', '=']
-      ],
+      snList: [],
       material: '',
       materialShow: false,
       account: '',
       name: localStorage.getItem('name'),
       key: true,
-      pandianType: '通盘',
+      pandianType: '',
       type: null,
       sn: '',
-      tipShow: false
+      tipShow: false,
+      factoryAlertShow: false
     }
   },
   computed: {
@@ -90,6 +94,7 @@ export default {
     //   return this.$store.state.inputVal
     // }
   },
+
   directives: {
     focus: {
       inserted: function (el, {value}) {
@@ -99,12 +104,23 @@ export default {
       }
     }
   },
+
   created() {
+    // getFactorySel(this)
     this.checkOpen()
     // getFactorySel(this)
   },
   updated() {
-    console.log(this.snList)
+
+  },
+  watch: {
+    'type': function() {
+      if (parseInt(this.type) === 1) {
+        this.pandianType = '精盘'
+      } else {
+        this.pandianType = '通盘'
+      }
+    }
   },
   mounted() {
     this.setData()
@@ -129,7 +145,7 @@ export default {
     },
     // 显示条码详情
     showSNDetail(index) {
-      alert(index)
+      // alert(index)
     },
     // 关闭弹框
     closeAlert() {
@@ -139,6 +155,11 @@ export default {
     closeTip() {
       this.tipShow = false
     },
+    closeFactoryAlert() {
+      this.factoryAlertShow = false
+    },
+
+    // 设置仓库、工厂、盘点方式
     setData() {
       let temp = localStorage.getItem('settingData')
       if (temp) {
@@ -147,6 +168,8 @@ export default {
         this.warehouseVal = JSON.parse(temp).warehouseVal
       }
     },
+
+    // 检测是否开放盘点
     checkOpen() {
       this.$ajax.get(path.app + 'checkopen').then(function(res) {
         console.log(res)
@@ -154,11 +177,13 @@ export default {
         console.log(err)
       })
     },
+
     // 添加条码
     addLi(data, sn, _this) {
       switch (data.code) {
         case 0:
           _this.snList.unshift([sn, '='])
+          this.factoryAlertShow = false
           this.clearHeadBottInput()
           break
         case 1:
@@ -175,11 +200,21 @@ export default {
           alert(data.msg)
           this.clearHeadBottInput()
           break
+        case 4:
+          this.oldFactoryVal = data.info.factory
+          this.oldWareHouseVal = data.info.wareHouse
+          this.factoryAlertShow = true
+          this.clearHeadBottInput()
+          break
+        default:
+          alert(`scan接口code字段返回异常。`)
       }
       console.log(this.snList)
     },
+
     // 教验条码
-    verify(sn) {
+    verify(sn, ifOK) {
+      // type为true时仓库不同可以提交
       let [_this, url, len, params] = [
         this,
         path.app + 'scan',
@@ -189,7 +224,8 @@ export default {
           wareHouse: this.warehouseVal,
           sn: sn,
           account: this.account,
-          name: this.name
+          name: this.name,
+          ok: ifOK
         }
       ]
       if (len < 6 || len > 40) {
@@ -219,6 +255,7 @@ export default {
         })
       }
     },
+
     // 输入物料号
     sendMaterial() {
       let [_this, url] = [
@@ -312,6 +349,14 @@ export default {
       margin: 0;
       text-align: left;
       border-bottom: 1px solid #666;
+    }
+  }
+  .factoryAlert{
+    button.half{
+      width: 50%;
+    }
+    p{
+      padding: $f20 $f10 $f15 $f10;
     }
   }
   input::-webkit-input-placeholder {
