@@ -1,6 +1,7 @@
 import $ from 'n-zepto'
 function Path() {
 	this.oa = 'http://10.12.0.54/derucci/workflow/jsp'
+	// this.oa = 'http://10.11.9.220:10083/derucci/workflow/jsp'
 	// this.oa = 'http://10.12.0.53:8900/derucci/workflow/jsp'
 	this.local = 'http://localhost/PDA-V/static/json'
 	// this.local = 'http://mangoguang.cn/PDA/static/json'
@@ -128,7 +129,7 @@ function getFactorySel(_this) {
     _this.warehouse = factoryObj.warehouse
     _this.warehouseNum = factoryObj.warehouseNum
   } else {
-    // this.factorySel = this.factorys[0].name
+    // this.factorySel = this.factorys[0].account
   }
 }
 
@@ -183,10 +184,50 @@ function setParams(obj) {
 	}
 }
 
-// function arrElementUp(arr, i) {
-// 	i = parseInt(i)
-// 	arr.unshift(arr[i])
-// 	arr.splice(i + 1, 1)
-// }
+let Mango = (function() {
+	return function() {
+		// 设置本地存储
+		// 本地存储在入口文件初始化initStorage方法
+		let Storage = function() {}
+
+		Storage.prototype = {
+			// 初始化并获取mangoStorage
+			initStorage: function(account) {
+				// localStorage.removeItem('mangoStorage')
+				let mangoStorage = localStorage.getItem('mangoStorage')
+				if (mangoStorage) {
+					mangoStorage = JSON.parse(mangoStorage)
+				} else {
+					// 给mangoStorage赋初值
+					mangoStorage = {}
+				}
+				if (!mangoStorage[`mango${account}`]) {
+					mangoStorage[`mango${account}`] = {}
+					localStorage.setItem('mangoStorage', JSON.stringify(mangoStorage))
+				}
+			},
+			// 获取本地存储
+			getStorage: function(account) {
+				return JSON.parse(localStorage.getItem('mangoStorage'))[`mango${account}`]
+			},
+			// 更改本地存储
+			setStorage: function(account, key, val) {
+				let tempStorage = JSON.parse(localStorage.getItem('mangoStorage'))
+				let accountStorage = tempStorage[`mango${account}`]
+				tempStorage[`mango${account}`][key] = val
+				console.log('333', tempStorage)
+				localStorage.setItem('mangoStorage', JSON.stringify(tempStorage))
+				return this
+			}
+		}
+
+		this.storage = new Storage()
+	}
+}())
+
+let mango = new Mango()
+// let storage = mango.storage
+// console.log(storage.getLocalData)
+export default mango
 
 export { path, V, cloneObj, getFactorySel, getPrintPlanMsg, getaccount, ajax, setParams, version }

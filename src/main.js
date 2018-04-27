@@ -8,6 +8,9 @@ import axios from 'axios'
 import {
   router
 } from './router/index.js'
+import MintUI from 'mint-ui'
+import 'mint-ui/lib/style.css'
+Vue.use(MintUI)
 Vue.prototype.$ajax = axios
 new Vue({
   el: '#app',

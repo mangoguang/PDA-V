@@ -35,7 +35,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import md5 from 'js-md5'
-import { path, V } from '../js/variable.js'
+import mango, { path, V } from '../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -54,17 +54,72 @@ export default {
   computed: {
 
   },
+  created: function () {
+    // 获取本地存储的皮肤值
+    this.setSkinCol()
+    // this.skinCol = localStorage.getItem('skinCol')
+    // if (this.skinCol) {
+    // // 检测是否存在本地存储皮肤值
+    //   this.$store.commit('changeSkin', this.skinCol)
+    // } else {
+    //   this.skinCol = 'skinA'
+    //   this.$store.commit('changeSkin', 'skinA')
+    //   localStorage.setItem('skinCol', 'skinA')
+    // }
+    // 获取本地存储账号信息
+    // let accountMsg = localStorage.getItem('accountMsg')
+    // console.log(accountMsg)
+    // if (accountMsg) {
+    //   let obj = eval('(' + accountMsg + ')')
+    //   this.account = obj.account
+    //   this.password = obj.password
+    // } else {
+    //   console.log('没有本地存储')
+    // }
+    this.loadingShow(false)
+  },
+  mounted() {
+    localStorage.removeItem('mangoStrage')
+    this.initAccountMsg()
+  },
   methods: {
     loadingShow: function(x) {
       this.$store.commit('loadingShow', x)
     },
-    // mint ui基于vue2的日期插件
-    // getDate() {
-    //   console.log(this.pickerVisible)
-    // },
-    // openPicker() {
-    //   this.$refs.picker.open()
-    // },
+    initAccountMsg() {
+      let temp = localStorage.getItem('account')
+      if (temp) {
+        this.account = temp
+      } else {
+        this.account = ''
+      }
+      temp = mango.storage.getStorage(this.account)
+      if (temp) {
+        this.password = temp['password']
+      } else {
+        this.password = ''
+      }
+    },
+    setSkinCol() {
+      let temp = mango.storage.getStorage(localStorage.getItem('account'))
+      if (!temp['skinCol']) {
+        this.skinCol = 'skinA'
+        this.$store.commit('changeSkin', 'skinA')
+      } else {
+        this.skinCol = temp['skinCol']
+      }
+      // console.log(111, this.$store.state.skinCol)
+      // 获取本地存储的皮肤值
+      // this.skinCol = localStorage.getItem('skinCol')
+      // if (this.skinCol) {
+      // // 检测是否存在本地存储皮肤值
+      //   this.$store.commit('changeSkin', this.skinCol)
+      // } else {
+      //   this.skinCol = 'skinA'
+      //   this.$store.commit('changeSkin', 'skinA')
+      //   localStorage.setItem('skinCol', 'skinA')
+      // }
+    },
     login: function() {
       let _this = this
       let params = {
@@ -83,10 +138,14 @@ export default {
           _this.canClick = true
           _this.loadingShow(false)
           if (data.status === 'true') {
+            // 初始化本基于本账号的本地存储
+            mango.storage.initStorage(_this.account)
+            localStorage.setItem('account', _this.account)
+            mango.storage.setStorage(_this.account, 'password', _this.password)
             // 保存账号密码到本地存储
-            localStorage.setItem('accountMsg', "{account: '" + _this.account + "'," +
-              "password: '" + _this.password + "'}")
-            localStorage.setItem('fullName', data.name)
+            // localStorage.setItem('accountMsg', "{account: '" + _this.account + "'," +
+            //   "password: '" + _this.password + "'}")
+            // localStorage.setItem('fullName', data.name)
             _this.$router.push({ path: '/select?name=' + data.name })
           } else {
             if (data.type === '0') {
@@ -104,33 +163,6 @@ export default {
         })
       }
     }
-  },
-  created: function () {
-    // 获取本地存储的皮肤值
-    this.skinCol = localStorage.getItem('skinCol')
-    if (this.skinCol) {
-    // 检测是否存在本地存储皮肤值
-      this.$store.commit('changeSkin', this.skinCol)
-    } else {
-      this.skinCol = 'skinA'
-      this.$store.commit('changeSkin', 'skinA')
-      localStorage.setItem('skinCol', 'skinA')
-    }
-
-    // 获取本地存储账号信息
-    let accountMsg = localStorage.getItem('accountMsg')
-    console.log(accountMsg)
-    if (accountMsg) {
-      let obj = eval('(' + accountMsg + ')')
-      this.account = obj.account
-      this.password = obj.password
-    } else {
-      console.log('没有本地存储')
-    }
-    this.loadingShow(false)
-  },
-  mounted() {
-
   }
 }
 </script>

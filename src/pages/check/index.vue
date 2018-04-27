@@ -39,7 +39,7 @@
       <p>请联系流程信息部相关人员</p>
     </Alert>
     <Alert class="factoryAlert" v-if="factoryAlertShow" @closeAlert="closeFactoryAlert">
-      <p>该条码【{{sn}}】所在的工厂【{{oldFactoryVal}}】仓库【{{oldWareHouseVal}}】与你选择的工厂【{{factoryVal}}】仓库【{{warehouseVal}}】不一致，是否继续录入？</p>
+      <p>该条码【{{sn}}】所在的工厂【{{oldFactoryVal}}】仓库【{{oldWareHouseVal}}】与你选择的工厂【{{factoryNum}}】仓库【{{warehouseNum}}】不一致，是否继续录入？</p>
       <button class="half" @click="verify(sn, 1)" slot="btn">确认</button>
       <button class="half" @click="closeFactoryAlert" slot="btn">取消</button>
     </Alert>
@@ -51,7 +51,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {path, ajax, getFactorySel, getaccount, version} from '../../js/variable.js'
+import mango, {path, ajax, getFactorySel, getaccount, version} from '../../js/variable.js'
 import HeadComponent from '../../components/check/header'
 import SetIcon from '../../components/check/setIcon'
 import HeadBott from '../../components/check/headBott'
@@ -71,8 +71,8 @@ export default {
       height: document.documentElement.clientHeight,
       numLength: 0,
       canVerify: true,
-      factoryVal: '',
-      warehouseVal: '',
+      factoryNum: '',
+      warehouseNum: '',
       oldFactoryVal: '',
       oldWareHouseVal: '',
       tableHList: ['序号', 'SN', '状态'],
@@ -106,9 +106,17 @@ export default {
   },
 
   created() {
-    // getFactorySel(this)
+    // this.PDType = storage.getStorage(11608050)[`mango11608050`].PDType
+    // let temp = localStorage.getItem('settingData')
+    // if (!temp) {
+    //   this.PDType = 0
+    //   mango.setLocalData('PDType', 0)
+    // } else {
+    //   // alert(`12334${JSON.parse(temp).PDType}`)
+    //   this.PDType = JSON.parse(temp).PDType
+    // }
     this.checkOpen()
-    // getFactorySel(this)
+    getFactorySel(this)
   },
   updated() {
 
@@ -124,13 +132,15 @@ export default {
   },
   mounted() {
     this.setData()
-    // localStorage.removeItem('settingData')
     getaccount(this)
     this.loadingShow(false)
-    if (!localStorage.getItem('settingData')) {
-      console.log(localStorage.getItem('settingData'))
-      alert('请先设置盘点参数。')
-      this.toSetting()
+    // 设置默认盘点模式
+    let PDType = mango.storage.getStorage(this.account)['PDType']
+    if (!PDType) {
+      this.type = 0
+      mango.storage.setStorage(this.account, 'PDType', 0)
+    } else {
+      this.type = PDType
     }
   },
   methods: {
@@ -138,7 +148,7 @@ export default {
       this.$store.commit('loadingShow', x)
     },
     toSetting() {
-      this.$router.push({path: '/checkSetting'})
+      this.$router.push({path: '/setting'})
     },
     test() {
       // this.sn = '111111'
@@ -163,9 +173,10 @@ export default {
     setData() {
       let temp = localStorage.getItem('settingData')
       if (temp) {
-        this.type = JSON.parse(temp).typeVal
-        this.factoryVal = JSON.parse(temp).factoryVal
-        this.warehouseVal = JSON.parse(temp).warehouseVal
+        this.type = parseInt(JSON.parse(temp).typeVal) ? 1 : 0
+        console.log(666, parseInt(JSON.parse(temp).typeVal))
+        // this.factoryVal = JSON.parse(temp).factoryVal
+        // this.warehouseVal = JSON.parse(temp).warehouseVal
       }
     },
 
@@ -220,8 +231,8 @@ export default {
         path.app + 'scan',
         sn.length, {
           type: this.type,
-          factory: this.factoryVal,
-          wareHouse: this.warehouseVal,
+          factory: this.factoryNum,
+          wareHouse: this.warehouseNum,
           sn: sn,
           account: this.account,
           name: this.name,
@@ -268,8 +279,8 @@ export default {
       // }
       let params = {
         type: this.type,
-        factory: this.factoryVal,
-        wareHouse: this.warehouseVal,
+        factory: this.factoryNum,
+        wareHouse: this.warehouseNum,
         sn: this.sn,
         account: this.account,
         name: this.name,

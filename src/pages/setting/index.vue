@@ -89,6 +89,15 @@
         <span></span>
       </li>
       <li>
+      <select-component
+      @changeSelectVal="selectType"
+      :dataName="'PDType'"
+      :selectVal="PDType"
+      :labelText = "'盘点方式'"
+      :firstOption = "'请选择盘点方式'"
+      :selectArr="[{name: '精盘', code: 1}, {name: '通盘', code: 0}].map(function(item) {
+        return {name: item.name, key: item.code}
+      })"></select-component>
         <button type="button" @click="logout">退出账号</button>
       </li>
     </ul>
@@ -101,6 +110,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import HeadComponent from '../../components/header'
+import SelectComponent from '../../components/check/select'
 import md5 from 'js-md5'
 import {path, V, getFactorySel, getPrintPlanMsg, ajax} from '../../js/variable.js'
 Vue.use(VueRouter)
@@ -108,7 +118,7 @@ Vue.use(Vuex)
 
 export default {
   name: 'Setting',
-  components: {HeadComponent},
+  components: {HeadComponent, SelectComponent},
   data () {
     return {
       height: document.documentElement.clientHeight,
@@ -130,6 +140,7 @@ export default {
       djPrintIPVal: '192.168.1.50', // 单据打印机ip
       typeList: ['skinA', 'skinB', 'skinC'], // 风格选择
       typeVal: localStorage.getItem('skinCol'),
+      PDType: '',
       factoryList: [],
       factory: '',
       factoryNum: '',
@@ -142,6 +153,23 @@ export default {
     skinCol() {
       return this.$store.state.skinCol
     }
+  },
+  created() {
+    // alert(localStorage.getItem('settingData'))
+    // if (!localStorage.getItem('settingData')) {
+    //   localStorage.setItem('settingData', '{}')
+    // }
+  },
+  mounted() {
+    this.loadingShow(false)
+    getPrintPlanMsg(this)
+    getFactorySel(this)
+    this.setSkinCol(localStorage.getItem('skinCol'))
+    // 获取防伪打印模板
+    this.getModule()
+    this.getFactory()
+    this.getDepartment()
+    console.log(888, localStorage.getItem('settingData'))
   },
   methods: {
     loadingShow: function(x) {
@@ -158,6 +186,11 @@ export default {
       let accountMsg = localStorage.getItem('accountMsg')
       let obj = eval('(' + accountMsg + ')')
       return obj
+    },
+
+    // 由select子组件触发
+    selectType(value) {
+      this.PDType = value
     },
     getFactory() {
       let _this = this
@@ -272,7 +305,7 @@ export default {
         factory: this.departmentVal
       }
       _this.putInShow = true
-      ajax('POST', url, params).then((data) => {
+      ajax('GET', url, params).then((data) => {
         data = data.warehouse
         _this.putInShow = false
         _this.lineList = data.map((param) => param.housecode)
@@ -363,7 +396,6 @@ export default {
       _this.putInShow = true
       ajax('POST', url, params).then((data) => {
         _this.putInShow = false
-        console.log('88888', data)
         data = data.printers
         _this.printList = data
         if (!_this.redPrintVal && data.length > 0) {
@@ -451,19 +483,6 @@ export default {
         _this.loadingShow(false)
       })
     }
-  },
-  created() {
-
-  },
-  mounted() {
-    this.loadingShow(false)
-    getPrintPlanMsg(this)
-    getFactorySel(this)
-    this.setSkinCol(localStorage.getItem('skinCol'))
-    // 获取防伪打印模板
-    this.getModule()
-    this.getFactory()
-    this.getDepartment()
   }
 }
 </script>
