@@ -65,7 +65,7 @@ import PutIn from '../../components/purchase/put-in'
 import SNDetail from '../../components/purchase/sn-detail'
 import Btn from '../../components/btn'
 import SureBox from '../../components/sureBox'
-import { path, V, getFactorySel, setParams, version } from '../../js/variable.js'
+import mango, { path, V, setParams, version } from '../../js/variable.js'
 // import apiFn from '../../js/lib/api.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -110,7 +110,7 @@ export default {
       clearsnArr: true, // 用于销售模块snArr初始化
       salestockupNum: 0,
       errorTime: 0,
-      dateVal: localStorage.getItem('dateVal'),
+      dateVal: '',
       numLength: 0,
       canVerify: true, // 判断输入框是否为人工输入
       mixType: false, // 既是标准包，又有子条码是，为true
@@ -176,6 +176,31 @@ export default {
       return this.$store.state.fbData
     }
   },
+  created: function () {
+    // 获取本地缓存
+    this.getStorage()
+    // 设置注销的回退步数
+    localStorage.setItem('routeIndex', '5')
+    // getFactorySel(this)
+    if (this.urlParams === 'purchase' || this.urlParams === 'salesoutput' || this.urlParams === 'allotinbound') {
+      this.orderType = 1
+    } else if (this.urlParams === 'salestockup' || this.urlParams === 'salesreturn' || this.urlParams === 'allot') {
+      this.orderType = 2
+    } else if (this.urlParams === 'product') {
+      this.orderType = 3
+    }
+    // this.getaccount()
+    this.snListUrl()
+    this.setTableH()
+    this.$store.commit('loadingShow', false)
+    this.$store.commit('tableH', ['序号', '描述', '条码', '状态'])
+    this.focusStatus = true
+    this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
+    this.checkBoxShowFn(true) // 再次进入页面是，将sn码选取复选框隐藏
+  },
+  mounted() {
+    this.$store.commit('isOP', false)
+  },
   methods: {
     setBtnDisabled(x) {
       this.$store.commit('btnDisabled', x)
@@ -189,16 +214,25 @@ export default {
     setsureBoxShow(x) {
       this.$store.commit('sureBoxShow', x)
     },
-    getaccount() {
-      // 获取本地存储账号信息
-      let accountMsg = localStorage.getItem('accountMsg')
-      if (accountMsg) {
-        let obj = eval('(' + accountMsg + ')')
-        this.account = obj.account
-      } else {
-        // console.log('没有本地存储')
-      }
+    getStorage() {
+      this.account = localStorage.getItem('account')
+      let temp = mango.storage.getStorage(this.account)
+      this.factory = temp['factory']
+      this.factoryNum = temp['factoryNum']
+      this.warehouse = temp['warehouse']
+      this.warehouseNum = temp['warehouseNum']
+      this.dateVal = temp['dateVal']
     },
+    // getaccount() {
+    //   // 获取本地存储账号信息
+    //   let accountMsg = localStorage.getItem('accountMsg')
+    //   if (accountMsg) {
+    //     let obj = eval('(' + accountMsg + ')')
+    //     this.account = obj.account
+    //   } else {
+    //     // console.log('没有本地存储')
+    //   }
+    // },
     // 点击头部切换按钮
     btn1() {
       this.$store.commit('tableH', ['序号', '物料描述', '数量'])
@@ -280,6 +314,7 @@ export default {
         this.verify3()
       }
     },
+    // 确认入库
     sureIn() {
       if (this.hadscanCount < this.scanCount) {
         if (this.urlParams === 'product') {
@@ -1198,33 +1233,6 @@ export default {
         }
       }
     }
-  },
-  created: function () {
-    // 设置注销的回退步数
-    localStorage.setItem('routeIndex', '5')
-    getFactorySel(this)
-    if (this.urlParams === 'purchase' || this.urlParams === 'salesoutput' || this.urlParams === 'allotinbound') {
-      this.orderType = 1
-    } else if (this.urlParams === 'salestockup' || this.urlParams === 'salesreturn' || this.urlParams === 'allot') {
-      this.orderType = 2
-    } else if (this.urlParams === 'product') {
-      this.orderType = 3
-    }
-    this.getaccount()
-    this.snListUrl()
-    this.setTableH()
-    this.$store.commit('loadingShow', false)
-    this.$store.commit('tableH', ['序号', '描述', '条码', '状态'])
-    this.focusStatus = true
-    this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
-    this.checkBoxShowFn(true) // 再次进入页面是，将sn码选取复选框隐藏
-  },
-  mounted() {
-    this.$store.commit('isOP', false)
-    // let scrollDiv = document.getElementsByClassName('contain')
-    // scrollDiv.addEventListener('scroll', () => {
-    //   console.log(scrollDiv.scrollTop)
-    // }, false)
   }
 }
 </script>

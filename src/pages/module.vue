@@ -37,7 +37,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {path, V, getFactorySel} from '../js/variable'
+import mango, {path, V, getFactorySel} from '../js/variable'
 import HeadComponent from '../components/header'
 import md5 from 'js-md5'
 Vue.use(VueRouter)
@@ -63,12 +63,34 @@ export default {
       return localStorage.getItem('skinCol')
     }
   },
+  created: function() {
+    // 设置注销的回退步数
+    localStorage.setItem('routeIndex', '3')
+    // getFactorySel(this)
+    // let obj = this.getAccountMsg()
+    // this.account = obj.account
+    // this.password = obj.password
+    this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
+  },
+  mounted() {
+    this.getStorage()
+    // alert(localStorage.getItem('dateVal'))
+    this.jurisdiction()
+  },
   methods: {
     addClass() {
       console.log('success')
     },
     loadingShow: function(x) {
       this.$store.commit('loadingShow', x)
+    },
+    getStorage() {
+      this.account = localStorage.getItem('account')
+      let temp = mango.storage.getStorage(this.account)
+      this.warehouse = temp['warehouse']
+      this.warehouseNum = temp['warehouseNum']
+      this.factoryNum = temp['factoryNum']
+      this.password = temp['password']
     },
     jurisdiction: function() {
       let _this = this
@@ -114,25 +136,12 @@ export default {
       } else {
         alert('您没有读取该模块内容的权限。')
       }
-    },
-    getAccountMsg: function() {
-      let accountMsg = localStorage.getItem('accountMsg')
-      let obj = eval('(' + accountMsg + ')')
-      return obj
     }
-  },
-  created: function() {
-    // 设置注销的回退步数
-    localStorage.setItem('routeIndex', '3')
-    getFactorySel(this)
-    let obj = this.getAccountMsg()
-    this.account = obj.account
-    this.password = obj.password
-    this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
-  },
-  mounted() {
-    // alert(localStorage.getItem('dateVal'))
-    this.jurisdiction()
+    // getAccountMsg: function() {
+    //   let accountMsg = localStorage.getItem('accountMsg')
+    //   let obj = eval('(' + accountMsg + ')')
+    //   return obj
+    // }
   }
 }
 </script>

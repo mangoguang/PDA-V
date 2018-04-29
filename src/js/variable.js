@@ -185,6 +185,7 @@ function setParams(obj) {
 }
 
 let Mango = (function() {
+	const localAccount = localStorage.getItem('account')
 	return function() {
 		// 设置本地存储
 		// 本地存储在入口文件初始化initStorage方法
@@ -218,6 +219,12 @@ let Mango = (function() {
 				console.log('333', tempStorage)
 				localStorage.setItem('mangoStorage', JSON.stringify(tempStorage))
 				return this
+			},
+			// 获取本地缓存
+			setData: function(_this, key) {
+				let temp = JSON.parse(localStorage.getItem('mangoStorage'))[`mango${localAccount}`]
+				_this[key] = temp[key]
+				return this
 			}
 		}
 
@@ -226,8 +233,53 @@ let Mango = (function() {
 }())
 
 let mango = new Mango()
-// let storage = mango.storage
-// console.log(storage.getLocalData)
 export default mango
+
+let Storage = (function() {
+	// 静态私有变量
+	const account = localStorage.getItem('account')
+
+	function _storage() {
+		// 初始化并获取mangoStorage
+		this.init = function(account) {
+			// localStorage.removeItem('mangoStorage')
+			let mangoStorage = localStorage.getItem('mangoStorage')
+			if (mangoStorage) {
+				mangoStorage = JSON.parse(mangoStorage)
+			} else {
+				// 给mangoStorage赋初值
+				mangoStorage = {}
+			}
+			if (!mangoStorage[`mango${account}`]) {
+				mangoStorage[`mango${account}`] = {}
+				localStorage.setItem('mangoStorage', JSON.stringify(mangoStorage))
+			}
+		}
+
+		// 获取本地存储
+		this.get = function(account) {
+			return JSON.parse(localStorage.getItem('mangoStorage'))[`mango${account}`]
+		}
+
+		// 更改本地存储
+		this.set = function(account, key, val) {
+			let tempStorage = JSON.parse(localStorage.getItem('mangoStorage'))
+			let accountStorage = tempStorage[`mango${account}`]
+			tempStorage[`mango${account}`][key] = val
+			console.log('333', tempStorage)
+			localStorage.setItem('mangoStorage', JSON.stringify(tempStorage))
+			return this
+		}
+
+		// 获取本地缓存
+		this.setData = function(_this, key) {
+			let temp = JSON.parse(localStorage.getItem('mangoStorage'))[`mango${localAccount}`]
+			_this[key] = temp[key]
+			return this
+		}
+	}
+
+	return _storage
+}())
 
 export { path, V, cloneObj, getFactorySel, getPrintPlanMsg, getaccount, ajax, setParams, version }

@@ -107,10 +107,8 @@ export default {
         this.factoryNum = temp['factoryNum']
       }
       this.factory = temp['factory']
-      // this.factoryNum = temp['factoryNum']
       this.warehouseNum = temp['warehouseNum']
       this.password = temp['password']
-      console.log(this.factoryNum, this.warehouseNum)
       this.name = temp['name']
     },
     setStorage() {

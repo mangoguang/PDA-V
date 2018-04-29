@@ -112,7 +112,7 @@ import Vuex from 'vuex'
 import HeadComponent from '../../components/header'
 import SelectComponent from '../../components/check/select'
 import md5 from 'js-md5'
-import {path, V, getFactorySel, getPrintPlanMsg, ajax} from '../../js/variable.js'
+import mango, {path, V, getPrintPlanMsg, ajax} from '../../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -146,7 +146,9 @@ export default {
       factoryNum: '',
       warehouseList: [],
       warehouse: '',
-      warehouseNum: ''
+      warehouseNum: '',
+      account: localStorage.getItem('account'),
+      password: ''
     }
   },
   computed: {
@@ -155,6 +157,11 @@ export default {
     }
   },
   created() {
+    mango.storage.setData(this, 'factory')
+    .setData(this, 'factoryNum')
+    .setData(this, 'warehouse')
+    .setData(this, 'warehouseNum')
+    .setData(this, 'password')
     // alert(localStorage.getItem('settingData'))
     // if (!localStorage.getItem('settingData')) {
     //   localStorage.setItem('settingData', '{}')
@@ -163,7 +170,7 @@ export default {
   mounted() {
     this.loadingShow(false)
     getPrintPlanMsg(this)
-    getFactorySel(this)
+    // getFactorySel(this)
     this.setSkinCol(localStorage.getItem('skinCol'))
     // 获取防伪打印模板
     this.getModule()
@@ -179,31 +186,32 @@ export default {
       this.$store.commit('changeSkin', x)
     },
     changeType() {
-      localStorage.setItem('skinCol', this.typeVal)
+      // localStorage.setItem('skinCol', this.typeVal)
+      mango.storage.setStorage(this.account, 'skinCol', this.typeVal)
       this.setSkinCol(this.typeVal)
     },
-    getAccountMsg: function() {
-      let accountMsg = localStorage.getItem('accountMsg')
-      let obj = eval('(' + accountMsg + ')')
-      return obj
-    },
-
+    // getAccountMsg: function() {
+    //   let accountMsg = localStorage.getItem('accountMsg')
+    //   let obj = eval('(' + accountMsg + ')')
+    //   return obj
+    // },
     // 由select子组件触发
     selectType(value) {
       this.PDType = value
     },
+    // 获取工厂列表
     getFactory() {
       let _this = this
-      let obj = this.getAccountMsg()
+      // let obj = this.getAccountMsg()
       let url = path.oa + '/PDAFactory.jsp'
       let params = {
         // name: this.factorySel,
         // password: md5(this.warehouse).toLocaleUpperCase()
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase()
+        account: this.account,
+        password: md5(this.password).toLocaleUpperCase()
       }
       _this.loadingShow(true)
-      ajax('POST', url, params).then((data) => {
+      ajax('GET', url, params).then((data) => {
         if (data.status) {
           _this.factoryList = data.factorys
           _this.setWarehouse()
@@ -217,19 +225,20 @@ export default {
       let _this = this
       // let url = path.local + '/warehouse_sel.php'
       let url = path.oa + '/PDAWareHouse.jsp'
-      let obj = this.getAccountMsg()
+      // let obj = this.getAccountMsg()
       // 获取本地存储账号信息
       let params = {
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase(),
+        account: this.account,
+        password: md5(this.password).toLocaleUpperCase(),
         factory: this.factoryNum
       }
 
       _this.loadingShow(true)
-      ajax('POST', url, params).then((data) => {
+      ajax('GET', url, params).then((data) => {
         _this.loadingShow(false)
         _this.warehouse = data.warehouse[0].name
-        localStorage.setItem('factoryMsg', '{factory: "' + _this.factory + '",warehouse: "' + _this.warehouse + '", factoryNum: "' + _this.factoryNum + '", warehouseNum: "' + _this.warehouseNum + '"}')
+        mango.storage.setStorage(_this.account, 'warehouse', _this.warehouse)
+        // localStorage.setItem('factoryMsg', '{factory: "' + _this.factory + '",warehouse: "' + _this.warehouse + '", factoryNum: "' + _this.factoryNum + '", warehouseNum: "' + _this.warehouseNum + '"}')
         console.log(localStorage.getItem('factoryMsg'))
         if (data.status) {
           _this.warehouseList = data.warehouse
@@ -267,13 +276,13 @@ export default {
     getDepartment() {
       let _this = this
       let url = path.oa + '/PDAPrinterF.jsp'
-      let obj = this.getAccountMsg()
+      // let obj = this.getAccountMsg()
       let params = {
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase()
+        account: this.account,
+        password: md5(this.password).toLocaleUpperCase()
       }
       _this.putInShow = true
-      ajax('POST', url, params).then((data) => {
+      ajax('GET', url, params).then((data) => {
         data = data.factorys
         _this.putInShow = false
         _this.departmentList = data.map((param) => param.factorycode)
@@ -298,10 +307,10 @@ export default {
     getLine() {
       let _this = this
       let url = path.oa + '/PDAPrinterH.jsp'
-      let obj = this.getAccountMsg()
+      // let obj = this.getAccountMsg()
       let params = {
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase(),
+        account: this.account,
+        password: md5(this.password).toLocaleUpperCase(),
         factory: this.departmentVal
       }
       _this.putInShow = true
@@ -330,7 +339,7 @@ export default {
     //     factory: this.departmentVal
     //   }
     //   _this.putInShow = true
-    //   ajax('POST', url, params).then((data) => {
+    //   ajax('GET', url, params).then((data) => {
     //     data = data.warehouse
     //     _this.putInShow = false
     //     lineList = data.map((param) => param.housecode)
@@ -356,14 +365,14 @@ export default {
     getLine1() {
       let _this = this
       let url = path.oa + '/PDAPrinterH.jsp'
-      let obj = this.getAccountMsg()
+      // let obj = this.getAccountMsg()
       let params = {
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase(),
+        account: this.account,
+        password: md5(this.password).toLocaleUpperCase(),
         factory: this.departmentVal
       }
       _this.putInShow = true
-      ajax('POST', url, params).then((data) => {
+      ajax('GET', url, params).then((data) => {
         data = data.warehouse
         _this.putInShow = false
         _this.lineList1 = data.map((param) => param.housecode)
@@ -386,15 +395,15 @@ export default {
     getPrint() {
       let _this = this
       let url = path.oa + '/PDAPrinterR.jsp'
-      let obj = this.getAccountMsg()
+      // let obj = this.getAccountMsg()
       let params = {
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase(),
+        account: this.account,
+        password: md5(this.password).toLocaleUpperCase(),
         factory: this.departmentVal,
         house: this.lineVal
       }
       _this.putInShow = true
-      ajax('POST', url, params).then((data) => {
+      ajax('GET', url, params).then((data) => {
         _this.putInShow = false
         data = data.printers
         _this.printList = data
@@ -419,15 +428,15 @@ export default {
     getPrint1() {
       let _this = this
       let url = path.oa + '/PDAPrinterR.jsp'
-      let obj = this.getAccountMsg()
+      // let obj = this.getAccountMsg()
       let params = {
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase(),
+        account: this.account,
+        password: md5(this.password).toLocaleUpperCase(),
         factory: this.departmentVal,
         house: this.lineVal1
       }
       _this.putInShow = true
-      ajax('POST', url, params).then((data) => {
+      ajax('GET', url, params).then((data) => {
         _this.putInShow = false
         data = data.printers
         _this.printList1 = data
@@ -447,7 +456,7 @@ export default {
     // 将工厂信息缓存到本地
     changeFactory(status) {
       console.log(status)
-      localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
+      // localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
       if (status) {
         this.setWarehouse()
       } else {
@@ -456,16 +465,24 @@ export default {
             this.warehouse = this.warehouseList[i].name
           }
         }
-        localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
+        setFactoryStorage()
+        // localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
+      }
+
+      function setFactoryStorage() {
+        mango.storage.setStorage(this.account, 'factory', this.factory)
+        .setStorage(this.account, 'factoryNum', this.factoryNum)
+        .setStorage(this.account, 'warehouse', this.warehouse)
+        .setStorage(this.account, 'warehouseNum', this.warehouseNum)
       }
     },
     logout() {
       let _this = this
       let url = path.oa + '/PDALoginOut.jsp'
-      let obj = this.getAccountMsg()
+      // let obj = this.getAccountMsg()
       let params = {
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase()
+        account: this.account,
+        password: md5(this.password).toLocaleUpperCase()
       }
       _this.putInShow = true
       V.get(url, params).then(function(data) {

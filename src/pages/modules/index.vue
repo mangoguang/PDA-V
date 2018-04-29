@@ -32,7 +32,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {path, V, cloneObj, getFactorySel, getPrintPlanMsg, setParams, version} from '../../js/variable.js'
+import mango, {path, V, cloneObj, getFactorySel, getPrintPlanMsg, setParams, version} from '../../js/variable.js'
 import HeadComponent from '../../components/header'
 // import TableH from '../../components/table-h'
 import TableTr from '../../components/table-tr-op'
@@ -57,9 +57,9 @@ export default {
       warehouseNum: '',
       bottomBtn: true,
       btnName: '',
-      account: '',
+      account: localStorage.getItem('account'),
       printPlanSelNum: '',
-      dateVal: localStorage.getItem('dateVal')
+      dateVal: ''
     }
   },
   computed: {
@@ -79,9 +79,69 @@ export default {
       }
     }
   },
+  created: function() {
+    // 设置注销的回退步数
+    localStorage.setItem('routeIndex', '4')
+    getPrintPlanMsg(this)
+    this.getStorage()
+    // getFactorySel(this)
+    let _this = this
+    if (this.moduleName !== 'product') {
+      if (this.moduleName === 'stock') {
+        if (this.bottomBtnName === '' || this.bottomBtnName === 'scanfw' || this.bottomBtnName === 'scanbq') {
+          this.moduleName = 'salestockup'
+          // 设置底部模块分类
+          this.setbottomBtnName('salestockup')
+        } else {
+          this.moduleName = this.bottomBtnName
+        }
+      } else if (this.moduleName === 'productScan') {
+        if (this.bottomBtnName === '' || this.bottomBtnName === 'salestockup' || this.bottomBtnName === 'salesoutput') {
+          this.moduleName = 'scanfw'
+          // 设置底部模块分类
+          this.setbottomBtnName('scanfw')
+          this.btnName = '打印出货标签'
+        } else {
+          this.moduleName = this.bottomBtnName
+          if (this.bottomBtnName === 'scanfw') {
+            this.btnName = '打印出货标签'
+          } else {
+            this.btnName = '打印入库单'
+          }
+        }
+      }
+      if (this.bottomBtnName === 'salestockup' || this.bottomBtnName === 'scanfw') {
+          this.bottomBtn = true
+        } else {
+          this.bottomBtn = false
+        }
+      if (this.$route.params.module !== 'productScan') {
+        this.getOrderList(this.orderListParams()).then(function(data) {
+          _this.setTrArr(data)
+        })
+      }
+    }
+    this.setTableH()
+    this.setOrders(this.orders)
+    this.$store.commit('loadingShow', true)
+    this.$store.commit('isOP', true)
+    this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
+    this.getaccount()
+  },
+  mounted() {
+    this.loadingShow(false)
+  },
   methods: {
     setbottomBtnName(name) {
       this.$store.commit('bottomBtnName', name)
+    },
+    getStorage() {
+      let temp = mango.storage.getStorage(this.account)
+      this.factory = temp['factory']
+      this.factoryNum = temp['factoryNum']
+      this.warehouse = temp['warehouse']
+      this.warehouseNum = temp['warehouseNum']
+      this.dateVal = temp['dateVal']
     },
     testTime(func) {
       var start = new Date().getTime() // 起始时间
@@ -536,57 +596,6 @@ export default {
           }
       }
     }
-  },
-  created: function() {
-    // 设置注销的回退步数
-    localStorage.setItem('routeIndex', '4')
-    getPrintPlanMsg(this)
-    getFactorySel(this)
-    let _this = this
-    if (this.moduleName !== 'product') {
-      if (this.moduleName === 'stock') {
-        if (this.bottomBtnName === '' || this.bottomBtnName === 'scanfw' || this.bottomBtnName === 'scanbq') {
-          this.moduleName = 'salestockup'
-          // 设置底部模块分类
-          this.setbottomBtnName('salestockup')
-        } else {
-          this.moduleName = this.bottomBtnName
-        }
-      } else if (this.moduleName === 'productScan') {
-        if (this.bottomBtnName === '' || this.bottomBtnName === 'salestockup' || this.bottomBtnName === 'salesoutput') {
-          this.moduleName = 'scanfw'
-          // 设置底部模块分类
-          this.setbottomBtnName('scanfw')
-          this.btnName = '打印出货标签'
-        } else {
-          this.moduleName = this.bottomBtnName
-          if (this.bottomBtnName === 'scanfw') {
-            this.btnName = '打印出货标签'
-          } else {
-            this.btnName = '打印入库单'
-          }
-        }
-      }
-      if (this.bottomBtnName === 'salestockup' || this.bottomBtnName === 'scanfw') {
-          this.bottomBtn = true
-        } else {
-          this.bottomBtn = false
-        }
-      if (this.$route.params.module !== 'productScan') {
-        this.getOrderList(this.orderListParams()).then(function(data) {
-          _this.setTrArr(data)
-        })
-      }
-    }
-    this.setTableH()
-    this.setOrders(this.orders)
-    this.$store.commit('loadingShow', true)
-    this.$store.commit('isOP', true)
-    this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
-    this.getaccount()
-  },
-  mounted() {
-    this.loadingShow(false)
   }
 }
 </script>
