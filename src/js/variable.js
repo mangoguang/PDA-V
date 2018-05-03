@@ -241,7 +241,7 @@ let Storage = (function() {
 
 	function _storage() {
 		// 初始化并获取mangoStorage
-		this.init = function(account) {
+		this.init = function() {
 			// localStorage.removeItem('mangoStorage')
 			let mangoStorage = localStorage.getItem('mangoStorage')
 			if (mangoStorage) {
@@ -257,12 +257,12 @@ let Storage = (function() {
 		}
 
 		// 获取本地存储
-		this.get = function(account) {
+		this.get = function() {
 			return JSON.parse(localStorage.getItem('mangoStorage'))[`mango${account}`]
 		}
 
 		// 更改本地存储
-		this.set = function(account, key, val) {
+		this.set = function(key, val) {
 			let tempStorage = JSON.parse(localStorage.getItem('mangoStorage'))
 			let accountStorage = tempStorage[`mango${account}`]
 			tempStorage[`mango${account}`][key] = val
@@ -281,5 +281,6 @@ let Storage = (function() {
 
 	return _storage
 }())
+// export default new Storage()
 
 export { path, V, cloneObj, getFactorySel, getPrintPlanMsg, getaccount, ajax, setParams, version }
