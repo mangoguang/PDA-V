@@ -199,7 +199,9 @@ export default {
     this.checkBoxShowFn(true) // 再次进入页面是，将sn码选取复选框隐藏
   },
   mounted() {
+    alert(123)
     this.$store.commit('isOP', false)
+    this.checkTime()
   },
   methods: {
     setBtnDisabled(x) {
@@ -342,6 +344,10 @@ export default {
       this.$store.commit('checkBoxShow', false)
       this.showCheckbox = false
       this.setsureBoxShow(false)
+    },
+    checkTime() {
+      let date = new Date()
+      console.log(888, date)
     },
     setSNCopy(arr) {
       this.$store.commit('SNCopy', arr)

@@ -1,6 +1,7 @@
 import $ from 'n-zepto'
 function Path() {
-	this.oa = 'http://10.12.0.54/derucci/workflow/jsp'
+	this.oa = 'http://10.12.0.61/api/pda/v1/userperm'
+	// this.oa = 'http://10.12.0.54/derucci/workflow/jsp'
 	// this.oa = 'http://10.11.9.220:10083/derucci/workflow/jsp'
 	// this.oa = 'http://10.12.0.53:8900/derucci/workflow/jsp'
 	this.local = 'http://localhost/PDA-V/static/json'
@@ -222,7 +223,8 @@ let Mango = (function() {
 			},
 			// 获取本地缓存
 			setData: function(_this, key) {
-				let temp = JSON.parse(localStorage.getItem('mangoStorage'))[`mango${localAccount}`]
+				let temp = JSON.parse(localStorage.getItem('mangoStorage'))[`mango${_this.account}`]
+				console.log('sucsess', temp)
 				_this[key] = temp[key]
 				return this
 			}

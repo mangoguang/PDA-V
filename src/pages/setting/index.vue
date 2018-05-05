@@ -203,38 +203,42 @@ export default {
     getFactory() {
       let _this = this
       // let obj = this.getAccountMsg()
-      let url = path.oa + '/PDAFactory.jsp'
+      let url = path.oa + '/factory'
       let params = {
         // name: this.factorySel,
         // password: md5(this.warehouse).toLocaleUpperCase()
         account: this.account,
-        password: md5(this.password).toLocaleUpperCase()
+        password: this.password
       }
       _this.loadingShow(true)
-      ajax('GET', url, params).then((data) => {
+      this.$ajax.post(url, params).then(function(res) {
+        let data = res.data
+      // ajax('GET', url, params).then((data) => {
         if (data.status) {
           _this.factoryList = data.factorys
           _this.setWarehouse()
         }
       }).catch(() => {
-        alert('请求超时！')
+        alert('请求超时1！')
           _this.loadingShow(false)
       })
     },
     setWarehouse: function() {
       let _this = this
       // let url = path.local + '/warehouse_sel.php'
-      let url = path.oa + '/PDAWareHouse.jsp'
+      let url = path.oa + '/warehouse'
       // let obj = this.getAccountMsg()
       // 获取本地存储账号信息
       let params = {
         account: this.account,
-        password: md5(this.password).toLocaleUpperCase(),
+        password: this.password,
         factory: this.factoryNum
       }
 
       _this.loadingShow(true)
-      ajax('GET', url, params).then((data) => {
+      this.$ajax.post(url, params).then(function(res) {
+        let data = res.data
+      // ajax('GET', url, params).then((data) => {
         _this.loadingShow(false)
         _this.warehouse = data.warehouse[0].name
         mango.storage.setStorage(_this.account, 'warehouse', _this.warehouse)
@@ -244,7 +248,7 @@ export default {
           _this.warehouseList = data.warehouse
         }
       }).catch(() => {
-        alert('请求超时！')
+        alert('请求超时2！')
           _this.loadingShow(false)
       })
     },
@@ -275,14 +279,16 @@ export default {
     },
     getDepartment() {
       let _this = this
-      let url = path.oa + '/PDAPrinterF.jsp'
+      let url = path.oa + '/printDept'
       // let obj = this.getAccountMsg()
       let params = {
         account: this.account,
-        password: md5(this.password).toLocaleUpperCase()
+        password: this.password
       }
       _this.putInShow = true
-      ajax('GET', url, params).then((data) => {
+      this.$ajax.post(url, params).then(function(res) {
+        let data = res.data
+      // ajax('GET', url, params).then((data) => {
         data = data.factorys
         _this.putInShow = false
         _this.departmentList = data.map((param) => param.factorycode)
@@ -292,9 +298,9 @@ export default {
         }
         // 获取生产线列表
         _this.getLine()
-        _this.getLine1()
+        // _this.getLine1()
       }).catch(() => {
-        alert('请求超时！')
+        alert('请求超时3！')
           _this.loadingShow(false)
       })
     },
@@ -302,91 +308,73 @@ export default {
       localStorage.setItem('departmentVal', this.departmentVal)
       // 获取生产线列表
       this.getLine()
-      this.getLine1()
+      // this.getLine1()
     },
     getLine() {
       let _this = this
-      let url = path.oa + '/PDAPrinterH.jsp'
+      let url = path.oa + '/printProdLine'
+      // let url = path.oa + '/PDAPrinterH.jsp'
       // let obj = this.getAccountMsg()
       let params = {
         account: this.account,
-        password: md5(this.password).toLocaleUpperCase(),
+        password: this.password,
         factory: this.departmentVal
       }
       _this.putInShow = true
-      ajax('GET', url, params).then((data) => {
+      this.$ajax.post(url, params).then(function(res) {
+        let data = res.data
+      // ajax('GET', url, params).then((data) => {
         data = data.warehouse
         _this.putInShow = false
         _this.lineList = data.map((param) => param.housecode)
+        _this.lineList1 = data.map((param) => param.housecode)
         if (!_this.lineVal && data.length > 0) {
           _this.lineVal = data[0].housecode
+          _this.lineVal1 = data[0].housecode
+          // localStorage.setItem('lineVal', data[0].housecode)
           localStorage.setItem('lineVal', data[0].housecode)
+          localStorage.setItem('lineVal1', data[0].housecode)
         }
         // 获取打印机列表
         _this.getPrint()
+        _this.getPrint1()
       }).catch(() => {
-        alert('请求超时！')
+        alert('请求超时4！')
           _this.loadingShow(false)
       })
     },
-    // getLine(lineVal, lineList, setItemName) {
-    //   let _this = this
-    //   let url = path.oa + '/PDAPrinterH.jsp'
-    //   let obj = this.getAccountMsg()
-    //   let params = {
-    //     account: obj.account,
-    //     password: md5(obj.password).toLocaleUpperCase(),
-    //     factory: this.departmentVal
-    //   }
-    //   _this.putInShow = true
-    //   ajax('GET', url, params).then((data) => {
-    //     data = data.warehouse
-    //     _this.putInShow = false
-    //     lineList = data.map((param) => param.housecode)
-    //     console.log('jjjj', lineList)
-    //     console.log(_this.lineList)
-    //     console.log('eee', lineVal, data.length)
-    //     if (!lineVal && data.length > 0) {
-    //       console.log(lineVal)
-    //       lineVal = data[0].housecode
-    //       localStorage.setItem('' + setItemName, data[0].housecode)
-    //       console.log(lineVal)
-    //     }
-    //   }).catch(() => {
-    //     alert('请求超时！')
-    //       _this.loadingShow(false)
-    //   })
-    // },
     changeLine() {
       localStorage.setItem('lineVal', this.lineVal)
       // 获取打印机列表
       this.getPrint()
     },
-    getLine1() {
-      let _this = this
-      let url = path.oa + '/PDAPrinterH.jsp'
-      // let obj = this.getAccountMsg()
-      let params = {
-        account: this.account,
-        password: md5(this.password).toLocaleUpperCase(),
-        factory: this.departmentVal
-      }
-      _this.putInShow = true
-      ajax('GET', url, params).then((data) => {
-        data = data.warehouse
-        _this.putInShow = false
-        _this.lineList1 = data.map((param) => param.housecode)
-        if (!_this.lineVal1 && data.length > 0) {
-          _this.lineVal1 = data[0].housecode
-          localStorage.setItem('lineVal1', data[0].housecode)
-        }
-        // 获取打印机列表
-        this.getPrint1()
-      }).catch(() => {
-        alert('请求超时！')
-          _this.loadingShow(false)
-      })
-    },
+    // getLine1() {
+    //   let _this = this
+    //   let url = path.oa + '/printProdLine'
+    //   // let obj = this.getAccountMsg()
+    //   let params = {
+    //     account: this.account,
+    //     password: this.password,
+    //     factory: this.departmentVal
+    //   }
+    //   _this.putInShow = true
+    //   this.$ajax.post(url, params).then(function(res) {
+    //     let data = res.data
+    //   // ajax('GET', url, params).then((data) => {
+    //     data = data.warehouse
+    //     _this.putInShow = false
+    //     _this.lineList1 = data.map((param) => param.housecode)
+    //     if (!_this.lineVal1 && data.length > 0) {
+    //       _this.lineVal1 = data[0].housecode
+    //       localStorage.setItem('lineVal1', data[0].housecode)
+    //     }
+    //     // 获取打印机列表
+    //     this.getPrint1()
+    //   }).catch(() => {
+    //     alert('请求超时5！')
+    //       _this.loadingShow(false)
+    //   })
+    // },
     changeLine1() {
       localStorage.setItem('lineVal1', this.lineVal1)
       // 获取打印机列表
@@ -394,16 +382,18 @@ export default {
     },
     getPrint() {
       let _this = this
-      let url = path.oa + '/PDAPrinterR.jsp'
+      let url = path.oa + '/printer'
       // let obj = this.getAccountMsg()
       let params = {
         account: this.account,
-        password: md5(this.password).toLocaleUpperCase(),
+        password: this.password,
         factory: this.departmentVal,
         house: this.lineVal
       }
       _this.putInShow = true
-      ajax('GET', url, params).then((data) => {
+      this.$ajax.post(url, params).then(function(res) {
+        let data = res.data
+      // ajax('GET', url, params).then((data) => {
         _this.putInShow = false
         data = data.printers
         _this.printList = data
@@ -414,7 +404,7 @@ export default {
           localStorage.setItem('blackPrintVal', data[0].printercode)
         }
       }).catch(() => {
-        alert('请求超时！')
+        alert('请求超时6！')
           _this.loadingShow(false)
       })
     },
@@ -427,16 +417,18 @@ export default {
     },
     getPrint1() {
       let _this = this
-      let url = path.oa + '/PDAPrinterR.jsp'
+      let url = path.oa + '/printer'
       // let obj = this.getAccountMsg()
       let params = {
         account: this.account,
-        password: md5(this.password).toLocaleUpperCase(),
+        password: this.password,
         factory: this.departmentVal,
         house: this.lineVal1
       }
       _this.putInShow = true
-      ajax('GET', url, params).then((data) => {
+      this.$ajax.post(url, params).then(function(res) {
+        let data = res.data
+      // ajax('GET', url, params).then((data) => {
         _this.putInShow = false
         data = data.printers
         _this.printList1 = data
@@ -445,7 +437,7 @@ export default {
           localStorage.setItem('printVal1', data[0].printercode)
         }
       }).catch(() => {
-        alert('请求超时！')
+        alert('请求超时7！')
           _this.loadingShow(false)
       })
     },
@@ -496,7 +488,7 @@ export default {
         console.log('注销登录')
         console.log(data)
       }).catch((res) => {
-        alert('请求超时！')
+        alert('请求超时8！')
         _this.loadingShow(false)
       })
     }

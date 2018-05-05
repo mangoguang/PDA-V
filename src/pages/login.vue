@@ -55,6 +55,8 @@ export default {
 
   },
   created: function () {
+    // localStorage.removeItem('mangoStrage')
+    // localStorage.removeItem('account')
     // 获取本地存储的皮肤值
     this.setSkinCol()
     // this.skinCol = localStorage.getItem('skinCol')
@@ -79,7 +81,6 @@ export default {
     this.loadingShow(false)
   },
   mounted() {
-    localStorage.removeItem('mangoStrage')
     this.initAccountMsg()
   },
   methods: {
@@ -90,23 +91,31 @@ export default {
       let temp = localStorage.getItem('account')
       if (temp) {
         this.account = temp
+        temp = mango.storage.getStorage(this.account)
+        if (temp) {
+          this.password = temp['password']
+        } else {
+          this.password = ''
+        }
       } else {
         this.account = ''
-      }
-      temp = mango.storage.getStorage(this.account)
-      if (temp) {
-        this.password = temp['password']
-      } else {
         this.password = ''
       }
     },
     setSkinCol() {
-      let temp = mango.storage.getStorage(localStorage.getItem('account'))
-      if (!temp['skinCol']) {
+      let temp = localStorage.getItem('account')
+      console.log(temp)
+      if (!temp) {
         this.skinCol = 'skinA'
         this.$store.commit('changeSkin', 'skinA')
       } else {
-        this.skinCol = temp['skinCol']
+        let skinCol = mango.storage.getStorage(temp)['skinCol']
+        if (skinCol) {
+          this.skinCol = mango.storage.getStorage(temp)['skinCol']
+        } else {
+          this.skinCol = 'skinA'
+          this.$store.commit('changeSkin', 'skinA')
+        }
       }
       // console.log(111, this.$store.state.skinCol)
       // 获取本地存储的皮肤值
@@ -126,20 +135,25 @@ export default {
         // name: 'mango',
         // password: '123456'
         account: this.account,
-        password: md5(this.password).toLocaleUpperCase()
+        password: this.password
+        // password: md5(this.password).toLocaleUpperCase()
       }
-      let url = path.oa + '/PDAUserCheck.jsp'
+      let url = path.oa + '/login'
+      // let url = path.oa + '/PDAUserCheck.jsp'
       // let url = path.local + '/login.php'
       if (_this.canClick) {
         _this.canClick = false
         _this.loadingShow(true)
-        V.post(url, params).then(function(data) {
+        this.$ajax.post(url, params).then(function(res) {
+          let data = res.data
+        // V.post(url, params).then(function(data) {
           console.log(data)
           _this.canClick = true
           _this.loadingShow(false)
-          if (data.status === 'true') {
+          if (data.status) {
             // 初始化本基于本账号的本地存储
             mango.storage.initStorage(_this.account)
+            // mango.storage.setStorage(_this.account, 'account', _this.account)
             localStorage.setItem('account', _this.account)
             mango.storage.setStorage(_this.account, 'password', _this.password)
             // 保存账号密码到本地存储
@@ -156,11 +170,12 @@ export default {
               alert('该账号已登录，不可重复登录！')
             }
           }
-        }).catch((res) => {
-          alert('请求超时！')
-          _this.canClick = true
-          _this.loadingShow(false)
         })
+        // .catch((res) => {
+        //   alert('请求超时！')
+        //   _this.canClick = true
+        //   _this.loadingShow(false)
+        // })
       }
     }
   }

@@ -256,6 +256,8 @@ export default {
       // let url = path.local + '/purchase/getlist.php'
       _this.loadingShow(true)
       let data = new Promise(function(resolve, reject) {
+        // this.$ajax.get(url, params).then(function(res) {
+        // let data = res.data
         V.get(url).then(function(data) {
           _this.loadingShow(false)
           data = JSON.parse(data.responseText)

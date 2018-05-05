@@ -9,7 +9,7 @@
       <li 
       v-for="(module,index) in modules" 
       :key="module.coding"
-      v-if="module.jurisdiction === 'true'"
+      v-if="module.jurisdiction"
       @click="toModule(module.coding, module.jurisdiction, module.name)" 
       :style="{
         background: 'url(./static/images/skinImg/' + skinCol + '/' + module.coding + '.png) no-repeat',
@@ -20,7 +20,7 @@
       <li 
       v-for="(module,index) in modules" 
       :key="module.coding"
-      v-if="module.jurisdiction === 'false'"
+      v-if="!module.jurisdiction"
       @click="toModule(module.coding, module.jurisdiction, module.name)" 
       :style="{
         background: 'url(./static/images/skinImg/' + skinCol + '/' + module.coding +'_1.png) no-repeat',
@@ -94,17 +94,20 @@ export default {
     },
     jurisdiction: function() {
       let _this = this
-      let url = path.oa + '/PDAPermission.jsp'
+      let url = path.oa + '/module'
       // let url = path.local + '/jurisdiction.php'
       let params = {
         account: this.account,
-        password: md5(this.password).toLocaleUpperCase(),
+        password: this.password,
+        // password: md5(this.password).toLocaleUpperCase(),
         factory: this.factoryNum,
         warehouse: this.warehouseNum
       }
 
       _this.loadingShow(true)
-      V.post(url, params).then(function(data) {
+      this.$ajax.post(url, params).then(function(res) {
+        let data = res.data
+      // V.post(url, params).then(function(data) {
         _this.loadingShow(false)
         if (data.status) {
           _this.modules = data.permissions
@@ -125,7 +128,7 @@ export default {
     },
     // 跳转对应模块
     toModule: function(module, status, moduleName) {
-      if (status === 'true') {
+      if (status) {
         if (module === 'setting') {
           this.$router.push({ path: '/setting' })
         } else if (module === 'check') {

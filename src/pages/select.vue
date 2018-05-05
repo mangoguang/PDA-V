@@ -146,24 +146,22 @@ export default {
     setWarehouse: function() {
       let _this = this
       // let url = path.local + '/warehouse_sel.php'
-      let url = path.oa + '/PDAWareHouse.jsp'
+      let url = path.oa + '/warehouse'
       // 获取本地存储账号信息
       let params = {
         account: this.account,
-        password: md5(this.password).toLocaleUpperCase(),
+        password: this.password,
         factory: this.factoryNum
       }
 
       _this.loadingShow(true)
-      V.post(url, params).then(function(data) {
+      this.$ajax.post(url, params).then(function(res) {
+        let data = res.data
+      // V.post(url, params).then(function(data) {
         _this.loadingShow(false)
         if (data.status) {
           _this.warehouses = data.warehouse
           if (data.warehouse.length > 0) {
-            // 更改默认仓库
-            // _this.warehouse = data.warehouse[0].name
-            // _this.warehouseNum = data.warehouse[0].code
-            console.log(222222, _this.warehouseNum, _this.warehouseStatus)
             if (!_this.warehouseNum || _this.warehouseStatus) {
               // 更改默认仓库
               _this.warehouse = data.warehouse[0].name
@@ -171,13 +169,6 @@ export default {
               console.log('successssss')
             } else {
               _this.warehouseStatus = true
-              // let factoryMsg = localStorage.getItem('factoryMsg')
-              // if (!factoryMsg) {
-              //   _this.warehouse = data.warehouse[0].name
-              //   _this.warehouseNum = data.warehouse[0].code
-              // } else {
-              //   _this.warehouseStatus = true
-              // }
             }
           }
         }
@@ -186,41 +177,20 @@ export default {
         _this.loadingShow(false)
       })
     },
-    // changeWarehouse() {
-
-    // },
-    // getAccountMsg: function() {
-    //   let accountMsg = localStorage.getItem('accountMsg')
-    //   let obj = eval('(' + accountMsg + ')')
-    //   return obj
-    // },
-    // getFactory: function() {
-    //   // 获取本地存储默认工厂
-    //   let factoryMsg = localStorage.getItem('factoryMsg')
-    //   let factoryObj = eval('(' + factoryMsg + ')')
-    //   if (factoryMsg) {
-    //     this.factory = factoryObj.factory
-    //     this.factoryNum = factoryObj.factoryNum
-    //     this.warehouse = factoryObj.warehouse
-    //     this.warehouseNum = factoryObj.warehouseNum
-    //   } else {
-    //     // this.factory = this.factorys[0].name
-    //   }
-    // },
     // 设置工厂列表
     setFactorys: function() {
       // alert(this.factoryNum)
       let _this = this
       // let url = path.local + '/factory_sel.php'
-      let url = path.oa + '/PDAFactory.jsp'
+      let url = path.oa + '/factory'
       let params = {
-        // name: this.factory,
-        // password: md5(this.warehouse).toLocaleUpperCase()
         account: this.account,
-        password: md5(this.password).toLocaleUpperCase()
+        password: this.password
       }
       _this.loadingShow(true)
-      V.post(url, params).then(function(data) {
+      this.$ajax.post(url, params).then(function(res) {
+          let data = res.data
+      // V.post(url, params).then(function(data) {
         _this.loadingShow(false)
         // let factoryMsg = localStorage.getItem('factoryMsg')
         if (data.status) {
