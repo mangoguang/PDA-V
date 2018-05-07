@@ -1,6 +1,6 @@
 import $ from 'n-zepto'
 function Path() {
-	this.oa = 'http://10.12.0.61/api/pda/v1/userperm'
+	this.oa = 'http://10.12.0.32:8089/api/pda/v1/userperm'
 	// this.oa = 'http://10.12.0.54/derucci/workflow/jsp'
 	// this.oa = 'http://10.11.9.220:10083/derucci/workflow/jsp'
 	// this.oa = 'http://10.12.0.53:8900/derucci/workflow/jsp'
@@ -9,7 +9,8 @@ function Path() {
 	this.sap = 'http://10.12.0.153:50100/RESTAdapter/'
 	// this.sap = 'http://10.12.0.154:50100/RESTAdapter/'
 	this.appTest = 'http://10.11.8.223:8081/api/v1/stocktake/'
-	this.app = 'http://10.12.0.61/api/pda/v1/stocktake/'
+	this.app = 'http://10.12.0.32:8089/api/pda/v1/stocktake/'
+	// this.app = 'http://10.12.0.61/api/pda/v1/stocktake/'
 }
 let path = new Path()
 // 网页版为'web'，app版为'app'
@@ -231,58 +232,62 @@ let Mango = (function() {
 		}
 
 		this.storage = new Storage()
+		this.goIndex = function() {
+			// this.$router.go(-1)
+			this.$router.go(0 - parseInt(localStorage.getItem('routeIndex')))
+		}
 	}
 }())
 
 let mango = new Mango()
 export default mango
 
-let Storage = (function() {
-	// 静态私有变量
-	const account = localStorage.getItem('account')
+// let Storage = (function() {
+// 	// 静态私有变量
+// 	const account = localStorage.getItem('account')
 
-	function _storage() {
-		// 初始化并获取mangoStorage
-		this.init = function() {
-			// localStorage.removeItem('mangoStorage')
-			let mangoStorage = localStorage.getItem('mangoStorage')
-			if (mangoStorage) {
-				mangoStorage = JSON.parse(mangoStorage)
-			} else {
-				// 给mangoStorage赋初值
-				mangoStorage = {}
-			}
-			if (!mangoStorage[`mango${account}`]) {
-				mangoStorage[`mango${account}`] = {}
-				localStorage.setItem('mangoStorage', JSON.stringify(mangoStorage))
-			}
-		}
+// 	function _storage() {
+// 		// 初始化并获取mangoStorage
+// 		this.init = function() {
+// 			// localStorage.removeItem('mangoStorage')
+// 			let mangoStorage = localStorage.getItem('mangoStorage')
+// 			if (mangoStorage) {
+// 				mangoStorage = JSON.parse(mangoStorage)
+// 			} else {
+// 				// 给mangoStorage赋初值
+// 				mangoStorage = {}
+// 			}
+// 			if (!mangoStorage[`mango${account}`]) {
+// 				mangoStorage[`mango${account}`] = {}
+// 				localStorage.setItem('mangoStorage', JSON.stringify(mangoStorage))
+// 			}
+// 		}
 
-		// 获取本地存储
-		this.get = function() {
-			return JSON.parse(localStorage.getItem('mangoStorage'))[`mango${account}`]
-		}
+// 		// 获取本地存储
+// 		this.get = function() {
+// 			return JSON.parse(localStorage.getItem('mangoStorage'))[`mango${account}`]
+// 		}
 
-		// 更改本地存储
-		this.set = function(key, val) {
-			let tempStorage = JSON.parse(localStorage.getItem('mangoStorage'))
-			let accountStorage = tempStorage[`mango${account}`]
-			tempStorage[`mango${account}`][key] = val
-			console.log('333', tempStorage)
-			localStorage.setItem('mangoStorage', JSON.stringify(tempStorage))
-			return this
-		}
+// 		// 更改本地存储
+// 		this.set = function(key, val) {
+// 			let tempStorage = JSON.parse(localStorage.getItem('mangoStorage'))
+// 			let accountStorage = tempStorage[`mango${account}`]
+// 			tempStorage[`mango${account}`][key] = val
+// 			console.log('333', tempStorage)
+// 			localStorage.setItem('mangoStorage', JSON.stringify(tempStorage))
+// 			return this
+// 		}
 
-		// 获取本地缓存
-		this.setData = function(_this, key) {
-			let temp = JSON.parse(localStorage.getItem('mangoStorage'))[`mango${localAccount}`]
-			_this[key] = temp[key]
-			return this
-		}
-	}
+// 		// 获取本地缓存
+// 		this.setData = function(_this, key) {
+// 			let temp = JSON.parse(localStorage.getItem('mangoStorage'))[`mango${localAccount}`]
+// 			_this[key] = temp[key]
+// 			return this
+// 		}
+// 	}
 
-	return _storage
-}())
+// 	return _storage
+// }())
 // export default new Storage()
 
 export { path, V, cloneObj, getFactorySel, getPrintPlanMsg, getaccount, ajax, setParams, version }

@@ -199,9 +199,15 @@ export default {
     this.checkBoxShowFn(true) // 再次进入页面是，将sn码选取复选框隐藏
   },
   mounted() {
-    alert(123)
+    let _this = this
     this.$store.commit('isOP', false)
-    this.checkTime()
+    // 检测，过了12点强制重新登陆。
+    let checkTime = setInterval(function() {
+      if (_this.checkTime()) {
+        clearInterval(checkTime)
+        mango.goIndex.call(_this)
+      }
+    }, 10000)
   },
   methods: {
     setBtnDisabled(x) {
@@ -347,7 +353,13 @@ export default {
     },
     checkTime() {
       let date = new Date()
-      console.log(888, date)
+      // let [hour, minute, second] = [0, 0, 10]
+      let [hour, minute, second] = [date.getHours(), date.getMinutes(), date.getSeconds()]
+      if (!(hour || minute) && second <= 10) {
+        return true
+      } else {
+        return false
+      }
     },
     setSNCopy(arr) {
       this.$store.commit('SNCopy', arr)

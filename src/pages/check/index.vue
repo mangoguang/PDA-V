@@ -79,8 +79,8 @@ export default {
       snList: [],
       material: '',
       materialShow: false,
-      account: '',
-      name: localStorage.getItem('name'),
+      account: localStorage.getItem('account'),
+      name: '',
       key: true,
       pandianType: '',
       type: null,
@@ -106,15 +106,7 @@ export default {
   },
 
   created() {
-    // this.PDType = storage.getStorage(11608050)[`mango11608050`].PDType
-    // let temp = localStorage.getItem('settingData')
-    // if (!temp) {
-    //   this.PDType = 0
-    //   mango.setLocalData('PDType', 0)
-    // } else {
-    //   // alert(`12334${JSON.parse(temp).PDType}`)
-    //   this.PDType = JSON.parse(temp).PDType
-    // }
+    this.getStorage()
     this.checkOpen()
     getFactorySel(this)
   },
@@ -132,7 +124,6 @@ export default {
   },
   mounted() {
     this.setData()
-    getaccount(this)
     this.loadingShow(false)
     // 设置默认盘点模式
     let PDType = mango.storage.getStorage(this.account)['PDType']
@@ -171,13 +162,13 @@ export default {
 
     // 设置仓库、工厂、盘点方式
     setData() {
-      let temp = localStorage.getItem('settingData')
-      if (temp) {
-        this.type = parseInt(JSON.parse(temp).typeVal) ? 1 : 0
-        console.log(666, parseInt(JSON.parse(temp).typeVal))
-        // this.factoryVal = JSON.parse(temp).factoryVal
-        // this.warehouseVal = JSON.parse(temp).warehouseVal
-      }
+      mango.storage.setData(this, 'factoryNum')
+      .setData(this, 'warehouseNum')
+      .setData(this, 'name')
+      // let temp = localStorage.getItem('settingData')
+      // if (temp) {
+      //   this.type = parseInt(JSON.parse(temp).typeVal) ? 1 : 0
+      // }
     },
 
     // 检测是否开放盘点
@@ -187,6 +178,15 @@ export default {
       }).catch(function(err) {
         console.log(err)
       })
+    },
+
+    // 获取本地缓存数据
+    getStorage() {
+      let temp = mango.storage.getStorage(this.account)
+      this.name = temp['name']
+      this.factory = temp['factory']
+      this.warehouseNum = temp['warehouseNum']
+      this.password = temp['password']
     },
 
     // 添加条码

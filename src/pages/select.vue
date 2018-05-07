@@ -109,7 +109,6 @@ export default {
       this.factory = temp['factory']
       this.warehouseNum = temp['warehouseNum']
       this.password = temp['password']
-      this.name = temp['name']
     },
     setStorage() {
       // 工厂、仓库、日期本地缓存

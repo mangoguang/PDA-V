@@ -187,7 +187,7 @@ export default {
     },
     changeType() {
       // localStorage.setItem('skinCol', this.typeVal)
-      mango.storage.setStorage(this.account, 'skinCol', this.typeVal)
+      // mango.storage.setStorage(this.account, 'skinCol', this.typeVal)
       this.setSkinCol(this.typeVal)
     },
     // getAccountMsg: function() {
@@ -197,7 +197,9 @@ export default {
     // },
     // 由select子组件触发
     selectType(value) {
+      mango.storage.setStorage(this.account, 'PDType', value)
       this.PDType = value
+      console.log(mango.storage.getStorage(this.account))
     },
     // 获取工厂列表
     getFactory() {
