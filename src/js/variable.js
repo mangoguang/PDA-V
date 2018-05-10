@@ -236,6 +236,18 @@ let Mango = (function() {
 			// this.$router.go(-1)
 			this.$router.go(0 - parseInt(localStorage.getItem('routeIndex')))
 		}
+		// 获取当前日期
+		this.currentTime = function() {
+			let date = new Date()
+			const [year, month, day] = [date.getFullYear(), date.getMonth(), date.getDate()]
+			return `${this.turnDate(year)}-${this.turnDate(month + 1)}-${this.turnDate(day)}`
+		}
+		this.turnDate = function(num) {
+			if (num < 10) {
+				num = '0' + parseInt(num)
+			}
+			return num
+		}
 	}
 }())
 

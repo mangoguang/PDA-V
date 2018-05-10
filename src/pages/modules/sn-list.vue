@@ -199,6 +199,7 @@ export default {
     this.checkBoxShowFn(true) // 再次进入页面是，将sn码选取复选框隐藏
   },
   mounted() {
+    console.log(222333, this.dateVal, mango.currentTime())
     let _this = this
     this.$store.commit('isOP', false)
     // 检测，过了12点强制重新登陆。
@@ -1078,10 +1079,10 @@ export default {
         params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + this.dateVal + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'salesoutput') {
-        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '/' + localStorage.getItem('fullName') + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + this.dateVal + '" } }'
+        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '/' + localStorage.getItem('fullName') + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + mango.currentTime() + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'salestockup') {
-        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZDATE: "' + this.dateVal + '" } }'
+        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZDATE: "' + mango.currentTime() + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'purchase') {
         params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ',LGORT: "' + this.warehouseNum + '"' + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '", ZDATE: "' + this.dateVal + '"} }'
@@ -1092,18 +1093,18 @@ export default {
         if (dateArr[2].length === 1) {
           dateArr[2] = '0' + dateArr[2]
         }
-        function turnDate(num) {
-          if (num < 10) {
-            num = '0' + parseInt(num)
-          }
-          return num
-        }
+        // function turnDate(num) {
+        //   if (num < 10) {
+        //     num = '0' + parseInt(num)
+        //   }
+        //   return num
+        // }
         params = {
           ZRKDH: this.BUS_NO,
           ZGZRY: '' + this.account + '',
           // ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
-          ZGZRQ: dateArr[0] + turnDate(dateArr[1]) + turnDate(dateArr[2]),
-          ZGZSJ: '' + turnDate(myDate.getHours()) + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
+          ZGZRQ: dateArr[0] + mango.turnDate(dateArr[1]) + mango.turnDate(dateArr[2]),
+          ZGZSJ: '' + mango.turnDate(myDate.getHours()) + mango.turnDate(myDate.getMinutes()) + mango.turnDate(myDate.getSeconds()),
           LGORT: this.warehouseNum
         }
       } else if (this.urlParams === 'allot') {
