@@ -174,6 +174,9 @@ export default {
     },
     fbData() {
       return this.$store.state.fbData
+    },
+    skinCol() {
+      return this.$store.state.skinCol
     }
   },
   created: function () {
@@ -195,7 +198,7 @@ export default {
     this.$store.commit('loadingShow', false)
     this.$store.commit('tableH', ['序号', '描述', '条码', '状态'])
     this.focusStatus = true
-    this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
+    // this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
     this.checkBoxShowFn(true) // 再次进入页面是，将sn码选取复选框隐藏
   },
   mounted() {

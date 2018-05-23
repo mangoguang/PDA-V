@@ -47,12 +47,13 @@ export default {
       account: null,
       password: null,
       // 按钮是否可点击
-      canClick: true,
-      skinCol: ''
+      canClick: true
     }
   },
   computed: {
-
+    skinCol() {
+      return this.$store.state.skinCol
+    }
   },
   created: function () {
     // localStorage.removeItem('mangoStrage')
@@ -104,30 +105,20 @@ export default {
     },
     setSkinCol() {
       let temp = localStorage.getItem('account')
-      console.log(temp)
       if (!temp) {
         this.skinCol = 'skinA'
         this.$store.commit('changeSkin', 'skinA')
       } else {
         let skinCol = mango.storage.getStorage(temp)['skinCol']
         if (skinCol) {
-          this.skinCol = mango.storage.getStorage(temp)['skinCol']
+          this.$store.commit('changeSkin', skinCol)
+          mango.storage.setStorage(temp, 'skinCol', skinCol)
         } else {
-          this.skinCol = 'skinA'
           this.$store.commit('changeSkin', 'skinA')
+          mango.storage.setStorage(temp, 'skinCol', 'skinA')
         }
       }
-      // console.log(111, this.$store.state.skinCol)
-      // 获取本地存储的皮肤值
-      // this.skinCol = localStorage.getItem('skinCol')
-      // if (this.skinCol) {
-      // // 检测是否存在本地存储皮肤值
-      //   this.$store.commit('changeSkin', this.skinCol)
-      // } else {
-      //   this.skinCol = 'skinA'
-      //   this.$store.commit('changeSkin', 'skinA')
-      //   localStorage.setItem('skinCol', 'skinA')
-      // }
+      console.log('皮肤：', this.$store.state.skinCol, this.skinCol)
     },
     login: function() {
       let _this = this
@@ -147,28 +138,17 @@ export default {
         this.$ajax.post(url, params).then(function(res) {
           let data = res.data
         // V.post(url, params).then(function(data) {
-          console.log(data)
+          console.log('success', data)
           _this.canClick = true
           _this.loadingShow(false)
           if (data.status) {
             // 初始化本基于本账号的本地存储
             mango.storage.initStorage(_this.account)
-            // mango.storage.setStorage(_this.account, 'account', _this.account)
             localStorage.setItem('account', _this.account)
             mango.storage.setStorage(_this.account, 'password', _this.password)
-            // 保存账号密码到本地存储
-            // localStorage.setItem('accountMsg', "{account: '" + _this.account + "'," +
-            //   "password: '" + _this.password + "'}")
-            // localStorage.setItem('fullName', data.name)
             _this.$router.push({ path: '/select?name=' + data.name })
           } else {
-            if (data.type === '0') {
-              alert('该账号不存在！')
-            } else if (data.type === '1') {
-              alert('密码错误！')
-            } else {
-              alert('该账号已登录，不可重复登录！')
-            }
+            alert(data.msg)
           }
         })
         // .catch((res) => {

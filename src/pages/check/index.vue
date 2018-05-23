@@ -225,6 +225,10 @@ export default {
 
     // 教验条码
     verify(sn, ifOK) {
+      if (sn.indexOf('#') !== -1 || sn.indexOf('*') !== -1) {
+        sn = sn.replace(/#/g, '$').replace(/\*/g, '$')
+        alert(sn)
+      }
       // type为true时仓库不同可以提交
       let [_this, url, len, params] = [
         this,

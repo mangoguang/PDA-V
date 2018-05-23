@@ -139,7 +139,7 @@ export default {
       fwPrintIPVal: '', // 标签打印机ip
       djPrintIPVal: '192.168.1.50', // 单据打印机ip
       typeList: ['skinA', 'skinB', 'skinC'], // 风格选择
-      typeVal: localStorage.getItem('skinCol'),
+      typeVal: mango.storage.getStorage(localStorage.getItem('account'), 'skinCol')['skinCol'],
       PDType: '',
       factoryList: [],
       factory: '',
@@ -157,6 +157,7 @@ export default {
     }
   },
   created() {
+    console.log(123123, this.typeVal)
     mango.storage.setData(this, 'factory')
     .setData(this, 'factoryNum')
     .setData(this, 'warehouse')
@@ -171,7 +172,7 @@ export default {
     this.loadingShow(false)
     getPrintPlanMsg(this)
     // getFactorySel(this)
-    this.setSkinCol(localStorage.getItem('skinCol'))
+    // this.setSkinCol(localStorage.getItem('skinCol'))
     // 获取防伪打印模板
     this.getModule()
     this.getFactory()
@@ -184,6 +185,7 @@ export default {
     },
     setSkinCol(x) {
       this.$store.commit('changeSkin', x)
+      mango.storage.setStorage(this.account, 'skinCol', x)
     },
     changeType() {
       // localStorage.setItem('skinCol', this.typeVal)

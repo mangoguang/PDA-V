@@ -60,7 +60,7 @@ export default {
   },
   computed: {
     skinCol() {
-      return localStorage.getItem('skinCol')
+      return this.$store.state.skinCol
     }
   },
   created: function() {
@@ -70,7 +70,7 @@ export default {
     // let obj = this.getAccountMsg()
     // this.account = obj.account
     // this.password = obj.password
-    this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
+    // this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
   },
   mounted() {
     this.getStorage()

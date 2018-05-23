@@ -69,12 +69,15 @@ export default {
     }
   },
   computed: {
-
+    skinCol() {
+      return this.$store.state.skinCol
+    }
   },
   created() {
+    this.setSkinCol()
     // 获取本地存储
     this.getStorage()
-    this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
+    // this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
   },
   mounted() {
     this.setFactorys()
@@ -94,6 +97,25 @@ export default {
     },
     openPicker() {
       this.$refs.picker.open()
+    },
+    setSkinCol() {
+      let temp = localStorage.getItem('account')
+      console.log(111, temp)
+      if (!temp) {
+        this.skinCol = 'skinA'
+        this.$store.commit('changeSkin', 'skinA')
+      } else {
+        let skinCol = mango.storage.getStorage(temp)['skinCol']
+        console.log(111222, skinCol)
+        if (skinCol) {
+          this.$store.commit('changeSkin', skinCol)
+          mango.storage.setStorage(temp, 'skinCol', skinCol)
+        } else {
+          this.$store.commit('changeSkin', 'skinA')
+          mango.storage.setStorage(temp, 'skinCol', 'skinA')
+        }
+      }
+      console.log('皮肤：', this.$store.state.skinCol, this.skinCol)
     },
     getStorage() {
       let temp = mango.storage.getStorage(this.account)

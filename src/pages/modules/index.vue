@@ -68,6 +68,9 @@ export default {
     },
     productScanList() {
       return this.$store.state.productScanList
+    },
+    skinCol() {
+      return this.$store.state.skinCol
     }
   },
   watch: {
@@ -125,7 +128,7 @@ export default {
     this.setOrders(this.orders)
     this.$store.commit('loadingShow', true)
     this.$store.commit('isOP', true)
-    this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
+    // this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
     this.getaccount()
   },
   mounted() {
