@@ -59,7 +59,8 @@ export default {
       btnName: '',
       account: localStorage.getItem('account'),
       printPlanSelNum: '',
-      dateVal: ''
+      dateVal: '',
+      key: true
     }
   },
   computed: {
@@ -507,6 +508,11 @@ export default {
       return arr
     },
     setIn() {
+      if (!this.key) {
+        return
+      } else {
+        this.key = false
+      }
       this.loadingShow(true)
       // 扫标签码模块检测分包条码是否扫描完全
       if (this.bottomBtnName === 'scanbq') {
@@ -571,6 +577,7 @@ export default {
       if (this.snArr().length === 0) {
         alert('请先扫码！')
         this.loadingShow(false)
+        _this.key = true
         return
       } else {
         printCode(url, params)
@@ -578,10 +585,12 @@ export default {
       function printCode(url, params) {
         if (version === 'web') {
           V.post(url, params).then(function(data) {
+            _this.key = true
             _this.afterSetIn(_this, data)
           })
         } else {
           window.apiready(url, params).then(function(data) {
+            _this.key = true
             if (data) {
               _this.afterSetIn(_this, data)
             } else {

@@ -25,13 +25,13 @@
       </table>
     </div>
     <Alert v-show="materialShow" @closeAlert="closeAlert">
-      <p>条码不存在</p>
-      <p>请输入物料号进行确认。</p>
-      <div class="materialBox" slot="mid">
+      <p class="alertText">条码不存在，是否录入？</p>
+      <!-- <div class="materialBox" slot="mid">
         <label>物料号</label>
         <input v-model="material" ref="materialInput" type="text">
-      </div>
+      </div> -->
       <button @click="sendMaterial" slot="btn">确认</button>
+      <!-- <button @click="closeAlert" slot="btn">取消</button> -->
     </Alert>
     <Alert class="tip" v-if="tipShow" @closeAlert="closeTip">
       <img src="" alt="">
@@ -227,7 +227,6 @@ export default {
     verify(sn, ifOK) {
       if (sn.indexOf('#') !== -1 || sn.indexOf('*') !== -1) {
         sn = sn.replace(/#/g, '$').replace(/\*/g, '$')
-        alert(sn)
       }
       // type为true时仓库不同可以提交
       let [_this, url, len, params] = [
@@ -243,6 +242,7 @@ export default {
           ok: ifOK
         }
       ]
+      console.log(`参数：`, params)
       if (len < 6 || len > 40) {
         alert('请检查条码是否正确！')
         return
@@ -259,9 +259,10 @@ export default {
           let data = res.data
           _this.key = true
           _this.loadingShow(false)
-          Vue.nextTick(function () {
-            _this.$refs.materialInput.focus()
-          })
+          // 获取弹框子组件输入框的焦点
+          // Vue.nextTick(function () {
+          //   _this.$refs.materialInput.focus()
+          // })
           // 添加条码到列表
           _this.addLi(data, sn, _this)
         }).catch(function(err) {
@@ -288,15 +289,16 @@ export default {
         sn: this.sn,
         account: this.account,
         name: this.name,
-        material: this.material
+        // material: this.material
+        material: ''
       }
       _this.loadingShow(true)
       // 给提交时间上锁
       if (this.key) {
         this.key = false
-        if (this.material === '') {
-          return
-        }
+        // if (this.material === '') {
+        //   return
+        // }
         this.$ajax.post(url, params).then(function(res) {
           let data = res.data
           _this.key = true
@@ -413,6 +415,9 @@ export default {
     p:last-child{
       padding-bottom: $f20;
     }
+  }
+  .alertText{
+    padding-bottom: .4rem;
   }
 }
 
