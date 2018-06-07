@@ -263,6 +263,13 @@ export default {
       ajax('GET', url, null).then((data) => {
         _this.putInShow = false
         data = data.MT_SecurityCode_GetModule_Resp.Item
+        // 添加空方案
+        const emptyObj = {
+          ZBQMC: '不打印',
+          ZBQXH: ''
+        }
+        data.unshift(emptyObj)
+
         _this.printPlanList = data
         let temp = localStorage.getItem('printPlanMsg')
         if (!temp) {
