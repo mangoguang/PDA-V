@@ -89,6 +89,7 @@
         <span></span>
       </li>
       <li>
+        <!-- 盘点方式 -->
       <select-component
       @changeSelectVal="selectType"
       :dataName="'PDType'"
@@ -96,6 +97,26 @@
       :labelText = "'盘点方式'"
       :firstOption = "'请选择盘点方式'"
       :selectArr="[{name: '精盘', code: 1}, {name: '通盘', code: 0}].map(function(item) {
+        return {name: item.name, key: item.code}
+      })"></select-component>
+      <!-- 盘点单号 -->
+      <select-component
+      @changeSelectVal="selectOrderNo"
+      :dataName="'orderNo'"
+      :selectVal="orderNo"
+      :labelText = "'盘点单号'"
+      :firstOption = "'请选择盘点单号'"
+      :selectArr="orderNoList.map(function(item) {
+        return {name: item.name, key: item.name}
+      })"></select-component>
+      <!-- 盘点版本 -->
+      <select-component
+      @changeSelectVal="selectVersion"
+      :dataName="'version'"
+      :selectVal="version"
+      :labelText = "'盘点版本'"
+      :firstOption = "'请选择盘点版本'"
+      :selectArr="[{name: '初盘', code: 1}, {name: '复盘', code: 2}].map(function(item) {
         return {name: item.name, key: item.code}
       })"></select-component>
         <button type="button" @click="logout">退出账号</button>
@@ -148,7 +169,10 @@ export default {
       warehouse: '',
       warehouseNum: '',
       account: localStorage.getItem('account'),
-      password: ''
+      password: '',
+      orderNo: '', // 盘点单号
+      orderNoList: [],
+      version: '' // 盘点版本
     }
   },
   computed: {
@@ -163,6 +187,7 @@ export default {
     .setData(this, 'warehouse')
     .setData(this, 'warehouseNum')
     .setData(this, 'password')
+    .setData(this, 'orderNo')
     // alert(localStorage.getItem('settingData'))
     // if (!localStorage.getItem('settingData')) {
     //   localStorage.setItem('settingData', '{}')
@@ -177,6 +202,7 @@ export default {
     this.getModule()
     this.getFactory()
     this.getDepartment()
+    this.getOrderNo()
     console.log(888, localStorage.getItem('settingData'))
   },
   methods: {
@@ -201,7 +227,17 @@ export default {
     selectType(value) {
       mango.storage.setStorage(this.account, 'PDType', value)
       this.PDType = value
-      console.log(mango.storage.getStorage(this.account))
+    },
+    // 选择盘点单号
+    selectOrderNo(value) {
+      mango.storage.setStorage(this.account, 'orderNo', value)
+      this.orderNo = value
+    },
+    // 选择盘点版本
+    selectVersion(value) {
+      console.log('盘点版本：', value)
+      mango.storage.setStorage(this.account, 'version', value)
+      this.version = value
     },
     // 获取工厂列表
     getFactory() {
@@ -276,6 +312,29 @@ export default {
           _this.printPlanSelNum = data[0].ZBQXH
           localStorage.setItem('printPlanMsg', JSON.stringify(data[0]))
         }
+      })
+    },
+    // 获取盘点单号
+    getOrderNo() {
+      let _this = this
+      let url = path.oa + '/getOrderNoList'
+      // 获取本地存储账号信息
+      let params = {
+        account: this.account,
+        password: this.password,
+        factory: this.factoryNum,
+        warehouse: this.warehouseNum
+      }
+      _this.loadingShow(true)
+      this.$ajax.post(url, params).then(function(res) {
+        // _this.orderNoList = res.data.orderNos
+        let data = res.data
+        _this.loadingShow(false)
+        _this.orderNoList = data.orderNos
+        mango.storage.setStorage(_this.account, 'orderNo', _this.orderNo)
+      }).catch(() => {
+        alert('请求超时了！')
+          _this.loadingShow(false)
       })
     },
     // 将打印方案缓存到本地

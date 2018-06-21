@@ -86,7 +86,9 @@ export default {
       type: null,
       sn: '',
       tipShow: false,
-      factoryAlertShow: false
+      factoryAlertShow: false,
+      version: '', // 盘点版本
+      orderNo: '' // 盘点单号
     }
   },
   computed: {
@@ -133,6 +135,7 @@ export default {
     } else {
       this.type = PDType
     }
+    console.log(this.version, this.orderNo)
   },
   methods: {
     loadingShow: function(x) {
@@ -187,6 +190,8 @@ export default {
       this.factory = temp['factory']
       this.warehouseNum = temp['warehouseNum']
       this.password = temp['password']
+      this.version = temp['version']
+      this.orderNo = temp['orderNo']
     },
 
     // 添加条码
@@ -234,6 +239,8 @@ export default {
         path.app + 'scan',
         sn.length, {
           type: this.type,
+          orderNo: this.orderNo,
+          version: this.version,
           factory: this.factoryNum,
           wareHouse: this.warehouseNum,
           sn: sn,
@@ -284,6 +291,8 @@ export default {
       // }
       let params = {
         type: this.type,
+        orderNo: this.orderNo,
+        version: this.version,
         factory: this.factoryNum,
         wareHouse: this.warehouseNum,
         sn: this.sn,
