@@ -125,6 +125,11 @@ export default {
     }
   },
   mounted() {
+    // 检测盘点单号是否存在于缓存中
+    if (!this.orderNo) {
+      alert('请在系统设置页面选择盘点单号及盘点版本。')
+      this.$router.push({ path: '/setting' })
+    }
     this.setData()
     this.loadingShow(false)
     // 设置默认盘点模式

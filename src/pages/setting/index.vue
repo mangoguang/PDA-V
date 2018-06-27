@@ -187,7 +187,7 @@ export default {
     .setData(this, 'warehouse')
     .setData(this, 'warehouseNum')
     .setData(this, 'password')
-    .setData(this, 'orderNo')
+    .setData(this, 'orderNo') // 在登陆页会将这个缓存清除
     // alert(localStorage.getItem('settingData'))
     // if (!localStorage.getItem('settingData')) {
     //   localStorage.setItem('settingData', '{}')
@@ -281,7 +281,7 @@ export default {
       // ajax('GET', url, params).then((data) => {
         _this.loadingShow(false)
         _this.warehouse = data.warehouse[0].name
-        mango.storage.setStorage(_this.account, 'warehouse', _this.warehouse)
+        // mango.storage.setStorage(_this.account, 'warehouse', _this.warehouse)
         // localStorage.setItem('factoryMsg', '{factory: "' + _this.factory + '",warehouse: "' + _this.warehouse + '", factoryNum: "' + _this.factoryNum + '", warehouseNum: "' + _this.warehouseNum + '"}')
         console.log(localStorage.getItem('factoryMsg'))
         if (data.status) {
