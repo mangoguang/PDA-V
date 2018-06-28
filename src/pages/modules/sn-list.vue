@@ -1092,7 +1092,7 @@ export default {
         params = setParams(params)
       } else if (this.urlParams === 'product') {
         let myDate = new Date()
-        let dateArr = localStorage.getItem('dateVal').split('-')
+        let dateArr = this.dateVal.split('-')
         if (dateArr[2].length === 1) {
           dateArr[2] = '0' + dateArr[2]
         }

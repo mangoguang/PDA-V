@@ -142,12 +142,11 @@ export default {
           _this.canClick = true
           _this.loadingShow(false)
           if (data.status) {
+            // 初始化本基于本账号的本地存储
+            mango.storage.initStorage(_this.account)
             // 将盘点单号及盘点版本的本地缓存清空1
             mango.storage.setStorage(_this.account, 'orderNo', '')
             mango.storage.setStorage(_this.account, 'version', '')
-
-            // 初始化本基于本账号的本地存储
-            mango.storage.initStorage(_this.account)
             localStorage.setItem('account', _this.account)
             mango.storage.setStorage(_this.account, 'password', _this.password)
             _this.$router.push({ path: '/select?name=' + data.name })
