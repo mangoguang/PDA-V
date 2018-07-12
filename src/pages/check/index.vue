@@ -25,7 +25,7 @@
       </table>
     </div>
     <Alert v-show="materialShow" @closeAlert="closeAlert">
-      <p class="alertText">条码不存在，是否录入？</p>
+      <p class="alertText">{{alertMsg}}</p>
       <!-- <div class="materialBox" slot="mid">
         <label>物料号</label>
         <input v-model="material" ref="materialInput" type="text">
@@ -43,6 +43,13 @@
       <button class="half" @click="verify(sn, 1)" slot="btn">确认</button>
       <button class="half" @click="closeFactoryAlert" slot="btn">取消</button>
     </Alert>
+
+    <!-- 重复扫描弹框 -->
+    <Alert v-show="againScanShow" @closeAlert="closeAgainScanAlert">
+      <p class="alertText">{{againScanText}}</p>
+      <!-- <button @click="closeAgainScanAlert" slot="btn">确认</button> -->
+    </Alert>
+
   </div>
 </template>
 <!-- </keep-alive> -->
@@ -79,6 +86,8 @@ export default {
       snList: [],
       material: '',
       materialShow: false,
+      againScanShow: false,
+      againScanText: '',
       account: localStorage.getItem('account'),
       name: '',
       key: true,
@@ -88,7 +97,8 @@ export default {
       tipShow: false,
       factoryAlertShow: false,
       version: '', // 盘点版本
-      orderNo: '' // 盘点单号
+      orderNo: '', // 盘点单号
+      alertMsg: ''
     }
   },
   computed: {
@@ -125,11 +135,6 @@ export default {
     }
   },
   mounted() {
-    // 检测盘点单号是否存在于缓存中
-    if (!this.orderNo) {
-      alert('请在系统设置页面选择盘点单号及盘点版本。')
-      this.$router.push({ path: '/setting' })
-    }
     this.setData()
     this.loadingShow(false)
     // 设置默认盘点模式
@@ -146,6 +151,9 @@ export default {
     loadingShow: function(x) {
       this.$store.commit('loadingShow', x)
     },
+    back() {
+      this.$router.go(-1)
+    },
     toSetting() {
       this.$router.push({path: '/setting'})
     },
@@ -159,6 +167,11 @@ export default {
     // 关闭弹框
     closeAlert() {
       this.materialShow = false
+      this.clearHeadBottInput()
+    },
+    // 关闭重复扫描弹框
+    closeAgainScanAlert() {
+      this.againScanShow = false
       this.clearHeadBottInput()
     },
     closeTip() {
@@ -181,8 +194,19 @@ export default {
 
     // 检测是否开放盘点
     checkOpen() {
+      let _this = this
       this.$ajax.get(path.app + 'checkopen').then(function(res) {
-        console.log(res)
+        res = res.data
+        if (!res.open) {
+          alert('现在不是盘点时间。')
+          _this.back()
+        } else {
+          // 检测盘点单号是否存在于缓存中
+          if (!_this.orderNo) {
+            alert('请在系统设置页面选择盘点单号及盘点版本。')
+            _this.$router.push({ path: '/setting' })
+          }
+        }
       }).catch(function(err) {
         console.log(err)
       })
@@ -201,20 +225,36 @@ export default {
 
     // 添加条码
     addLi(data, sn, _this) {
+      console.log('检测数据：', data)
       switch (data.code) {
         case 0:
-          _this.snList.unshift([sn, '='])
+          this.snList.unshift([sn, '='])
           this.factoryAlertShow = false
           this.clearHeadBottInput()
           break
         case 1:
           const temp = data.info
-          alert(`条码重复扫描，扫描人：${temp.name}，工号：${temp.account}，条码：${temp.sn}，入库工厂/仓库：${temp.factory}/${temp.wareHouse}`)
+          this.againScanShow = true // 现实重复扫描提示弹框
+          this.againScanText = `条码重复扫描，扫描人：${temp.name}，工号：${temp.account}，条码：${temp.sn}，入库工厂/仓库：${temp.factory}/${temp.wareHouse}`
           this.clearHeadBottInput()
+          let _this = this
+          // 设置两秒后关闭重复扫描提示框
+          if (againScanSetTimeout) {
+            clearTimeout(againScanSetTimeout)
+          }
+          let againScanSetTimeout = setTimeout(() => {
+            _this.closeAgainScanAlert()
+          }, 2000)
           break
         case 2:
-          _this.sn = sn
-          _this.materialShow = true
+          this.sn = sn
+          this.materialShow = true
+          let obj = data.data
+          if (obj) {
+            this.alertMsg = `${obj.sn}是${obj.factory}工厂${obj.wareHouse}库位状态为${obj.message}的条码,是否录入。`
+          } else {
+            this.alertMsg = '条码在该工厂未找到，是否录入？'
+          }
           this.clearHeadBottInput()
           break
         case 3:
@@ -431,6 +471,7 @@ export default {
     }
   }
   .alertText{
+    padding: 0.4rem .4rem .4rem .4rem;
     padding-bottom: .4rem;
   }
 }
