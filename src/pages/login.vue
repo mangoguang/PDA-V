@@ -26,6 +26,7 @@
         </li>
       </ul>
     </form>
+    <a class="internetCheck" href="http://10.12.0.175:81">网络测试</a>
   </div>
 </template>
 <!-- </keep-alive> -->
@@ -243,6 +244,23 @@ export default {
 li:last-child{
   height: $f40;
   margin-top: $f20;
+}
+
+.internetCheck{
+  position: absolute;
+  bottom: .5rem;
+  left: 50%;
+  width: 1.6rem;
+  height: .6rem;
+  line-height: .6rem;
+  text-align: center;
+  margin-left: -1.1rem;
+  padding-left: .6rem;
+  text-decoration: none;
+  color: #fff;
+  background: url(../assets/img/login/wifi.png) no-repeat;
+  background-size: .6rem auto;
+  background-position: 0 center;
 }
 
 @each $skin, $col, $subCol, $strongCol, $btnBgCol, $btnBgSubCol in $skin-data {

@@ -1072,12 +1072,9 @@ export default {
       // 为true时按钮不可点击
       this.setBtnDisabled(true)
       let [_this, params, url, ZIP1] = [this, '', '', '']
-      // if (localStorage.getItem('departmentVal')) {
+      if (localStorage.getItem('departmentVal')) {
       ZIP1 = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal1') + '_' + localStorage.getItem('printVal1')
-      // } else {
-      //   alert('设置出错！')
-      //   return
-      // }
+      }
       if (this.urlParams === 'salesreturn') {
         params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + this.dateVal + '" } }'
         params = setParams(params)
