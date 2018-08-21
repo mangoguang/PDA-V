@@ -1079,10 +1079,10 @@ export default {
         params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + this.dateVal + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'salesoutput') {
-        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '/' + localStorage.getItem('fullName') + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + mango.currentTime() + '" } }'
+        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '/' + localStorage.getItem('fullName') + '", ZQRKZ: 1, ZDATE: "' + mango.currentTime() + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'salestockup') {
-        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZDATE: "' + mango.currentTime() + '" } }'
+        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + mango.currentTime() + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'purchase') {
         params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ',LGORT: "' + this.warehouseNum + '"' + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '", ZDATE: "' + this.dateVal + '"} }'

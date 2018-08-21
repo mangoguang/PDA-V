@@ -26,7 +26,7 @@
         </li>
       </ul>
     </form>
-    <a class="internetCheck" href="http://10.12.0.175:81">网络测试</a>
+    <!-- <a class="internetCheck" href="http://10.12.0.175:81">网络测试</a> -->
   </div>
 </template>
 <!-- </keep-alive> -->
