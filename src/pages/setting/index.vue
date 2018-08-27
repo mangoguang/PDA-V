@@ -90,7 +90,16 @@
       </li>
       <li>
         <!-- 盘点方式 -->
-      <select-component
+        <select-component
+      @changeSelectVal="selectType"
+      :dataName="'PDType'"
+      :selectVal="PDType"
+      :labelText = "'盘点方式'"
+      :firstOption = "'请选择盘点方式'"
+      :selectArr="[{name: '通盘', code: 0}].map(function(item) {
+        return {name: item.name, key: item.code}
+      })"></select-component>
+      <!-- <select-component
       @changeSelectVal="selectType"
       :dataName="'PDType'"
       :selectVal="PDType"
@@ -98,7 +107,7 @@
       :firstOption = "'请选择盘点方式'"
       :selectArr="[{name: '精盘', code: 1}, {name: '通盘', code: 0}].map(function(item) {
         return {name: item.name, key: item.code}
-      })"></select-component>
+      })"></select-component> -->
       <!-- 盘点单号 -->
       <select-component
       @changeSelectVal="selectOrderNo"
