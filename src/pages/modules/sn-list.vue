@@ -808,9 +808,11 @@ export default {
           _this.inputVal = ''
           _this.errorShow = true
           _this.inputVal = ''
-          setTimeout(function timer() {
-            _this.$store.commit('errorMsg', data.ZTXXX)
-          }, 1000)
+          if (_this.urlParams !== 'salestockup') {
+            setTimeout(function timer() {
+              _this.$store.commit('errorMsg', data.ZTXXX)
+            }, 1000)
+          }
           // setTimeout(_this.errorShow = false, 1000)
           // _this.inputVal = ''
           // alert(data.ZTXXX)
