@@ -2,7 +2,7 @@
   <div>
     <TableH></TableH>
     <ul v-if="name === 'productScan'" class="clearfix table-tr-op">
-      <li v-for="(arr, index) in productScanList" :key="arr[0]" :class="{on: arr[3]}">
+      <li v-for="(arr, index) in productScanList" :key="`biaoqianma${index}`" :class="{on: arr[3]}">
         <ul>
           <li class="li1">{{index+1}}</li>
           <li class="li2"><input type="text" :value="arr[0]" disabled="disabled"></li>

@@ -4,7 +4,8 @@ function Path() {
 	// this.oa = 'http://10.12.0.190/api/pda/v1/userperm'
 	this.local = 'http://localhost/PDA-V/static/json'
 	// this.local = 'http://mangoguang.cn/PDA/static/json'
-	this.sap = 'http://10.12.0.153:50100/RESTAdapter/'
+	this.sap = 'http://10.12.0.158:50100/RESTAdapter/'
+	// this.sap = 'http://10.12.0.153:50100/RESTAdapter/'
 	this.appTest = 'http://10.11.8.223:8081/api/v1/stocktake/'
 
 	this.app = 'http://10.12.0.61/api/pda/v1/stocktake/'
