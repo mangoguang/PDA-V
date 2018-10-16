@@ -1073,15 +1073,26 @@ export default {
     setSureIn() {
       // 为true时按钮不可点击
       this.setBtnDisabled(true)
-      let [_this, params, url, ZIP1] = [this, '', '', '']
+      // 备货出库过账接口，打印机ip即变量zip不允许为空
+      let [_this, params, url, ZIP1, fullName] = [this, '', '', 'SOS', localStorage.getItem('fullName') ? localStorage.getItem('fullName') : '']
       if (localStorage.getItem('departmentVal')) {
-      ZIP1 = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal1') + '_' + localStorage.getItem('printVal1')
+        if (localStorage.getItem('lineVal1')) {
+          if (localStorage.getItem('printVal1')) {
+            ZIP1 = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal1') + '_' + localStorage.getItem('printVal1')
+          } else {
+            // alert('打印机未选择。')
+          }
+        } else {
+          // alert('生产线未选择。')
+        }
+      } else {
+        // alert('部门未选择。')
       }
       if (this.urlParams === 'salesreturn') {
         params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + this.dateVal + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'salesoutput') {
-        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '/' + localStorage.getItem('fullName') + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + mango.currentTime() + '" } }'
+        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '/' + fullName + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + mango.currentTime() + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'salestockup') {
         params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + mango.currentTime() + '" } }'
