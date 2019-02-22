@@ -42,5 +42,5 @@ table{
   min-width: 10rem;
 }
 button:hover{
-  box-shadow: 3px 3px 2px #888888;
+  opacity: 0.5;
 }

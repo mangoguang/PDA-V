@@ -65,7 +65,7 @@ import PutIn from '../../components/purchase/put-in'
 import SNDetail from '../../components/purchase/sn-detail'
 import Btn from '../../components/btn'
 import SureBox from '../../components/sureBox'
-import { path, V, getFactorySel, setParams, version } from '../../js/variable.js'
+import mango, { path, V, setParams, version } from '../../js/variable.js'
 // import apiFn from '../../js/lib/api.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -110,7 +110,7 @@ export default {
       clearsnArr: true, // 用于销售模块snArr初始化
       salestockupNum: 0,
       errorTime: 0,
-      dateVal: localStorage.getItem('dateVal'),
+      dateVal: '',
       numLength: 0,
       canVerify: true, // 判断输入框是否为人工输入
       mixType: false, // 既是标准包，又有子条码是，为true
@@ -174,7 +174,44 @@ export default {
     },
     fbData() {
       return this.$store.state.fbData
+    },
+    skinCol() {
+      return this.$store.state.skinCol
     }
+  },
+  created: function () {
+    // 获取本地缓存
+    this.getStorage()
+    // 设置注销的回退步数
+    localStorage.setItem('routeIndex', '5')
+    // getFactorySel(this)
+    if (this.urlParams === 'purchase' || this.urlParams === 'salesoutput' || this.urlParams === 'allotinbound') {
+      this.orderType = 1
+    } else if (this.urlParams === 'salestockup' || this.urlParams === 'salesreturn' || this.urlParams === 'allot') {
+      this.orderType = 2
+    } else if (this.urlParams === 'product') {
+      this.orderType = 3
+    }
+    // this.getaccount()
+    this.snListUrl()
+    this.setTableH()
+    this.$store.commit('loadingShow', false)
+    this.$store.commit('tableH', ['序号', '描述', '条码', '状态'])
+    this.focusStatus = true
+    // this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
+    this.checkBoxShowFn(true) // 再次进入页面是，将sn码选取复选框隐藏
+  },
+  mounted() {
+    console.log(222333, this.dateVal, mango.currentTime())
+    let _this = this
+    this.$store.commit('isOP', false)
+    // 检测，过了12点强制重新登陆。
+    let checkTime = setInterval(function() {
+      if (_this.checkTime()) {
+        clearInterval(checkTime)
+        mango.goIndex.call(_this)
+      }
+    }, 10000)
   },
   methods: {
     setBtnDisabled(x) {
@@ -189,16 +226,25 @@ export default {
     setsureBoxShow(x) {
       this.$store.commit('sureBoxShow', x)
     },
-    getaccount() {
-      // 获取本地存储账号信息
-      let accountMsg = localStorage.getItem('accountMsg')
-      if (accountMsg) {
-        let obj = eval('(' + accountMsg + ')')
-        this.account = obj.account
-      } else {
-        // console.log('没有本地存储')
-      }
+    getStorage() {
+      this.account = localStorage.getItem('account')
+      let temp = mango.storage.getStorage(this.account)
+      this.factory = temp['factory']
+      this.factoryNum = temp['factoryNum']
+      this.warehouse = temp['warehouse']
+      this.warehouseNum = temp['warehouseNum']
+      this.dateVal = temp['dateVal']
     },
+    // getaccount() {
+    //   // 获取本地存储账号信息
+    //   let accountMsg = localStorage.getItem('accountMsg')
+    //   if (accountMsg) {
+    //     let obj = eval('(' + accountMsg + ')')
+    //     this.account = obj.account
+    //   } else {
+    //     // console.log('没有本地存储')
+    //   }
+    // },
     // 点击头部切换按钮
     btn1() {
       this.$store.commit('tableH', ['序号', '物料描述', '数量'])
@@ -280,6 +326,7 @@ export default {
         this.verify3()
       }
     },
+    // 确认入库
     sureIn() {
       if (this.hadscanCount < this.scanCount) {
         if (this.urlParams === 'product') {
@@ -307,6 +354,16 @@ export default {
       this.$store.commit('checkBoxShow', false)
       this.showCheckbox = false
       this.setsureBoxShow(false)
+    },
+    checkTime() {
+      let date = new Date()
+      // let [hour, minute, second] = [0, 0, 10]
+      let [hour, minute, second] = [date.getHours(), date.getMinutes(), date.getSeconds()]
+      if (!(hour || minute) && second <= 10) {
+        return true
+      } else {
+        return false
+      }
     },
     setSNCopy(arr) {
       this.$store.commit('SNCopy', arr)
@@ -751,9 +808,11 @@ export default {
           _this.inputVal = ''
           _this.errorShow = true
           _this.inputVal = ''
-          setTimeout(function timer() {
-            _this.$store.commit('errorMsg', data.ZTXXX)
-          }, 1000)
+          if (_this.urlParams !== 'salestockup') {
+            setTimeout(function timer() {
+              _this.$store.commit('errorMsg', data.ZTXXX)
+            }, 1000)
+          }
           // setTimeout(_this.errorShow = false, 1000)
           // _this.inputVal = ''
           // alert(data.ZTXXX)
@@ -829,7 +888,7 @@ export default {
         this.setSNArr(temp)
         this.turnArr(temp)
       } else {
-        alert('条码不存在！')
+        alert('条码在入库单' + this.opNum + '不存在！')
         this.inputVal = ''
       }
     },
@@ -1016,41 +1075,38 @@ export default {
       this.setBtnDisabled(true)
       let [_this, params, url, ZIP1] = [this, '', '', '']
       if (localStorage.getItem('departmentVal')) {
-        ZIP1 = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal1') + '_' + localStorage.getItem('printVal1')
-      } else {
-        alert('设置出错！')
-        return
+      ZIP1 = localStorage.getItem('departmentVal').substr(0, 3) + '_' + localStorage.getItem('lineVal1') + '_' + localStorage.getItem('printVal1')
       }
       if (this.urlParams === 'salesreturn') {
         params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + this.dateVal + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'salesoutput') {
-        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '/' + localStorage.getItem('fullName') + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + this.dateVal + '" } }'
+        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '/' + localStorage.getItem('fullName') + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + mango.currentTime() + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'salestockup') {
-        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZDATE: "' + this.dateVal + '" } }'
+        params = '{ "item": {VBELN: ' + this.BUS_NO + ', ZGH: "' + this.account + '", ZQRKZ: 1, ZIP: ' + ZIP1 + ', ZDATE: "' + mango.currentTime() + '" } }'
         params = setParams(params)
       } else if (this.urlParams === 'purchase') {
         params = '{ "Item": {BUS_NO: ' + this.BUS_NO + ',LGORT: "' + this.warehouseNum + '"' + ', ZQRKZ: 1, ZDDLX: "' + this.ZDDLX + '", ZGH: "' + this.account + '", ZDATE: "' + this.dateVal + '"} }'
         params = setParams(params)
       } else if (this.urlParams === 'product') {
         let myDate = new Date()
-        let dateArr = localStorage.getItem('dateVal').split('-')
+        let dateArr = this.dateVal.split('-')
         if (dateArr[2].length === 1) {
           dateArr[2] = '0' + dateArr[2]
         }
-        function turnDate(num) {
-          if (num < 10) {
-            num = '0' + parseInt(num)
-          }
-          return num
-        }
+        // function turnDate(num) {
+        //   if (num < 10) {
+        //     num = '0' + parseInt(num)
+        //   }
+        //   return num
+        // }
         params = {
           ZRKDH: this.BUS_NO,
           ZGZRY: '' + this.account + '',
           // ZGZRQ: '' + myDate.getFullYear() + turnDate(myDate.getMonth() + 1) + turnDate(myDate.getDate()),
-          ZGZRQ: dateArr[0] + turnDate(dateArr[1]) + turnDate(dateArr[2]),
-          ZGZSJ: '' + myDate.getHours() + turnDate(myDate.getMinutes()) + turnDate(myDate.getSeconds()),
+          ZGZRQ: dateArr[0] + mango.turnDate(dateArr[1]) + mango.turnDate(dateArr[2]),
+          ZGZSJ: '' + mango.turnDate(myDate.getHours()) + mango.turnDate(myDate.getMinutes()) + mango.turnDate(myDate.getSeconds()),
           LGORT: this.warehouseNum
         }
       } else if (this.urlParams === 'allot') {
@@ -1198,33 +1254,6 @@ export default {
         }
       }
     }
-  },
-  created: function () {
-    // 设置注销的回退步数
-    localStorage.setItem('routeIndex', '5')
-    getFactorySel(this)
-    if (this.urlParams === 'purchase' || this.urlParams === 'salesoutput' || this.urlParams === 'allotinbound') {
-      this.orderType = 1
-    } else if (this.urlParams === 'salestockup' || this.urlParams === 'salesreturn' || this.urlParams === 'allot') {
-      this.orderType = 2
-    } else if (this.urlParams === 'product') {
-      this.orderType = 3
-    }
-    this.getaccount()
-    this.snListUrl()
-    this.setTableH()
-    this.$store.commit('loadingShow', false)
-    this.$store.commit('tableH', ['序号', '描述', '条码', '状态'])
-    this.focusStatus = true
-    this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
-    this.checkBoxShowFn(true) // 再次进入页面是，将sn码选取复选框隐藏
-  },
-  mounted() {
-    this.$store.commit('isOP', false)
-    // let scrollDiv = document.getElementsByClassName('contain')
-    // scrollDiv.addEventListener('scroll', () => {
-    //   console.log(scrollDiv.scrollTop)
-    // }, false)
   }
 }
 </script>

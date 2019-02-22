@@ -1,31 +1,35 @@
 import $ from 'n-zepto'
 function Path() {
-	this.oa = 'http://10.12.0.54/derucci/workflow/jsp'
-	// this.oa = 'http://10.12.0.53:8900/derucci/workflow/jsp'
+	this.oa = 'http://10.12.0.61/api/pda/v1/userperm'
+	// this.oa = 'http://10.12.0.190/api/pda/v1/userperm'
 	this.local = 'http://localhost/PDA-V/static/json'
 	// this.local = 'http://mangoguang.cn/PDA/static/json'
-	this.sap = 'http://10.12.0.153:50100/RESTAdapter/'
-	// this.sap = 'http://10.12.0.154:50100/RESTAdapter/'
+	this.sap = 'http://10.12.0.158:50100/RESTAdapter/'
+	// this.sap = 'http://10.12.0.153:50100/RESTAdapter/'
+	this.appTest = 'http://10.11.8.223:8081/api/v1/stocktake/'
+
+	this.app = 'http://10.12.0.61/api/pda/v1/stocktake/'
+	// this.app = 'http://10.12.0.190/api/pda/v1/stocktake/'
 }
 let path = new Path()
 // 网页版为'web'，app版为'app'
 let version = 'web'
 
 var cloneObj = function(obj) {
-    let str = obj.constructor === Array ? [] : {}
-    let newobj = obj.constructor === Array ? [] : {}
-    if (typeof obj !== 'object') {
-      return
-    } else if (window.JSON) {
-      str = JSON.stringify(obj) // 系列化对象
-      newobj = JSON.parse(str) // 还原
-    } else {
-      for (var i in obj) {
-        newobj[i] = typeof obj[i] === 'object' ?
-        cloneObj(obj[i]) : obj[i]
-      }
-    }
-    return newobj
+	let str = obj.constructor === Array ? [] : {}
+	let newobj = obj.constructor === Array ? [] : {}
+	if (typeof obj !== 'object') {
+		return
+	} else if (window.JSON) {
+		str = JSON.stringify(obj) // 系列化对象
+		newobj = JSON.parse(str) // 还原
+	} else {
+		for (var i in obj) {
+			newobj[i] = typeof obj[i] === 'object' ?
+			cloneObj(obj[i]) : obj[i]
+		}
+	}
+	return newobj
 }
 
 function VueAjax() {
@@ -126,7 +130,7 @@ function getFactorySel(_this) {
     _this.warehouse = factoryObj.warehouse
     _this.warehouseNum = factoryObj.warehouseNum
   } else {
-    // this.factorySel = this.factorys[0].name
+    // this.factorySel = this.factorys[0].account
   }
 }
 
@@ -157,7 +161,8 @@ function ajax (type, url, params) {
       url: url,
       data: params,
       dataType: 'json',
-      // timeout: 300,
+			// timeout: 300,
+			// contentType: 'application/json;charset=UTF-8',
       context: $('body'),
       success: function (data) {
         resolve(data)
@@ -180,10 +185,130 @@ function setParams(obj) {
 	}
 }
 
-// function arrElementUp(arr, i) {
-// 	i = parseInt(i)
-// 	arr.unshift(arr[i])
-// 	arr.splice(i + 1, 1)
-// }
+let Mango = (function() {
+	const localAccount = localStorage.getItem('account')
+	return function() {
+		// 设置本地存储
+		// 本地存储在入口文件初始化initStorage方法
+		let Storage = function() {}
+
+		Storage.prototype = {
+			// 初始化并获取mangoStorage
+			initStorage: function(account) {
+				// localStorage.removeItem('mangoStorage')
+				let mangoStorage = localStorage.getItem('mangoStorage')
+				if (mangoStorage) {
+					mangoStorage = JSON.parse(mangoStorage)
+				} else {
+					// 给mangoStorage赋初值
+					mangoStorage = {}
+				}
+				if (!mangoStorage[`mango${account}`]) {
+					mangoStorage[`mango${account}`] = {}
+					localStorage.setItem('mangoStorage', JSON.stringify(mangoStorage))
+				}
+			},
+			// 获取本地存储
+			getStorage: function(account) {
+				return JSON.parse(localStorage.getItem('mangoStorage'))[`mango${account}`]
+			},
+			// 更改本地存储
+			setStorage: function(account, key, val) {
+				let tempStorage = JSON.parse(localStorage.getItem('mangoStorage'))
+				let accountStorage = tempStorage[`mango${account}`]
+				tempStorage[`mango${account}`][key] = val
+				console.log('333', tempStorage)
+				localStorage.setItem('mangoStorage', JSON.stringify(tempStorage))
+				return this
+			},
+			// 获取本地缓存
+			setData: function(_this, key) {
+				let temp = JSON.parse(localStorage.getItem('mangoStorage'))[`mango${_this.account}`]
+				console.log('sucsess', temp)
+				_this[key] = temp[key]
+				return this
+			}
+		}
+
+		this.storage = new Storage()
+		this.goIndex = function() {
+			// this.$router.go(-1)
+			this.$router.go(0 - parseInt(localStorage.getItem('routeIndex')))
+		}
+		// 获取当前日期
+		this.currentTime = function() {
+			let date = new Date()
+			const [year, month, day] = [date.getFullYear(), date.getMonth(), date.getDate()]
+			return `${this.turnDate(year)}-${this.turnDate(month + 1)}-${this.turnDate(day)}`
+		}
+		this.turnDate = function(num) {
+			if (num < 10) {
+				num = '0' + parseInt(num)
+			}
+			return num
+		}
+		this.setSkinCol = (_this) => {
+			let temp = localStorage.getItem('account')
+			let skinCol = mango.storage.getStorage(temp)['skinCol']
+			if (skinCol) {
+				_this.skinCol = mango.storage.getStorage(temp)['skinCol']
+			} else {
+				_this.skinCol = 'skinA'
+				_this.$store.commit('changeSkin', 'skinA')
+			}
+		}
+	}
+}())
+
+let mango = new Mango()
+export default mango
+
+// let Storage = (function() {
+// 	// 静态私有变量
+// 	const account = localStorage.getItem('account')
+
+// 	function _storage() {
+// 		// 初始化并获取mangoStorage
+// 		this.init = function() {
+// 			// localStorage.removeItem('mangoStorage')
+// 			let mangoStorage = localStorage.getItem('mangoStorage')
+// 			if (mangoStorage) {
+// 				mangoStorage = JSON.parse(mangoStorage)
+// 			} else {
+// 				// 给mangoStorage赋初值
+// 				mangoStorage = {}
+// 			}
+// 			if (!mangoStorage[`mango${account}`]) {
+// 				mangoStorage[`mango${account}`] = {}
+// 				localStorage.setItem('mangoStorage', JSON.stringify(mangoStorage))
+// 			}
+// 		}
+
+// 		// 获取本地存储
+// 		this.get = function() {
+// 			return JSON.parse(localStorage.getItem('mangoStorage'))[`mango${account}`]
+// 		}
+
+// 		// 更改本地存储
+// 		this.set = function(key, val) {
+// 			let tempStorage = JSON.parse(localStorage.getItem('mangoStorage'))
+// 			let accountStorage = tempStorage[`mango${account}`]
+// 			tempStorage[`mango${account}`][key] = val
+// 			console.log('333', tempStorage)
+// 			localStorage.setItem('mangoStorage', JSON.stringify(tempStorage))
+// 			return this
+// 		}
+
+// 		// 获取本地缓存
+// 		this.setData = function(_this, key) {
+// 			let temp = JSON.parse(localStorage.getItem('mangoStorage'))[`mango${localAccount}`]
+// 			_this[key] = temp[key]
+// 			return this
+// 		}
+// 	}
+
+// 	return _storage
+// }())
+// export default new Storage()
 
 export { path, V, cloneObj, getFactorySel, getPrintPlanMsg, getaccount, ajax, setParams, version }

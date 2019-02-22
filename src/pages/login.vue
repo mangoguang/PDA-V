@@ -26,6 +26,7 @@
         </li>
       </ul>
     </form>
+    <!-- <a class="internetCheck" href="http://10.12.0.175:81">网络测试</a> -->
   </div>
 </template>
 <!-- </keep-alive> -->
@@ -35,7 +36,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import md5 from 'js-md5'
-import { path, V } from '../js/variable.js'
+import mango, { path, V } from '../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
@@ -47,90 +48,120 @@ export default {
       account: null,
       password: null,
       // 按钮是否可点击
-      canClick: true,
-      skinCol: ''
+      canClick: true
     }
   },
   computed: {
-
+    skinCol() {
+      return this.$store.state.skinCol
+    }
+  },
+  created: function () {
+    // localStorage.removeItem('mangoStrage')
+    // localStorage.removeItem('account')
+    // 获取本地存储的皮肤值
+    this.setSkinCol()
+    // this.skinCol = localStorage.getItem('skinCol')
+    // if (this.skinCol) {
+    // // 检测是否存在本地存储皮肤值
+    //   this.$store.commit('changeSkin', this.skinCol)
+    // } else {
+    //   this.skinCol = 'skinA'
+    //   this.$store.commit('changeSkin', 'skinA')
+    //   localStorage.setItem('skinCol', 'skinA')
+    // }
+    // 获取本地存储账号信息
+    // let accountMsg = localStorage.getItem('accountMsg')
+    // console.log(accountMsg)
+    // if (accountMsg) {
+    //   let obj = eval('(' + accountMsg + ')')
+    //   this.account = obj.account
+    //   this.password = obj.password
+    // } else {
+    //   console.log('没有本地存储')
+    // }
+    this.loadingShow(false)
+  },
+  mounted() {
+    this.initAccountMsg()
   },
   methods: {
     loadingShow: function(x) {
       this.$store.commit('loadingShow', x)
     },
-    // mint ui基于vue2的日期插件
-    // getDate() {
-    //   console.log(this.pickerVisible)
-    // },
-    // openPicker() {
-    //   this.$refs.picker.open()
-    // },
+    initAccountMsg() {
+      let temp = localStorage.getItem('account')
+      if (temp) {
+        this.account = temp
+        temp = mango.storage.getStorage(this.account)
+        if (temp) {
+          this.password = temp['password']
+        } else {
+          this.password = ''
+        }
+      } else {
+        this.account = ''
+        this.password = ''
+      }
+    },
+    setSkinCol() {
+      let temp = localStorage.getItem('account')
+      if (!temp) {
+        this.skinCol = 'skinA'
+        this.$store.commit('changeSkin', 'skinA')
+      } else {
+        let skinCol = mango.storage.getStorage(temp)['skinCol']
+        if (skinCol) {
+          this.$store.commit('changeSkin', skinCol)
+          mango.storage.setStorage(temp, 'skinCol', skinCol)
+        } else {
+          this.$store.commit('changeSkin', 'skinA')
+          mango.storage.setStorage(temp, 'skinCol', 'skinA')
+        }
+      }
+      console.log('皮肤：', this.$store.state.skinCol, this.skinCol)
+    },
     login: function() {
       let _this = this
       let params = {
         // name: 'mango',
         // password: '123456'
         account: this.account,
-        password: md5(this.password).toLocaleUpperCase()
+        password: this.password
+        // password: md5(this.password).toLocaleUpperCase()
       }
-      let url = path.oa + '/PDAUserCheck.jsp'
+      let url = path.oa + '/login'
+      // let url = path.oa + '/PDAUserCheck.jsp'
       // let url = path.local + '/login.php'
       if (_this.canClick) {
         _this.canClick = false
         _this.loadingShow(true)
-        V.post(url, params).then(function(data) {
-          console.log(data)
+        this.$ajax.post(url, params).then(function(res) {
+          let data = res.data
+        // V.post(url, params).then(function(data) {
+          console.log('success', data)
           _this.canClick = true
           _this.loadingShow(false)
-          if (data.status === 'true') {
-            // 保存账号密码到本地存储
-            localStorage.setItem('accountMsg', "{account: '" + _this.account + "'," +
-              "password: '" + _this.password + "'}")
-            localStorage.setItem('fullName', data.name)
+          if (data.status) {
+            // 初始化本基于本账号的本地存储
+            mango.storage.initStorage(_this.account)
+            // 将盘点单号及盘点版本的本地缓存清空1
+            mango.storage.setStorage(_this.account, 'orderNo', '')
+            mango.storage.setStorage(_this.account, 'version', '')
+            localStorage.setItem('account', _this.account)
+            mango.storage.setStorage(_this.account, 'password', _this.password)
             _this.$router.push({ path: '/select?name=' + data.name })
           } else {
-            if (data.type === '0') {
-              alert('该账号不存在！')
-            } else if (data.type === '1') {
-              alert('密码错误！')
-            } else {
-              alert('该账号已登录，不可重复登录！')
-            }
+            alert(data.msg)
           }
-        }).catch((res) => {
-          alert('请求超时！')
-          _this.canClick = true
-          _this.loadingShow(false)
         })
+        // .catch((res) => {
+        //   alert('请求超时！')
+        //   _this.canClick = true
+        //   _this.loadingShow(false)
+        // })
       }
     }
-  },
-  created: function () {
-    // 获取本地存储的皮肤值
-    this.skinCol = localStorage.getItem('skinCol')
-    if (this.skinCol) {
-    // 检测是否存在本地存储皮肤值
-      this.$store.commit('changeSkin', this.skinCol)
-    } else {
-      this.skinCol = 'skinA'
-      this.$store.commit('changeSkin', 'skinA')
-      localStorage.setItem('skinCol', 'skinA')
-    }
-
-    // 获取本地存储账号信息
-    let accountMsg = localStorage.getItem('accountMsg')
-    console.log(accountMsg)
-    if (accountMsg) {
-      let obj = eval('(' + accountMsg + ')')
-      this.account = obj.account
-      this.password = obj.password
-    } else {
-      console.log('没有本地存储')
-    }
-    this.loadingShow(false)
-  },
-  mounted() {
-
   }
 }
 </script>
@@ -213,6 +244,23 @@ export default {
 li:last-child{
   height: $f40;
   margin-top: $f20;
+}
+
+.internetCheck{
+  position: absolute;
+  bottom: .5rem;
+  left: 50%;
+  width: 1.6rem;
+  height: .6rem;
+  line-height: .6rem;
+  text-align: center;
+  margin-left: -1.1rem;
+  padding-left: .6rem;
+  text-decoration: none;
+  color: #fff;
+  background: url(../assets/img/login/wifi.png) no-repeat;
+  background-size: .6rem auto;
+  background-position: 0 center;
 }
 
 @each $skin, $col, $subCol, $strongCol, $btnBgCol, $btnBgSubCol in $skin-data {
