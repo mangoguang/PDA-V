@@ -766,7 +766,7 @@ export default {
           data = data.MT_AllotInbound_Verify_Resp.Item
         }
         // 校验成功
-        if (data.ZXXLX === 'S') {
+        if (data.ZXXLX === 'S' || data.ZXXLX === 'W') {
           _this.inputVal = ''
           // 标准包
           if (fbtype === 0) {
@@ -803,6 +803,14 @@ export default {
             _this.turnArr(arr, index)
             // _this.inputVal = ''
             _this.focusStatus = true
+          }
+          // 如果返回W，则弹2秒的提示框
+          if (data.ZXXLX === 'W') {
+            _this.$store.commit('errorMsg', data.ZTXXX)
+            _this.errorShow = true
+            setTimeout(() => {
+              _this.errorShow = false
+            }, 1500)
           }
         } else {
           _this.inputVal = ''
@@ -849,16 +857,24 @@ export default {
               alert('条码有误！')
             }
           }
-          if (data.ZXXLX === 'S') {
+          if (data.ZXXLX === 'S' || data.ZXXLX === 'W') {
             _this.inputVal = ''
             _this.snListUrl()
+            // 如果返回W，则弹2秒的提示框
+            if (data.ZXXLX === 'W') {
+              _this.$store.commit('errorMsg', data.ZTXXX)
+              _this.errorShow = true
+              setTimeout(() => {
+                _this.errorShow = false
+              }, 1000)
+            }
           } else {
             _this.errorShow = true
             _this.$store.commit('errorMsg', data.ZTXXX)
             _this.inputVal = ''
             setTimeout(function timer() {
               _this.errorShow = false
-            }, 1000)
+            }, 1500)
           }
         })
       // } else {

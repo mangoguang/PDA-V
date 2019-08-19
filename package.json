@@ -14,12 +14,9 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
-<<<<<<< HEAD
-    "better-scroll": "^1.14.1",
-=======
     "better-scroll": "^1.10.1",
->>>>>>> dc2bb9c1b986537d737814398e6aed3032bb5c23
     "brace-expansion": "^1.1.8",
     "has-ansi": "^3.0.0",
     "iview": "^2.13.1",

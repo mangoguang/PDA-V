@@ -35,6 +35,10 @@ export var router = new VueRouter({
     name: 'Purchase',
     component: resolve => require(['../pages/purchase'], resolve)
   }, {
+    path: '/orderScan',
+    name: 'OrderScan',
+    component: resolve => require(['../pages/orderScan'], resolve)
+  }, {
     path: '/purchase/:num',
     name: 'PurchaseSN',
     component: resolve => require(['../pages/purchase/child'], resolve)

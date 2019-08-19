@@ -133,6 +133,8 @@ export default {
           this.$router.push({ path: '/setting' })
         } else if (module === 'check') {
           this.$router.push({ path: '/check' })
+        } else if (module === 'orderScan') {
+          this.$router.push({ path: '/orderScan' })
         } else {
           this.$router.push({ path: '/modules/' + module + '?moduleName=' + moduleName })
         }

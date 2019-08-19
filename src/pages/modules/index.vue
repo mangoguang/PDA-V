@@ -163,7 +163,7 @@ export default {
       _this.putInShow = false
       if (data.MT_Product_GetOrder_Resp.Item) {
         data = data.MT_Product_GetOrder_Resp.Item
-        if (data[0].ZXXLX === 'S' || data[0].ZXXLX === '') {
+        if (data[0].ZXXLX === 'S' || data[0].ZXXLX === '' || data[0].ZXXLX === 'W') {
           _this.setScanArr(data, '')
           _this.searchNum = ''
         } else {
