@@ -13,7 +13,6 @@ import {flexible} from './js/lib/properScreen.js'
 import Login from './pages/login.vue'
 import store from './store'
 import Loading from './components/loading'
-
 // Vue.use(vueResource)
 flexible()
 

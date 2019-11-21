@@ -9,7 +9,7 @@
       <li 
       v-for="(module,index) in modules" 
       :key="module.coding"
-      v-if="module.jurisdiction === 'true'"
+      v-if="module.jurisdiction"
       @click="toModule(module.coding, module.jurisdiction, module.name)" 
       :style="{
         background: 'url(./static/images/skinImg/' + skinCol + '/' + module.coding + '.png) no-repeat',
@@ -20,7 +20,7 @@
       <li 
       v-for="(module,index) in modules" 
       :key="module.coding"
-      v-if="module.jurisdiction === 'false'"
+      v-if="!module.jurisdiction"
       @click="toModule(module.coding, module.jurisdiction, module.name)" 
       :style="{
         background: 'url(./static/images/skinImg/' + skinCol + '/' + module.coding +'_1.png) no-repeat',
@@ -37,7 +37,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {path, V, getFactorySel} from '../js/variable'
+import mango, {path, V, getFactorySel} from '../js/variable'
 import HeadComponent from '../components/header'
 import md5 from 'js-md5'
 Vue.use(VueRouter)
@@ -60,8 +60,22 @@ export default {
   },
   computed: {
     skinCol() {
-      return localStorage.getItem('skinCol')
+      return this.$store.state.skinCol
     }
+  },
+  created: function() {
+    // 设置注销的回退步数
+    localStorage.setItem('routeIndex', '3')
+    // getFactorySel(this)
+    // let obj = this.getAccountMsg()
+    // this.account = obj.account
+    // this.password = obj.password
+    // this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
+  },
+  mounted() {
+    this.getStorage()
+    // alert(localStorage.getItem('dateVal'))
+    this.jurisdiction()
   },
   methods: {
     addClass() {
@@ -70,19 +84,30 @@ export default {
     loadingShow: function(x) {
       this.$store.commit('loadingShow', x)
     },
+    getStorage() {
+      this.account = localStorage.getItem('account')
+      let temp = mango.storage.getStorage(this.account)
+      this.warehouse = temp['warehouse']
+      this.warehouseNum = temp['warehouseNum']
+      this.factoryNum = temp['factoryNum']
+      this.password = temp['password']
+    },
     jurisdiction: function() {
       let _this = this
-      let url = path.oa + '/PDAPermission.jsp'
+      let url = path.oa + '/module'
       // let url = path.local + '/jurisdiction.php'
       let params = {
         account: this.account,
-        password: md5(this.password).toLocaleUpperCase(),
+        password: this.password,
+        // password: md5(this.password).toLocaleUpperCase(),
         factory: this.factoryNum,
         warehouse: this.warehouseNum
       }
 
       _this.loadingShow(true)
-      V.post(url, params).then(function(data) {
+      this.$ajax.post(url, params).then(function(res) {
+        let data = res.data
+      // V.post(url, params).then(function(data) {
         _this.loadingShow(false)
         if (data.status) {
           _this.modules = data.permissions
@@ -103,36 +128,25 @@ export default {
     },
     // 跳转对应模块
     toModule: function(module, status, moduleName) {
-      if (status === 'true') {
+      if (status) {
         if (module === 'setting') {
           this.$router.push({ path: '/setting' })
         } else if (module === 'check') {
           this.$router.push({ path: '/check' })
+        } else if (module === 'orderScan') {
+          this.$router.push({ path: '/orderScan' })
         } else {
           this.$router.push({ path: '/modules/' + module + '?moduleName=' + moduleName })
         }
       } else {
         alert('您没有读取该模块内容的权限。')
       }
-    },
-    getAccountMsg: function() {
-      let accountMsg = localStorage.getItem('accountMsg')
-      let obj = eval('(' + accountMsg + ')')
-      return obj
     }
-  },
-  created: function() {
-    // 设置注销的回退步数
-    localStorage.setItem('routeIndex', '3')
-    getFactorySel(this)
-    let obj = this.getAccountMsg()
-    this.account = obj.account
-    this.password = obj.password
-    this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
-  },
-  mounted() {
-    // alert(localStorage.getItem('dateVal'))
-    this.jurisdiction()
+    // getAccountMsg: function() {
+    //   let accountMsg = localStorage.getItem('accountMsg')
+    //   let obj = eval('(' + accountMsg + ')')
+    //   return obj
+    // }
   }
 }
 </script>

@@ -14,15 +14,20 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
-    "better-scroll": "^1.14.1",
+    "better-scroll": "^1.10.1",
     "brace-expansion": "^1.1.8",
     "has-ansi": "^3.0.0",
+    "iview": "^2.13.1",
     "js-md5": "^0.6.1",
     "jsonp": "^0.2.1",
+    "less": "^3.0.2",
+    "less-loader": "^4.1.0",
     "mint-ui": "^2.2.13",
     "normalize.css": "^7.0.0",
-    "vue-router": "^2.2.0"
+    "vue-router": "^2.2.0",
+    "vux": "^2.9.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",
@@ -92,12 +97,14 @@
     "vue-style-loader": "^2.0.4",
     "vue-template-compiler": "^2.1.10",
     "vuex": "^2.3.1",
+    "vux-loader": "^1.2.8",
     "webpack": "^2.2.1",
     "webpack-bundle-analyzer": "^2.2.2",
     "webpack-dev-middleware": "^1.10.0",
     "webpack-hot-middleware": "^2.16.1",
     "webpack-merge": "^2.6.1",
-    "weixin-js-sdk": "^1.2.0"
+    "weixin-js-sdk": "^1.2.0",
+    "yaml-loader": "^0.5.0"
   },
   "engines": {
     "node": ">= 4.0.0",

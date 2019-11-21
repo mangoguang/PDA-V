@@ -6,17 +6,7 @@
 <script>
   export default {
     name: 'TableH',
-    props: ['list'],
-    data() {
-      return {
-
-      }
-    },
-    methods: {
-      clearInput() {
-
-      }
-    }
+    props: ['list']
   }
 </script>
 <style scoped lang="scss">
@@ -33,6 +23,8 @@ tr{
   th{
     border: none;
     outline: none;
+    color: #999;
+    padding: 0 .2rem;
   }
 }
 </style>

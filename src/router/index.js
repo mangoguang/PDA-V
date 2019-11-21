@@ -24,12 +24,20 @@ export var router = new VueRouter({
     path: '/cropper',
     name: 'Cropper',
     component: resolve => require(['../pages/cropper'], resolve)
+  }, {
+    path: '/pandian',
+    name: 'Pandian',
+    component: resolve => require(['../pages/pandian'], resolve)
   },
   // 模块路由
   {
     path: '/purchase',
     name: 'Purchase',
     component: resolve => require(['../pages/purchase'], resolve)
+  }, {
+    path: '/orderScan',
+    name: 'OrderScan',
+    component: resolve => require(['../pages/orderScan'], resolve)
   }, {
     path: '/purchase/:num',
     name: 'PurchaseSN',
@@ -94,6 +102,10 @@ export var router = new VueRouter({
     path: '/check',
     name: 'Check',
     component: resolve => require(['../pages/check'], resolve)
+  }, {
+    path: '/checkSetting',
+    name: 'CheckSetting',
+    component: resolve => require(['../pages/check/setting'], resolve)
   }, {
     path: '/edit',
     name: 'Edit',

@@ -89,6 +89,45 @@
         <span></span>
       </li>
       <li>
+        <!-- 盘点方式 -->
+        <select-component
+      @changeSelectVal="selectType"
+      :dataName="'PDType'"
+      :selectVal="PDType"
+      :labelText = "'盘点方式'"
+      :firstOption = "'请选择盘点方式'"
+      :selectArr="[{name: '通盘', code: 0}].map(function(item) {
+        return {name: item.name, key: item.code}
+      })"></select-component>
+      <!-- <select-component
+      @changeSelectVal="selectType"
+      :dataName="'PDType'"
+      :selectVal="PDType"
+      :labelText = "'盘点方式'"
+      :firstOption = "'请选择盘点方式'"
+      :selectArr="[{name: '精盘', code: 1}, {name: '通盘', code: 0}].map(function(item) {
+        return {name: item.name, key: item.code}
+      })"></select-component> -->
+      <!-- 盘点单号 -->
+      <select-component
+      @changeSelectVal="selectOrderNo"
+      :dataName="'orderNo'"
+      :selectVal="orderNo"
+      :labelText = "'盘点单号'"
+      :firstOption = "'请选择盘点单号'"
+      :selectArr="orderNoList.map(function(item) {
+        return {name: item.name, key: item.name}
+      })"></select-component>
+      <!-- 盘点版本 -->
+      <select-component
+      @changeSelectVal="selectVersion"
+      :dataName="'version'"
+      :selectVal="version"
+      :labelText = "'盘点版本'"
+      :firstOption = "'请选择盘点版本'"
+      :selectArr="[{name: '初盘', code: 1}, {name: '复盘', code: 2}].map(function(item) {
+        return {name: item.name, key: item.code}
+      })"></select-component>
         <button type="button" @click="logout">退出账号</button>
       </li>
     </ul>
@@ -101,14 +140,15 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 import HeadComponent from '../../components/header'
+import SelectComponent from '../../components/check/select'
 import md5 from 'js-md5'
-import {path, V, getFactorySel, getPrintPlanMsg, ajax} from '../../js/variable.js'
+import mango, {path, V, getPrintPlanMsg, ajax} from '../../js/variable.js'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
 export default {
   name: 'Setting',
-  components: {HeadComponent},
+  components: {HeadComponent, SelectComponent},
   data () {
     return {
       height: document.documentElement.clientHeight,
@@ -129,13 +169,19 @@ export default {
       fwPrintIPVal: '', // 标签打印机ip
       djPrintIPVal: '192.168.1.50', // 单据打印机ip
       typeList: ['skinA', 'skinB', 'skinC'], // 风格选择
-      typeVal: localStorage.getItem('skinCol'),
+      typeVal: mango.storage.getStorage(localStorage.getItem('account'), 'skinCol')['skinCol'],
+      PDType: '',
       factoryList: [],
       factory: '',
       factoryNum: '',
       warehouseList: [],
       warehouse: '',
-      warehouseNum: ''
+      warehouseNum: '',
+      account: localStorage.getItem('account'),
+      password: '',
+      orderNo: '', // 盘点单号
+      orderNoList: [],
+      version: '' // 盘点版本
     }
   },
   computed: {
@@ -143,66 +189,115 @@ export default {
       return this.$store.state.skinCol
     }
   },
+  created() {
+    console.log(123123, this.typeVal)
+    mango.storage.setData(this, 'factory')
+    .setData(this, 'factoryNum')
+    .setData(this, 'warehouse')
+    .setData(this, 'warehouseNum')
+    .setData(this, 'password')
+    .setData(this, 'orderNo') // 在登陆页会将这个缓存清除
+    // alert(localStorage.getItem('settingData'))
+    // if (!localStorage.getItem('settingData')) {
+    //   localStorage.setItem('settingData', '{}')
+    // }
+  },
+  mounted() {
+    this.loadingShow(false)
+    getPrintPlanMsg(this)
+    // getFactorySel(this)
+    // this.setSkinCol(localStorage.getItem('skinCol'))
+    // 获取防伪打印模板
+    this.getModule()
+    this.getFactory()
+    this.getDepartment()
+    this.getOrderNo()
+    console.log(888, localStorage.getItem('settingData'))
+  },
   methods: {
     loadingShow: function(x) {
       this.$store.commit('loadingShow', x)
     },
     setSkinCol(x) {
       this.$store.commit('changeSkin', x)
+      mango.storage.setStorage(this.account, 'skinCol', x)
     },
     changeType() {
-      localStorage.setItem('skinCol', this.typeVal)
+      // localStorage.setItem('skinCol', this.typeVal)
+      // mango.storage.setStorage(this.account, 'skinCol', this.typeVal)
       this.setSkinCol(this.typeVal)
     },
-    getAccountMsg: function() {
-      let accountMsg = localStorage.getItem('accountMsg')
-      let obj = eval('(' + accountMsg + ')')
-      return obj
+    // getAccountMsg: function() {
+    //   let accountMsg = localStorage.getItem('accountMsg')
+    //   let obj = eval('(' + accountMsg + ')')
+    //   return obj
+    // },
+    // 由select子组件触发
+    selectType(value) {
+      mango.storage.setStorage(this.account, 'PDType', value)
+      this.PDType = value
     },
+    // 选择盘点单号
+    selectOrderNo(value) {
+      mango.storage.setStorage(this.account, 'orderNo', value)
+      this.orderNo = value
+    },
+    // 选择盘点版本
+    selectVersion(value) {
+      console.log('盘点版本：', value)
+      mango.storage.setStorage(this.account, 'version', value)
+      this.version = value
+    },
+    // 获取工厂列表
     getFactory() {
       let _this = this
-      let obj = this.getAccountMsg()
-      let url = path.oa + '/PDAFactory.jsp'
+      // let obj = this.getAccountMsg()
+      let url = path.oa + '/factory'
       let params = {
         // name: this.factorySel,
         // password: md5(this.warehouse).toLocaleUpperCase()
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase()
+        account: this.account,
+        password: this.password
       }
       _this.loadingShow(true)
-      ajax('POST', url, params).then((data) => {
+      this.$ajax.post(url, params).then(function(res) {
+        let data = res.data
+      // ajax('GET', url, params).then((data) => {
         if (data.status) {
           _this.factoryList = data.factorys
           _this.setWarehouse()
         }
       }).catch(() => {
-        alert('请求超时！')
+        alert('请求超时1！')
           _this.loadingShow(false)
       })
     },
     setWarehouse: function() {
       let _this = this
       // let url = path.local + '/warehouse_sel.php'
-      let url = path.oa + '/PDAWareHouse.jsp'
-      let obj = this.getAccountMsg()
+      let url = path.oa + '/warehouse'
+      // let obj = this.getAccountMsg()
       // 获取本地存储账号信息
       let params = {
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase(),
+        account: this.account,
+        password: this.password,
         factory: this.factoryNum
       }
 
       _this.loadingShow(true)
-      ajax('POST', url, params).then((data) => {
+      this.$ajax.post(url, params).then(function(res) {
+        let data = res.data
+      // ajax('GET', url, params).then((data) => {
         _this.loadingShow(false)
         _this.warehouse = data.warehouse[0].name
-        localStorage.setItem('factoryMsg', '{factory: "' + _this.factory + '",warehouse: "' + _this.warehouse + '", factoryNum: "' + _this.factoryNum + '", warehouseNum: "' + _this.warehouseNum + '"}')
+        // mango.storage.setStorage(_this.account, 'warehouse', _this.warehouse)
+        // localStorage.setItem('factoryMsg', '{factory: "' + _this.factory + '",warehouse: "' + _this.warehouse + '", factoryNum: "' + _this.factoryNum + '", warehouseNum: "' + _this.warehouseNum + '"}')
         console.log(localStorage.getItem('factoryMsg'))
         if (data.status) {
           _this.warehouseList = data.warehouse
         }
       }).catch(() => {
-        alert('请求超时！')
+        alert('请求超时2！')
           _this.loadingShow(false)
       })
     },
@@ -213,12 +308,42 @@ export default {
       ajax('GET', url, null).then((data) => {
         _this.putInShow = false
         data = data.MT_SecurityCode_GetModule_Resp.Item
+        // 添加空方案
+        const emptyObj = {
+          ZBQMC: '不打印',
+          ZBQXH: ''
+        }
+        data.unshift(emptyObj)
+
         _this.printPlanList = data
         let temp = localStorage.getItem('printPlanMsg')
         if (!temp) {
           _this.printPlanSelNum = data[0].ZBQXH
           localStorage.setItem('printPlanMsg', JSON.stringify(data[0]))
         }
+      })
+    },
+    // 获取盘点单号
+    getOrderNo() {
+      let _this = this
+      let url = path.oa + '/getOrderNoList'
+      // 获取本地存储账号信息
+      let params = {
+        account: this.account,
+        password: this.password,
+        factory: this.factoryNum,
+        warehouse: this.warehouseNum
+      }
+      _this.loadingShow(true)
+      this.$ajax.post(url, params).then(function(res) {
+        // _this.orderNoList = res.data.orderNos
+        let data = res.data
+        _this.loadingShow(false)
+        _this.orderNoList = data.orderNos
+        mango.storage.setStorage(_this.account, 'orderNo', _this.orderNo)
+      }).catch(() => {
+        alert('请求超时了！')
+          _this.loadingShow(false)
       })
     },
     // 将打印方案缓存到本地
@@ -233,14 +358,16 @@ export default {
     },
     getDepartment() {
       let _this = this
-      let url = path.oa + '/PDAPrinterF.jsp'
-      let obj = this.getAccountMsg()
+      let url = path.oa + '/printDept'
+      // let obj = this.getAccountMsg()
       let params = {
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase()
+        account: this.account,
+        password: this.password
       }
       _this.putInShow = true
-      ajax('POST', url, params).then((data) => {
+      this.$ajax.post(url, params).then(function(res) {
+        let data = res.data
+      // ajax('GET', url, params).then((data) => {
         data = data.factorys
         _this.putInShow = false
         _this.departmentList = data.map((param) => param.factorycode)
@@ -250,9 +377,9 @@ export default {
         }
         // 获取生产线列表
         _this.getLine()
-        _this.getLine1()
+        // _this.getLine1()
       }).catch(() => {
-        alert('请求超时！')
+        alert('请求超时3！')
           _this.loadingShow(false)
       })
     },
@@ -260,91 +387,73 @@ export default {
       localStorage.setItem('departmentVal', this.departmentVal)
       // 获取生产线列表
       this.getLine()
-      this.getLine1()
+      // this.getLine1()
     },
     getLine() {
       let _this = this
-      let url = path.oa + '/PDAPrinterH.jsp'
-      let obj = this.getAccountMsg()
+      let url = path.oa + '/printProdLine'
+      // let url = path.oa + '/PDAPrinterH.jsp'
+      // let obj = this.getAccountMsg()
       let params = {
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase(),
+        account: this.account,
+        password: this.password,
         factory: this.departmentVal
       }
       _this.putInShow = true
-      ajax('POST', url, params).then((data) => {
+      this.$ajax.post(url, params).then(function(res) {
+        let data = res.data
+      // ajax('GET', url, params).then((data) => {
         data = data.warehouse
         _this.putInShow = false
         _this.lineList = data.map((param) => param.housecode)
+        _this.lineList1 = data.map((param) => param.housecode)
         if (!_this.lineVal && data.length > 0) {
           _this.lineVal = data[0].housecode
+          _this.lineVal1 = data[0].housecode
+          // localStorage.setItem('lineVal', data[0].housecode)
           localStorage.setItem('lineVal', data[0].housecode)
+          localStorage.setItem('lineVal1', data[0].housecode)
         }
         // 获取打印机列表
         _this.getPrint()
+        _this.getPrint1()
       }).catch(() => {
-        alert('请求超时！')
+        alert('请求超时4！')
           _this.loadingShow(false)
       })
     },
-    // getLine(lineVal, lineList, setItemName) {
-    //   let _this = this
-    //   let url = path.oa + '/PDAPrinterH.jsp'
-    //   let obj = this.getAccountMsg()
-    //   let params = {
-    //     account: obj.account,
-    //     password: md5(obj.password).toLocaleUpperCase(),
-    //     factory: this.departmentVal
-    //   }
-    //   _this.putInShow = true
-    //   ajax('POST', url, params).then((data) => {
-    //     data = data.warehouse
-    //     _this.putInShow = false
-    //     lineList = data.map((param) => param.housecode)
-    //     console.log('jjjj', lineList)
-    //     console.log(_this.lineList)
-    //     console.log('eee', lineVal, data.length)
-    //     if (!lineVal && data.length > 0) {
-    //       console.log(lineVal)
-    //       lineVal = data[0].housecode
-    //       localStorage.setItem('' + setItemName, data[0].housecode)
-    //       console.log(lineVal)
-    //     }
-    //   }).catch(() => {
-    //     alert('请求超时！')
-    //       _this.loadingShow(false)
-    //   })
-    // },
     changeLine() {
       localStorage.setItem('lineVal', this.lineVal)
       // 获取打印机列表
       this.getPrint()
     },
-    getLine1() {
-      let _this = this
-      let url = path.oa + '/PDAPrinterH.jsp'
-      let obj = this.getAccountMsg()
-      let params = {
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase(),
-        factory: this.departmentVal
-      }
-      _this.putInShow = true
-      ajax('POST', url, params).then((data) => {
-        data = data.warehouse
-        _this.putInShow = false
-        _this.lineList1 = data.map((param) => param.housecode)
-        if (!_this.lineVal1 && data.length > 0) {
-          _this.lineVal1 = data[0].housecode
-          localStorage.setItem('lineVal1', data[0].housecode)
-        }
-        // 获取打印机列表
-        this.getPrint1()
-      }).catch(() => {
-        alert('请求超时！')
-          _this.loadingShow(false)
-      })
-    },
+    // getLine1() {
+    //   let _this = this
+    //   let url = path.oa + '/printProdLine'
+    //   // let obj = this.getAccountMsg()
+    //   let params = {
+    //     account: this.account,
+    //     password: this.password,
+    //     factory: this.departmentVal
+    //   }
+    //   _this.putInShow = true
+    //   this.$ajax.post(url, params).then(function(res) {
+    //     let data = res.data
+    //   // ajax('GET', url, params).then((data) => {
+    //     data = data.warehouse
+    //     _this.putInShow = false
+    //     _this.lineList1 = data.map((param) => param.housecode)
+    //     if (!_this.lineVal1 && data.length > 0) {
+    //       _this.lineVal1 = data[0].housecode
+    //       localStorage.setItem('lineVal1', data[0].housecode)
+    //     }
+    //     // 获取打印机列表
+    //     this.getPrint1()
+    //   }).catch(() => {
+    //     alert('请求超时5！')
+    //       _this.loadingShow(false)
+    //   })
+    // },
     changeLine1() {
       localStorage.setItem('lineVal1', this.lineVal1)
       // 获取打印机列表
@@ -352,18 +461,19 @@ export default {
     },
     getPrint() {
       let _this = this
-      let url = path.oa + '/PDAPrinterR.jsp'
-      let obj = this.getAccountMsg()
+      let url = path.oa + '/printer'
+      // let obj = this.getAccountMsg()
       let params = {
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase(),
+        account: this.account,
+        password: this.password,
         factory: this.departmentVal,
         house: this.lineVal
       }
       _this.putInShow = true
-      ajax('POST', url, params).then((data) => {
+      this.$ajax.post(url, params).then(function(res) {
+        let data = res.data
+      // ajax('GET', url, params).then((data) => {
         _this.putInShow = false
-        console.log('88888', data)
         data = data.printers
         _this.printList = data
         if (!_this.redPrintVal && data.length > 0) {
@@ -373,7 +483,7 @@ export default {
           localStorage.setItem('blackPrintVal', data[0].printercode)
         }
       }).catch(() => {
-        alert('请求超时！')
+        alert('请求超时6！')
           _this.loadingShow(false)
       })
     },
@@ -386,16 +496,18 @@ export default {
     },
     getPrint1() {
       let _this = this
-      let url = path.oa + '/PDAPrinterR.jsp'
-      let obj = this.getAccountMsg()
+      let url = path.oa + '/printer'
+      // let obj = this.getAccountMsg()
       let params = {
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase(),
+        account: this.account,
+        password: this.password,
         factory: this.departmentVal,
         house: this.lineVal1
       }
       _this.putInShow = true
-      ajax('POST', url, params).then((data) => {
+      this.$ajax.post(url, params).then(function(res) {
+        let data = res.data
+      // ajax('GET', url, params).then((data) => {
         _this.putInShow = false
         data = data.printers
         _this.printList1 = data
@@ -404,7 +516,7 @@ export default {
           localStorage.setItem('printVal1', data[0].printercode)
         }
       }).catch(() => {
-        alert('请求超时！')
+        alert('请求超时7！')
           _this.loadingShow(false)
       })
     },
@@ -415,7 +527,7 @@ export default {
     // 将工厂信息缓存到本地
     changeFactory(status) {
       console.log(status)
-      localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
+      // localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
       if (status) {
         this.setWarehouse()
       } else {
@@ -424,16 +536,24 @@ export default {
             this.warehouse = this.warehouseList[i].name
           }
         }
-        localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
+        setFactoryStorage()
+        // localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
+      }
+
+      function setFactoryStorage() {
+        mango.storage.setStorage(this.account, 'factory', this.factory)
+        .setStorage(this.account, 'factoryNum', this.factoryNum)
+        .setStorage(this.account, 'warehouse', this.warehouse)
+        .setStorage(this.account, 'warehouseNum', this.warehouseNum)
       }
     },
     logout() {
       let _this = this
       let url = path.oa + '/PDALoginOut.jsp'
-      let obj = this.getAccountMsg()
+      // let obj = this.getAccountMsg()
       let params = {
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase()
+        account: this.account,
+        password: md5(this.password).toLocaleUpperCase()
       }
       _this.putInShow = true
       V.get(url, params).then(function(data) {
@@ -447,23 +567,10 @@ export default {
         console.log('注销登录')
         console.log(data)
       }).catch((res) => {
-        alert('请求超时！')
+        alert('请求超时8！')
         _this.loadingShow(false)
       })
     }
-  },
-  created() {
-
-  },
-  mounted() {
-    this.loadingShow(false)
-    getPrintPlanMsg(this)
-    getFactorySel(this)
-    this.setSkinCol(localStorage.getItem('skinCol'))
-    // 获取防伪打印模板
-    this.getModule()
-    this.getFactory()
-    this.getDepartment()
   }
 }
 </script>

@@ -50,7 +50,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 100;
+    z-index: 1000;
 }
 .spinner {
   position: absolute;

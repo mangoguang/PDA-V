@@ -9,14 +9,23 @@
     
     <form>
       <select id="factorys" v-model="factoryNum" @change="setWarehouse">
-        <option v-for="factory in factorys" :value="factory.code">{{ factory.name }}</option>
+        <option v-for="factory in factorys" :value="factory.code" :key="factory.code">{{ factory.name }}</option>
       </select>
       <select id="warehouse" v-model="warehouseNum">
-        <option v-for="warehouse in warehouses" :value="warehouse.code">{{ warehouse.name }}</option>
+        <option v-for="warehouse in warehouses" :value="warehouse.code" :key="warehouse.code">{{ warehouse.name }}</option>
       </select>
-      <input v-model="dateVal" type="text" class="demo-input" placeholder="请选择日期" id="date">
+      <input id="date" @click="openPicker" v-model="dateVal" type="text">
+      <mt-datetime-picker
+        ref="picker"
+        type="date"
+        v-model="pickerValue"
+        year-format="{value} 年"
+        month-format="{value} 月"
+        date-format="{value} 日"
+        @confirm="handleConfirm">
+      </mt-datetime-picker>
+      <!-- <Btn @click.native="openPicker">open</Btn> -->
       <div @click="select"><Btn>确定</Btn></div>
-<!--       <button @click="select" type="button">确定</button> -->
     </form>
   </div>
 </template>
@@ -26,20 +35,25 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
-import {path, V, getFactorySel} from '../js/variable'
+import 'mint-ui/lib/style.min.css'
+import { DatetimePicker, Button } from 'mint-ui'
+
+import mango, {path, V, getFactorySel} from '../js/variable'
 import Btn from '../components/btn'
 import md5 from 'js-md5'
-import laydate from '../js/lib/laydate'
 Vue.use(VueRouter)
 Vue.use(Vuex)
+Vue.component(DatetimePicker.name, DatetimePicker)
+Vue.component(Button.name, Button)
 
 export default {
   name: 'Select',
-  components: {Btn},
+  components: {Btn, DatetimePicker},
   data () {
     return {
       msg: 'Vuex组件',
       height: document.documentElement.clientHeight,
+      width: document.documentElement.clientWidth,
       factorys: [],
       warehouses: [],
       factory: '',
@@ -48,66 +62,134 @@ export default {
       warehouseNum: '',
       warehouseStatus: false,
       name: this.$route.query.name,
-      dateVal: ''
+      dateVal: '',
+      account: localStorage.getItem('account'),
+      pickerValue: new Date(),
+      password: ''
     }
   },
   computed: {
-
+    skinCol() {
+      return this.$store.state.skinCol
+    }
+  },
+  created() {
+    this.setSkinCol()
+    // 获取本地存储
+    this.getStorage()
+    // this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
+  },
+  mounted() {
+    this.setFactorys()
+    // 设置日期插件宽度，一个bug还是我打开min-ui的姿势不对？
+    document.getElementsByClassName('picker-items')[0].style.width = this.width + 'px'
+    // localStorage.setItem('name', this.name)
+    // console.log('sssss', mango.storage.setStorage(this.account, 'name', 'guang').setStorage(this.account, 'age', 26))
+    // console.log(mango.storage.getStorage(this.account))
+    // console.log('jjjj', vuexI18n)
   },
   methods: {
     loadingShow: function(x) {
       this.$store.commit('loadingShow', x)
     },
+    handleConfirm(date) {
+      this.dateVal = date.toLocaleDateString().split('/').join('-')
+    },
+    openPicker() {
+      this.$refs.picker.open()
+    },
+    setSkinCol() {
+      let temp = localStorage.getItem('account')
+      console.log(111, temp)
+      if (!temp) {
+        this.skinCol = 'skinA'
+        this.$store.commit('changeSkin', 'skinA')
+      } else {
+        let skinCol = mango.storage.getStorage(temp)['skinCol']
+        console.log(111222, skinCol)
+        if (skinCol) {
+          this.$store.commit('changeSkin', skinCol)
+          mango.storage.setStorage(temp, 'skinCol', skinCol)
+        } else {
+          this.$store.commit('changeSkin', 'skinA')
+          mango.storage.setStorage(temp, 'skinCol', 'skinA')
+        }
+      }
+      console.log('皮肤：', this.$store.state.skinCol, this.skinCol)
+    },
+    getStorage() {
+      let temp = mango.storage.getStorage(this.account)
+      console.log(123, temp)
+      if (temp['dateVal']) {
+        this.dateVal = temp['dateVal']
+      } else {
+        this.handleConfirm(new Date())
+      }
+      if (temp['factoryNum']) {
+        this.factoryNum = temp['factoryNum']
+      }
+      this.factory = temp['factory']
+      this.warehouseNum = temp['warehouseNum']
+      this.password = temp['password']
+    },
+    setStorage() {
+      // 工厂、仓库、日期本地缓存
+      mango.storage.setStorage(this.account, 'factory', this.factory)
+      .setStorage(this.account, 'factoryNum', this.factoryNum)
+      .setStorage(this.account, 'warehouse', this.warehouse)
+      .setStorage(this.account, 'warehouseNum', this.warehouseNum)
+      .setStorage(this.account, 'dateVal', this.dateVal)
+      .setStorage(this.account, 'name', this.name)
+      console.log('222', mango.storage.getStorage(this.account))
+    },
     select: function() {
+      console.log(this.warehouseNum)
       // localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "1012", warehouseNum: "' + this.warehouseNum + '"}')
-      let dateVal = document.getElementById('date').value
+      // let dateVal = document.getElementById('date').value
+      if (this.dateVal === undefined || this.dateVal === '') {
+        alert('请选择日期！')
+        return
+      }
       // 仓库名称与代号保持一致
       for (let i in this.warehouses) {
         if (this.warehouses[i].code === this.warehouseNum) {
           this.warehouse = this.warehouses[i].name
         }
       }
-      localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
-      if (dateVal === undefined || dateVal === '') {
-        alert('请选择日期！')
-        return
-      } else {
-        localStorage.setItem('dateVal', dateVal)
-      }
-      this.$router.push({ path: '/module?name=' + this.name })
 
-      // this.$router.push({ path: '/module?name=' + this.name + '&factoryNum=1012&warehouseNum=' + this.warehouseNum + '&warehouse=' + this.warehouse })
+      // 工厂、仓库、日期本地缓存
+      this.setStorage()
+
+      // localStorage.setItem('factoryMsg', '{factory: "' + this.factory + '",warehouse: "' + this.warehouse + '", factoryNum: "' + this.factoryNum + '", warehouseNum: "' + this.warehouseNum + '"}')
+      // localStorage.setItem('dateVal', dateVal)
+      this.$router.push({ path: '/module?name=' + this.name })
     },
     setWarehouse: function() {
       let _this = this
       // let url = path.local + '/warehouse_sel.php'
-      let url = path.oa + '/PDAWareHouse.jsp'
-      let obj = this.getAccountMsg()
+      let url = path.oa + '/warehouse'
       // 获取本地存储账号信息
       let params = {
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase(),
+        account: this.account,
+        password: this.password,
         factory: this.factoryNum
       }
 
       _this.loadingShow(true)
-      V.post(url, params).then(function(data) {
+      this.$ajax.post(url, params).then(function(res) {
+        let data = res.data
+      // V.post(url, params).then(function(data) {
         _this.loadingShow(false)
         if (data.status) {
           _this.warehouses = data.warehouse
           if (data.warehouse.length > 0) {
-            if (_this.warehouseStatus) {
+            if (!_this.warehouseNum || _this.warehouseStatus) {
               // 更改默认仓库
               _this.warehouse = data.warehouse[0].name
               _this.warehouseNum = data.warehouse[0].code
+              console.log('successssss')
             } else {
-              let factoryMsg = localStorage.getItem('factoryMsg')
-              if (!factoryMsg) {
-                _this.warehouse = data.warehouse[0].name
-                _this.warehouseNum = data.warehouse[0].code
-              } else {
-                _this.warehouseStatus = true
-              }
+              _this.warehouseStatus = true
             }
           }
         }
@@ -116,50 +198,27 @@ export default {
         _this.loadingShow(false)
       })
     },
-    // changeWarehouse() {
-
-    // },
-    getAccountMsg: function() {
-      let accountMsg = localStorage.getItem('accountMsg')
-      let obj = eval('(' + accountMsg + ')')
-      return obj
-    },
-    // getFactory: function() {
-    //   // 获取本地存储默认工厂
-    //   let factoryMsg = localStorage.getItem('factoryMsg')
-    //   let factoryObj = eval('(' + factoryMsg + ')')
-    //   if (factoryMsg) {
-    //     this.factory = factoryObj.factory
-    //     this.factoryNum = factoryObj.factoryNum
-    //     this.warehouse = factoryObj.warehouse
-    //     this.warehouseNum = factoryObj.warehouseNum
-    //   } else {
-    //     // this.factory = this.factorys[0].name
-    //   }
-    // },
     // 设置工厂列表
     setFactorys: function() {
+      // alert(this.factoryNum)
       let _this = this
-      // 获取本地存储的账号信息
-      let obj = this.getAccountMsg()
       // let url = path.local + '/factory_sel.php'
-      let url = path.oa + '/PDAFactory.jsp'
+      let url = path.oa + '/factory'
       let params = {
-        // name: this.factory,
-        // password: md5(this.warehouse).toLocaleUpperCase()
-        account: obj.account,
-        password: md5(obj.password).toLocaleUpperCase()
+        account: this.account,
+        password: this.password
       }
-
       _this.loadingShow(true)
-      V.post(url, params).then(function(data) {
+      this.$ajax.post(url, params).then(function(res) {
+          let data = res.data
+      // V.post(url, params).then(function(data) {
         _this.loadingShow(false)
-        let factoryMsg = localStorage.getItem('factoryMsg')
+        // let factoryMsg = localStorage.getItem('factoryMsg')
         if (data.status) {
-          if (!factoryMsg) {
-            _this.factory = data.factorys[0].name
-            _this.factoryNum = data.factorys[0].code
-          }
+          // if (!factoryMsg) {
+          //   _this.factory = data.factorys[0].name
+          //   _this.factoryNum = data.factorys[0].code
+          // }
           _this.factorys = data.factorys
           _this.setWarehouse()
         }
@@ -167,20 +226,8 @@ export default {
         alert('您的网络有问题。')
         _this.loadingShow(false)
       })
-      getFactorySel(this)
+      // getFactorySel(this)
     }
-  },
-  created() {
-    this.setFactorys()
-    this.$store.commit('changeSkin', localStorage.getItem('skinCol'))
-  },
-  mounted() {
-    let timestamp = Date.parse(new Date())
-    // 执行一个laydate实例
-    laydate.render({
-      elem: '#date', // 指定元素
-      value: new Date(timestamp)
-    })
   }
 }
 </script>
@@ -188,6 +235,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import "./../assets/sass/variable.scss";
+@import "./../assets/css/mint-ui.css";
 @import "./../assets/css/common.css";
 
 .select{
