@@ -1,43 +1,34 @@
-# scanner
+# 仓卫
 
-> A Vue.js project
+> 项目基于vue-cli开发，项目运行所需环境配置，软件等可参照vue-cli官方文档。项目为公司ERP系统的组成部分，主要负责公司仓库出入库扫码记录，通过接口与PI交互，PI再与SAP交互。功能主要包括以下10大功能：
+1、退货入库：待开发
+2、仓库盘点：用于每月底仓库盘点
+3、单号扫描：待开发
+4、系统设置：设置系统信息，包括标签打印设置、单据打印设置、风格选择、常规设置等
+5、生产扫描：生产车间生产扫描，包括防伪码扫描和标签码扫描
+6、生产入库：生产车间生产入库，扫描生产单号，并根据生产单号明细扫描入库。
+7、调拨出库：待开发
+8、备货出库：仓库备货出库，包括仓库备货扫描和出库扫描
+9、调拨入库：待开发
+10、采购入库：成品采购入库，根据采购入库单扫描入库。
 
 ## Build Setup
 
 ``` bash
-# install dependencies
+# 安装项目依赖
 npm install
 
-# serve with hot reload at localhost:8080
+# 本地运行项目
 npm run dev
 
-# build for production with minification
+# 打包项目
 npm run build
 
-# build for production and view the bundle analyzer report
-npm run build --report
-
-# run unit tests
-npm run unit
-
-# run e2e tests
-npm run e2e
-
-# run all tests
-npm test
 ```
 
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+# 生产环境
+后台链接：10.12.0.61
+APP正式环境网页链接：http://10.12.0.91/web/pda800/index.html#/
 
-npm v4.1.2    node v5.0.0   webpack v2.3.0环境下运行正常。（仅做参考）
-项目应用了vue-cli脚手架，同时整合了vue-router路由，引入了微信jssdk。使用vuex做状态管理。
-
-
-采购入库页面:
-	点击产品按钮：
-		state.tableH: ['序号', '物料', '描述', '数量']
-		isTr3: true
-
-		4500000277-171012100008-1/3
-		4500000277-171012000007
-		
+# 测试环境
+APP测试环境网页链接：http://10.12.0.91/web/pda100/index.html#/
