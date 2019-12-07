@@ -133,6 +133,7 @@ export default {
     this.getaccount()
   },
   mounted() {
+    console.log(998899899, localStorage.getItem('printLogoVal'))
     this.loadingShow(false)
   },
   methods: {
@@ -554,6 +555,18 @@ export default {
         let arr = []
         let snArr = this.snArr()
         let zipType
+        let spart
+        if (localStorage.getItem('printLogoVal')) {
+        // if ()
+          let arr = /\(\S+\)/.exec(localStorage.getItem('printLogoVal'))
+          if (arr) {
+            spart = arr[0].slice(1, 3)
+          } else {
+            spart = ''
+          }
+        } else {
+          spart = ''
+        }
         for (let i in snArr) {
           // 判断用红标签还是黑标签
           if (parseInt(_this.productScanList[i][3]) === 0) {
@@ -565,7 +578,8 @@ export default {
             'ZFWMA: "' + snArr[i] + '",' +
             'ZIP: "' + zipType + '",' +
             'ZBQXH: "' + this.printPlanSelNum + '",' +
-            'ZGH: "' + this.account + '"' +
+            'ZGH: "' + this.account + '",' +
+            'SPART: "' + spart + '"' +
           '}'
         }
         params = '{' + arr.join(',') + ', ZDATE: "' + dateArr[0] + this.turnDate(dateArr[1]) + this.turnDate(dateArr[2]) + '"}'

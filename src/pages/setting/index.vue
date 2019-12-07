@@ -62,6 +62,13 @@
         <span></span>
       </li>
       <li>
+        <label for="printLogo">品牌</label>
+        <select id="printLogo" v-model="printLogoVal" @change="changePrintLogo">
+          <option v-for="obj in printLogoList" :value="obj" :key="obj">{{ obj }}</option>
+        </select>
+        <span></span>
+      </li>
+      <li>
         <h2 :style="{'background': 'url(./static/images/skinImg/' + skinCol + '/style.png) no-repeat', 'background-size': 'auto $f14', 'background-position': '0 0.1rem' }">风格选择</h2>
       </li>
       <li>
@@ -181,7 +188,9 @@ export default {
       password: '',
       orderNo: '', // 盘点单号
       orderNoList: [],
-      version: '' // 盘点版本
+      version: '', // 盘点版本
+      printLogoVal: localStorage.getItem('printLogoVal'),
+      printLogoList: ['不选()', '慕思经典-歌蒂娅(C1)', '慕思经典-凯奇(C2)', '慕思经典-0769/兰博基尼(C3)', '慕思经典-3D(C4)', '慕思经典-3D(D1)', '慕思时尚-V6/苏斯(F1)', '慕思高端-名品汇(H1)', '酒店工程(I1)', '慕思家纺(J1)', '慕思儿童(K1)', '慕思助眠品牌(M1)', '慕思海外品牌(R1)', '思丽德赛-国际(S1)', '思丽德赛-简约(S2)', '崔佧(T1)', '慕思材料(W1)', '通配品牌(Z1)', '爱迪奇(DQ)']
     }
   },
   computed: {
@@ -523,6 +532,10 @@ export default {
     // 将打印机名称缓存到本地
     changePrint1() {
       localStorage.setItem('printVal1', this.printVal1)
+    },
+    // 将打印机名称缓存到本地
+    changePrintLogo() {
+      localStorage.setItem('printLogoVal', this.printLogoVal)
     },
     // 将工厂信息缓存到本地
     changeFactory(status) {
